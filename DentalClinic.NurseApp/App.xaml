@@ -1,0 +1,14 @@
+<Application x:Class="DentalClinic.NurseApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DentalClinic.UI;component/Theme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- لون تطبيق الاستقبال: أزرق -->
+            <SolidColorBrush x:Key="AccentBrush" Color="#1E78AA"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
