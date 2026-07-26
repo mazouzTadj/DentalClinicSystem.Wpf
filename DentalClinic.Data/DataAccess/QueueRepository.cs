@@ -44,7 +44,8 @@ public class QueueRepository
     {
         const string sql = @"
             SELECT q.VisitID, q.PatientID, p.FullName AS PatientFullName, q.VisitDate,
-                   q.CheckInTime, q.Status, q.CreatedByUserID, q.StatusUpdatedAt, q.StatusUpdatedByUserID
+                   q.CheckInTime, q.Status, q.CreatedByUserID, q.StatusUpdatedAt, q.StatusUpdatedByUserID,
+                   q.ScheduledDate -- أضفنا هذا السطر
             FROM VisitQueue q
             INNER JOIN Patients p ON p.PatientID = q.PatientID
             WHERE q.VisitDate = CAST(GETDATE() AS DATE)
@@ -65,10 +66,26 @@ public class QueueRepository
                 Status = Enum.Parse<VisitStatus>(row["Status"].ToString()!),
                 CreatedByUserID = (int)row["CreatedByUserID"],
                 StatusUpdatedAt = row["StatusUpdatedAt"] as DateTime?,
-                StatusUpdatedByUserID = row["StatusUpdatedByUserID"] as int?
+                StatusUpdatedByUserID = row["StatusUpdatedByUserID"] as int?,
+                // جلبنا وقت الموعد المجدول
+                ScheduledDate = row["ScheduledDate"] == DBNull.Value ? null : (DateTime?)row["ScheduledDate"]
             });
         }
         return result;
+    }
+
+    // تغيير حالة الزيارة إلى "ملغاة" - تُستخدم من تطبيقَي الممرضة والطبيب معاً
+    public bool CancelVisit(int visitId, int cancelledByUserId)
+    {
+        try
+        {
+            UpdateStatus(visitId, VisitStatus.Cancelled, cancelledByUserId);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     // تغيير حالة الزيارة - سيُستخدم من تطبيق الطبيب في الخطوة القادمة
@@ -83,5 +100,65 @@ public class QueueRepository
             new SqlParameter("@Status", newStatus.ToString()),
             new SqlParameter("@UpdatedByUserID", updatedByUserId),
             new SqlParameter("@VisitID", visitId));
+    }
+    // --------------------------------------------------------
+    // الميزات الجديدة: حجز المواعيد المستقبلية
+    // --------------------------------------------------------
+
+    // 1. إضافة موعد مستقبلي
+    public bool ScheduleAppointment(int patientId, DateTime scheduledDate, int createdByUserId)
+    {
+        const string insertSql = @"
+            INSERT INTO VisitQueue (PatientID, VisitDate, ScheduledDate, Status, CreatedByUserID)
+            VALUES (@PatientID, @VisitDate, @ScheduledDate, 'Scheduled', @CreatedByUserID)";
+
+        try
+        {
+            _db.ExecuteNonQuery(insertSql,
+                new SqlParameter("@PatientID", patientId),
+                new SqlParameter("@VisitDate", scheduledDate.Date), // نحفظ التاريخ فقط للبحث
+                new SqlParameter("@ScheduledDate", scheduledDate),  // نحفظ التاريخ والوقت معاً
+                new SqlParameter("@CreatedByUserID", createdByUserId));
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    // جلب قائمة المرضى ليوم محدد (تُستخدم لفلترة الأيام المستقبلية)
+    public List<VisitQueueItem> GetQueueByDate(DateTime selectedDate)
+    {
+        const string sql = @"
+            SELECT q.VisitID, q.PatientID, p.FullName AS PatientFullName, q.VisitDate,
+                   q.CheckInTime, q.Status, q.CreatedByUserID, q.StatusUpdatedAt, q.StatusUpdatedByUserID,
+                   q.ScheduledDate -- أضفنا هذا السطر
+            FROM VisitQueue q
+            INNER JOIN Patients p ON p.PatientID = q.PatientID
+            WHERE q.VisitDate = CAST(@SelectedDate AS DATE)
+            ORDER BY q.CheckInTime ASC";
+
+        var table = _db.ExecuteQuery(sql, new SqlParameter("@SelectedDate", selectedDate.Date));
+        var result = new List<VisitQueueItem>();
+
+        foreach (DataRow row in table.Rows)
+        {
+            result.Add(new VisitQueueItem
+            {
+                VisitID = (int)row["VisitID"],
+                PatientID = (int)row["PatientID"],
+                PatientFullName = row["PatientFullName"].ToString()!,
+                VisitDate = (DateTime)row["VisitDate"],
+                CheckInTime = row["CheckInTime"] == DBNull.Value ? DateTime.MinValue : (DateTime)row["CheckInTime"],
+                Status = Enum.Parse<VisitStatus>(row["Status"].ToString()!),
+                CreatedByUserID = (int)row["CreatedByUserID"],
+                StatusUpdatedAt = row["StatusUpdatedAt"] as DateTime?,
+                StatusUpdatedByUserID = row["StatusUpdatedByUserID"] as int?,
+                // جلبنا وقت الموعد المجدول
+                ScheduledDate = row["ScheduledDate"] == DBNull.Value ? null : (DateTime?)row["ScheduledDate"]
+            });
+        }
+        return result;
     }
 }

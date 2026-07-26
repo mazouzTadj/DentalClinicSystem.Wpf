@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.Data.SqlClient;
 using DentalClinic.Data.Models;
 using DentalClinic.Data.Helpers;
@@ -13,34 +14,22 @@ public class UserRepository
         _db = db;
     }
 
-    // البحث عن مستخدم عبر اسم المستخدم (بدون فلترة حسب الدور)
+    // البحث عن مستخدم عبر اسم المستخدم (حسابات نشطة فقط) - تُستخدم لتسجيل الدخول
     public UserAccount? FindByUsername(string username)
     {
         const string sql = @"
-            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, CreatedAt, LastLoginAt
+            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, IsAdmin, CreatedAt, LastLoginAt
             FROM Users
             WHERE Username = @Username AND IsActive = 1";
 
         var table = _db.ExecuteQuery(sql, new SqlParameter("@Username", username));
-        if (table.Rows.Count == 0) return null;
-
-        var row = table.Rows[0];
-        return new UserAccount
-        {
-            UserID = (int)row["UserID"],
-            FullName = row["FullName"].ToString()!,
-            Username = row["Username"].ToString()!,
-            PasswordHash = row["PasswordHash"].ToString()!,
-            Role = (int)row["RoleID"] == 1 ? UserRole.Doctor : UserRole.Nurse,
-            PhoneNumber = row["PhoneNumber"] as string,
-            IsActive = (bool)row["IsActive"],
-            CreatedAt = (DateTime)row["CreatedAt"],
-            LastLoginAt = row["LastLoginAt"] as DateTime?
-        };
+        return table.Rows.Count == 0 ? null : MapRow(table.Rows[0]);
     }
 
     // تسجيل الدخول: يتحقق من اسم المستخدم، كلمة المرور، وأن الدور مطابق للتطبيق المُستخدَم
     // (مثال: حساب ممرضة لا يمكنه الدخول إلى تطبيق الطبيب والعكس صحيح)
+    // ملاحظة: IsAdmin لا علاقة له بهذا التحقق إطلاقاً - هو صلاحية إضافية فوق الدور الأساسي فقط،
+    // فحساب "جلولي زيد" (IsAdmin=1, Role=Doctor) يسجّل دخوله لتطبيق الطبيب بشكل طبيعي تماماً كأي طبيب آخر.
     public UserAccount? Authenticate(string username, string password, UserRole requiredRole, out string errorMessage)
     {
         errorMessage = string.Empty;
@@ -73,4 +62,106 @@ public class UserRepository
         const string sql = "UPDATE Users SET LastLoginAt = GETDATE() WHERE UserID = @UserID";
         _db.ExecuteNonQuery(sql, new SqlParameter("@UserID", userId));
     }
+
+    // ===================== إدارة المستخدمين (Super Admin فقط) =====================
+
+    // كل المستخدمين بما فيهم غير النشطين - تُستخدم في شاشة إدارة المستخدمين فقط (بعكس FindByUsername)
+    public List<UserAccount> GetAllUsers()
+    {
+        const string sql = @"
+            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, IsAdmin, CreatedAt, LastLoginAt
+            FROM Users
+            ORDER BY FullName";
+
+        var table = _db.ExecuteQuery(sql);
+        var result = new List<UserAccount>();
+        foreach (DataRow row in table.Rows)
+        {
+            result.Add(MapRow(row));
+        }
+        return result;
+    }
+
+    // إضافة مستخدم جديد (طبيب أو ممرضة، مع/بدون صلاحية مدير عام) - يرجع UserID الجديد
+    public int AddUser(UserAccount user, string plainPassword)
+    {
+        const string sql = @"
+            INSERT INTO Users (FullName, Username, PasswordHash, RoleID, PhoneNumber, IsAdmin, IsActive)
+            VALUES (@FullName, @Username, @PasswordHash, @RoleID, @PhoneNumber, @IsAdmin, 1)";
+
+        return _db.ExecuteInsertAndGetId(sql,
+            new SqlParameter("@FullName", user.FullName),
+            new SqlParameter("@Username", user.Username),
+            new SqlParameter("@PasswordHash", PasswordHelper.Hash(plainPassword)),
+            new SqlParameter("@RoleID", user.Role == UserRole.Doctor ? 1 : 2),
+            new SqlParameter("@PhoneNumber", (object?)user.PhoneNumber ?? DBNull.Value),
+            new SqlParameter("@IsAdmin", user.IsAdmin));
+    }
+
+    // تعديل بيانات مستخدم موجود (بدون تغيير كلمة المرور - لذلك دالة منفصلة UpdatePassword أدناه)
+    public void UpdateUser(UserAccount user)
+    {
+        const string sql = @"
+            UPDATE Users
+            SET FullName = @FullName, Username = @Username, RoleID = @RoleID,
+                PhoneNumber = @PhoneNumber, IsAdmin = @IsAdmin, IsActive = @IsActive
+            WHERE UserID = @UserID";
+
+        _db.ExecuteNonQuery(sql,
+            new SqlParameter("@FullName", user.FullName),
+            new SqlParameter("@Username", user.Username),
+            new SqlParameter("@RoleID", user.Role == UserRole.Doctor ? 1 : 2),
+            new SqlParameter("@PhoneNumber", (object?)user.PhoneNumber ?? DBNull.Value),
+            new SqlParameter("@IsAdmin", user.IsAdmin),
+            new SqlParameter("@IsActive", user.IsActive),
+            new SqlParameter("@UserID", user.UserID));
+    }
+
+    // تُستدعى فقط عند إدخال كلمة مرور جديدة صراحة أثناء التعديل (اتركها فارغة في الواجهة = لا تغيير)
+    public void UpdatePassword(int userId, string newPlainPassword)
+    {
+        const string sql = "UPDATE Users SET PasswordHash = @Hash WHERE UserID = @UserID";
+        _db.ExecuteNonQuery(sql,
+            new SqlParameter("@Hash", PasswordHelper.Hash(newPlainPassword)),
+            new SqlParameter("@UserID", userId));
+    }
+
+    // تعطيل/إعادة تفعيل حساب (لا حذف فعلي أبداً، حفاظاً على سجل من أنشأ كل مريض/جلسة تاريخياً)
+    public void SetActive(int userId, bool isActive)
+    {
+        const string sql = "UPDATE Users SET IsActive = @IsActive WHERE UserID = @UserID";
+        _db.ExecuteNonQuery(sql,
+            new SqlParameter("@IsActive", isActive),
+            new SqlParameter("@UserID", userId));
+    }
+
+    // هل اسم المستخدم هذا مستخدَم بالفعل من قِبل حساب آخر؟ (لإظهار رسالة واضحة بدل خطأ SQL خام)
+    public bool UsernameExists(string username, int? excludeUserId = null)
+    {
+        var sql = "SELECT COUNT(*) FROM Users WHERE Username = @Username";
+        var parameters = new List<SqlParameter> { new SqlParameter("@Username", username) };
+
+        if (excludeUserId.HasValue)
+        {
+            sql += " AND UserID <> @ExcludeUserID";
+            parameters.Add(new SqlParameter("@ExcludeUserID", excludeUserId.Value));
+        }
+
+        var result = _db.ExecuteScalar(sql, parameters.ToArray());
+        return result != null && Convert.ToInt32(result) > 0;
+    }
+
+    private static UserAccount MapRow(DataRow row) => new UserAccount
+    {
+        UserID = (int)row["UserID"],
+        FullName = row["FullName"].ToString()!,
+        Username = row["Username"].ToString()!,
+        PasswordHash = row["PasswordHash"].ToString()!,
+        Role = (int)row["RoleID"] == 1 ? UserRole.Doctor : UserRole.Nurse,
+        IsAdmin = (bool)row["IsAdmin"],
+        PhoneNumber = row["PhoneNumber"] as string,
+        IsActive = (bool)row["IsActive"],
+        CreatedAt = (DateTime)row["CreatedAt"],
+        LastLoginAt = row["LastLoginAt"] as DateTime?
+    };
 }

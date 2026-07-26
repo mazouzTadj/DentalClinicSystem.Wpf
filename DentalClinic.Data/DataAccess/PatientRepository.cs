@@ -31,17 +31,44 @@ public class PatientRepository
     }
 
     // بحث عن مريض بالاسم أو رقم الهاتف - يُستخدم عند إضافة مريض قديم لقائمة الانتظار
-    public List<Patient> Search(string term)
+    // term قد تكون فارغة إن استُخدم فلتر الجنس/العمر وحدهما بدون اسم أو هاتف
+    public List<Patient> Search(string term, string? gender = null, int? minAge = null, int? maxAge = null)
     {
-        const string sql = @"
+        var sql = @"
             SELECT PatientID, FullName, Age, Gender, PhoneNumber, Address, BasicMedicalNotes,
                    RegisteredByUserID, RegisteredAt, IsActive
             FROM Patients
-            WHERE IsActive = 1
-              AND (FullName LIKE @Term OR PhoneNumber LIKE @Term)
-            ORDER BY FullName";
+            WHERE IsActive = 1";
 
-        var table = _db.ExecuteQuery(sql, new SqlParameter("@Term", $"%{term}%"));
+        var parameters = new List<SqlParameter>();
+
+        if (!string.IsNullOrWhiteSpace(term))
+        {
+            sql += " AND (FullName LIKE @Term OR PhoneNumber LIKE @Term)";
+            parameters.Add(new SqlParameter("@Term", $"%{term}%"));
+        }
+
+        if (!string.IsNullOrWhiteSpace(gender))
+        {
+            sql += " AND Gender = @Gender";
+            parameters.Add(new SqlParameter("@Gender", gender));
+        }
+
+        if (minAge.HasValue)
+        {
+            sql += " AND Age >= @MinAge";
+            parameters.Add(new SqlParameter("@MinAge", minAge.Value));
+        }
+
+        if (maxAge.HasValue)
+        {
+            sql += " AND Age <= @MaxAge";
+            parameters.Add(new SqlParameter("@MaxAge", maxAge.Value));
+        }
+
+        sql += " ORDER BY FullName";
+
+        var table = _db.ExecuteQuery(sql, parameters.ToArray());
         var result = new List<Patient>();
 
         foreach (DataRow row in table.Rows)

@@ -8,4 +8,9 @@
     <RootNamespace>DentalClinic.UI</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Resource Include="Assets\logo_icon.png" />
+    <Resource Include="Assets\logo_full.png" />
+  </ItemGroup>
+
 </Project>

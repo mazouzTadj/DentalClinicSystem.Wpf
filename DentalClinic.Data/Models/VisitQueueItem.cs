@@ -5,7 +5,8 @@ public enum VisitStatus
     Waiting,
     InTreatment,
     Completed,
-    Cancelled
+    Cancelled,
+    Scheduled  // <-- تمت إضافة الحالة الجديدة هنا
 }
 
 // عنصر في قائمة الانتظار اليومية - يظهر عند الممرضة والطبيب معاً
@@ -20,4 +21,7 @@ public class VisitQueueItem
     public int CreatedByUserID { get; set; }
     public DateTime? StatusUpdatedAt { get; set; }
     public int? StatusUpdatedByUserID { get; set; }
+
+    // أضفنا هذا السطر لكي نستخدمه في واجهة المواعيد المستقبلية
+    public DateTime? ScheduledDate { get; set; }
 }
