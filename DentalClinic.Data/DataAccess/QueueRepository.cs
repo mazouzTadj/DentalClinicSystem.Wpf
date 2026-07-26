@@ -45,7 +45,15 @@ public class QueueRepository
         const string sql = @"
             SELECT q.VisitID, q.PatientID, p.FullName AS PatientFullName, q.VisitDate,
                    q.CheckInTime, q.Status, q.CreatedByUserID, q.StatusUpdatedAt, q.StatusUpdatedByUserID,
-                   q.ScheduledDate -- أضفنا هذا السطر
+                   
+                   -- هنا السر: نبحث عن أقرب موعد مستقبلي لهذا المريض
+                   (SELECT TOP 1 ScheduledDate 
+                    FROM VisitQueue f 
+                    WHERE f.PatientID = q.PatientID 
+                      AND f.VisitDate > q.VisitDate 
+                      AND f.Status = 'Scheduled' 
+                    ORDER BY f.ScheduledDate ASC) AS FutureScheduledDate
+
             FROM VisitQueue q
             INNER JOIN Patients p ON p.PatientID = q.PatientID
             WHERE q.VisitDate = CAST(GETDATE() AS DATE)
@@ -67,8 +75,8 @@ public class QueueRepository
                 CreatedByUserID = (int)row["CreatedByUserID"],
                 StatusUpdatedAt = row["StatusUpdatedAt"] as DateTime?,
                 StatusUpdatedByUserID = row["StatusUpdatedByUserID"] as int?,
-                // جلبنا وقت الموعد المجدول
-                ScheduledDate = row["ScheduledDate"] == DBNull.Value ? null : (DateTime?)row["ScheduledDate"]
+                // نقرأ الموعد المستقبلي بدلاً من الحالي
+                ScheduledDate = row["FutureScheduledDate"] == DBNull.Value ? null : (DateTime?)row["FutureScheduledDate"]
             });
         }
         return result;
@@ -133,7 +141,15 @@ public class QueueRepository
         const string sql = @"
             SELECT q.VisitID, q.PatientID, p.FullName AS PatientFullName, q.VisitDate,
                    q.CheckInTime, q.Status, q.CreatedByUserID, q.StatusUpdatedAt, q.StatusUpdatedByUserID,
-                   q.ScheduledDate -- أضفنا هذا السطر
+                   
+                   -- هنا السر: نبحث عن أقرب موعد مستقبلي لهذا المريض
+                   (SELECT TOP 1 ScheduledDate 
+                    FROM VisitQueue f 
+                    WHERE f.PatientID = q.PatientID 
+                      AND f.VisitDate > q.VisitDate 
+                      AND f.Status = 'Scheduled' 
+                    ORDER BY f.ScheduledDate ASC) AS FutureScheduledDate
+
             FROM VisitQueue q
             INNER JOIN Patients p ON p.PatientID = q.PatientID
             WHERE q.VisitDate = CAST(@SelectedDate AS DATE)
@@ -155,8 +171,8 @@ public class QueueRepository
                 CreatedByUserID = (int)row["CreatedByUserID"],
                 StatusUpdatedAt = row["StatusUpdatedAt"] as DateTime?,
                 StatusUpdatedByUserID = row["StatusUpdatedByUserID"] as int?,
-                // جلبنا وقت الموعد المجدول
-                ScheduledDate = row["ScheduledDate"] == DBNull.Value ? null : (DateTime?)row["ScheduledDate"]
+                // نقرأ الموعد المستقبلي بدلاً من الحالي
+                ScheduledDate = row["FutureScheduledDate"] == DBNull.Value ? null : (DateTime?)row["FutureScheduledDate"]
             });
         }
         return result;

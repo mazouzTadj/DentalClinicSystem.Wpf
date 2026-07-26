@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using DentalClinic.Data.Models;
 
@@ -25,6 +26,20 @@ public class QueueRowViewModel : INotifyPropertyChanged
         }
     }
 
+    // المتغير الجديد الخاص بالموعد القادم
+    private DateTime? _scheduledDate;
+    public DateTime? ScheduledDate
+    {
+        get => _scheduledDate;
+        private set
+        {
+            if (_scheduledDate == value) return;
+            _scheduledDate = value;
+            OnPropertyChanged(nameof(ScheduledDate));
+            OnPropertyChanged(nameof(NextAppointmentText));
+        }
+    }
+
     // يمكن إلغاء الزيارة فقط إن كانت لا تزال في الانتظار أو قيد المعالجة
     public bool CanCancel => Status == VisitStatus.Waiting || Status == VisitStatus.InTreatment;
 
@@ -37,17 +52,24 @@ public class QueueRowViewModel : INotifyPropertyChanged
         _ => Status.ToString()
     };
 
+    // النص الذي سيظهر في الجدول أمام الممرضة
+    public string NextAppointmentText => ScheduledDate.HasValue
+        ? ScheduledDate.Value.ToString("dd/MM/yyyy hh:mm tt")
+        : "-";
+
     public QueueRowViewModel(VisitQueueItem item)
     {
         VisitID = item.VisitID;
         PatientFullName = item.PatientFullName;
         CheckInTimeText = item.CheckInTime.ToString("hh:mm tt");
         _status = item.Status;
+        _scheduledDate = item.ScheduledDate; // جلب الموعد عند التحميل الأول
     }
 
     public void UpdateFrom(VisitQueueItem item)
     {
         Status = item.Status;
+        ScheduledDate = item.ScheduledDate; // تحديث الموعد تلقائياً إذا قام الطبيب بإضافته للتو
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

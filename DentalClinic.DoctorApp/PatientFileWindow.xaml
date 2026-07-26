@@ -35,7 +35,7 @@
                             Style="{StaticResource SecondaryButtonStyle}" FontSize="12"
                             Margin="0,0,8,0" Click="ExportPdfButton_Click"/>
 
-                    <!-- 📅 زر حجز موعد جديد (تمت إضافته هنا) -->
+                    <!-- 📅 زر حجز موعد جديد -->
                     <Button x:Name="ScheduleAppointmentButton" Content="📅 Schedule Next Visit" Height="30" Padding="10,0"
                             Style="{StaticResource SecondaryButtonStyle}" FontSize="12" FontWeight="SemiBold"
                             Margin="0,0,8,0" Click="ScheduleAppointmentButton_Click"/>
@@ -96,10 +96,12 @@
                                  TextWrapping="Wrap" AcceptsReturn="True" Height="56" VerticalContentAlignment="Top"/>
                     </Border>
 
+                    <!-- 🦷 خانة العلاج الجديدة: ComboBox اختيار من القائمة أو كتابة علاج مخصص -->
                     <TextBlock Text="Treatment" Style="{StaticResource FieldLabelStyle}"/>
-                    <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
-                        <TextBox x:Name="TreatmentBox" Style="{StaticResource PlainTextBoxStyle}"
-                                 TextWrapping="Wrap" AcceptsReturn="True" Height="56" VerticalContentAlignment="Top"/>
+                    <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14" Padding="5,2">
+                        <ComboBox x:Name="CmbTreatment" BorderThickness="0" Background="Transparent" 
+                                  FontSize="14" VerticalAlignment="Center" IsEditable="True"
+                                  SelectionChanged="CmbTreatment_SelectionChanged"/>
                     </Border>
 
                     <TextBlock Text="Affected Tooth (optional)" Style="{StaticResource FieldLabelStyle}"/>

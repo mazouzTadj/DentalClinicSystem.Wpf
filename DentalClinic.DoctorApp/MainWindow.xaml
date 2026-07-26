@@ -15,33 +15,45 @@
     <DockPanel LastChildFill="True">
 
         <!-- الشريط العلوي -->
+        <!-- الشريط العلوي -->
         <Border DockPanel.Dock="Top" Background="White" Padding="24,18">
             <Border.Effect>
                 <DropShadowEffect Color="#000000" Opacity="0.06" BlurRadius="10" ShadowDepth="2" Direction="270"/>
             </Border.Effect>
-            <DockPanel>
+
+            <!-- تم إضافة LastChildFill="False" لتجنب تمدد أي زر بشكل غير مرغوب -->
+            <DockPanel LastChildFill="False">
                 <Button DockPanel.Dock="Left" Content="Open Patient File" Width="180" Height="42"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        Click="OpenFileButton_Click"/>
-                <Button DockPanel.Dock="Left" Content="Advanced Search" Width="150" Height="42" Margin="12,0,0,0"
-                        Style="{StaticResource SecondaryButtonStyle}"
-                        Click="AdvancedSearchButton_Click"/>
+                Style="{StaticResource PrimaryButtonStyle}"
+                Click="OpenFileButton_Click"/>
+                <Button DockPanel.Dock="Left" Content="Search" Width="150" Height="42" Margin="12,0,0,0"
+                Style="{StaticResource SecondaryButtonStyle}"
+                Click="AdvancedSearchButton_Click"/>
+
+                <!-- 🩺 زر إدارة العلاجات والأسعار (تمت إضافته وتصحيح مكانه) -->
+                <Button DockPanel.Dock="Left" Content="Treatments" Width="130" Height="42" Margin="12,0,0,0"
+                Style="{StaticResource SecondaryButtonStyle}"
+                Click="ManageTreatmentsButton_Click"/>
+
                 <Button DockPanel.Dock="Left" Content="Backup" Width="100" Height="42" Margin="12,0,0,0"
-                        Style="{StaticResource SecondaryButtonStyle}"
-                        Click="BackupButton_Click"/>
+                Style="{StaticResource SecondaryButtonStyle}"
+                Click="BackupButton_Click"/>
+
                 <!-- مخفي افتراضياً - يظهر فقط إذا كان المستخدم الحالي مديراً عاماً (IsAdmin) -->
                 <Button x:Name="ManageUsersButton" DockPanel.Dock="Left" Content="Manage Users" Width="140" Height="42" Margin="12,0,0,0"
-                        Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
-                        Click="ManageUsersButton_Click"/>
+                Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                Click="ManageUsersButton_Click"/>
                 <Button x:Name="FinancialDashboardButton" DockPanel.Dock="Left" Content="Finances" Width="110" Height="42" Margin="12,0,0,0"
-                        Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
-                        Click="FinancialDashboardButton_Click"/>
-                <Button Content="Logout" DockPanel.Dock="Right" Width="100" Height="42"
-                        Style="{StaticResource DangerButtonStyle}"
-                        Click="LogoutButton_Click"/>
-                <Button Content="Refresh" DockPanel.Dock="Right" Width="100" Height="42" Margin="0,0,12,0"
-                        Style="{StaticResource SecondaryButtonStyle}"
-                        Click="RefreshButton_Click"/>
+                Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                Click="FinancialDashboardButton_Click"/>
+
+                <!-- الأزرار على جهة اليمين -->
+                <Button DockPanel.Dock="Right" Content="Logout" Width="100" Height="42"
+                Style="{StaticResource DangerButtonStyle}"
+                Click="LogoutButton_Click"/>
+                <Button DockPanel.Dock="Right" Content="Refresh" Width="100" Height="42" Margin="0,0,12,0"
+                Style="{StaticResource SecondaryButtonStyle}"
+                Click="RefreshButton_Click"/>
             </DockPanel>
         </Border>
 

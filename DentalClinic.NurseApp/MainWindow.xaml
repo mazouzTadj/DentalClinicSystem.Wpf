@@ -66,6 +66,9 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
+                    <!-- العمود الجديد للموعد القادم -->
+                    <DataGridTextColumn Header="NEXT APPOINTMENT" Binding="{Binding NextAppointmentText}" Width="170"/>
+
                     <DataGridTemplateColumn Header="ACTIONS" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

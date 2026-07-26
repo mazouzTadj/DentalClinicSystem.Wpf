@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
@@ -156,6 +158,13 @@ public partial class MainWindow : Window
     private void AdvancedSearchButton_Click(object sender, RoutedEventArgs e)
     {
         var window = new AdvancedSearchWindow(_currentUser) { Owner = this };
+        window.ShowDialog();
+    }
+
+    // 🩺 فتح نافذة إدارة العلاجات والأسعار
+    private void ManageTreatmentsButton_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new TreatmentManagementWindow { Owner = this };
         window.ShowDialog();
     }
 

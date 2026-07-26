@@ -1,11 +1,25 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Data;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
 
 namespace DentalClinic.DoctorApp;
+
+// كائن بسيط لتمثيل العلاج وسعره
+public class TreatmentPresetItem
+{
+    public int TreatmentID { get; set; }
+    public string TreatmentName { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public override string ToString() => TreatmentName;
+}
 
 public partial class PatientFileWindow : Window
 {
@@ -17,8 +31,10 @@ public partial class PatientFileWindow : Window
     private readonly SessionRepository _sessionRepo;
     private readonly QueueRepository _queueRepo;
     private readonly PaymentRepository _paymentRepo;
+    private readonly DatabaseHelper _db;
 
     public ObservableCollection<SessionHistoryRowViewModel> History { get; } = new();
+    private readonly List<TreatmentPresetItem> _treatments = new();
 
     private Patient? _currentPatient;
 
@@ -36,11 +52,11 @@ public partial class PatientFileWindow : Window
         HistoryGrid.ItemsSource = History;
 
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
-        var db = new DatabaseHelper(connectionString);
-        _patientRepo = new PatientRepository(db);
-        _sessionRepo = new SessionRepository(db);
-        _queueRepo = new QueueRepository(db);
-        _paymentRepo = new PaymentRepository(db);
+        _db = new DatabaseHelper(connectionString);
+        _patientRepo = new PatientRepository(_db);
+        _sessionRepo = new SessionRepository(_db);
+        _queueRepo = new QueueRepository(_db);
+        _paymentRepo = new PaymentRepository(_db);
 
         if (_visitId == null)
         {
@@ -50,6 +66,7 @@ public partial class PatientFileWindow : Window
         Loaded += (s, e) =>
         {
             LoadPatientInfo();
+            LoadTreatments();
             LoadHistory();
         };
     }
@@ -60,6 +77,54 @@ public partial class PatientFileWindow : Window
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+    // 🦷 دالة جلب قائمة العلاجات وأسعارها من قاعدة البيانات
+    private void LoadTreatments()
+    {
+        try
+        {
+            // إنشاء جدول العلاجات والأسعار تلقائياً إن لم يكن موجوداً
+            const string createTableSql = @"
+                IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TreatmentPresets')
+                BEGIN
+                    CREATE TABLE TreatmentPresets (
+                        TreatmentID INT IDENTITY(1,1) PRIMARY KEY,
+                        TreatmentName NVARCHAR(200) NOT NULL,
+                        Price DECIMAL(18,2) NOT NULL DEFAULT 0,
+                        IsActive BIT NOT NULL DEFAULT 1
+                    );
+                END";
+            _db.ExecuteNonQuery(createTableSql);
+
+            const string sql = "SELECT TreatmentID, TreatmentName, Price FROM TreatmentPresets WHERE IsActive = 1 ORDER BY TreatmentName ASC";
+            var table = _db.ExecuteQuery(sql);
+
+            _treatments.Clear();
+            foreach (DataRow row in table.Rows)
+            {
+                _treatments.Add(new TreatmentPresetItem
+                {
+                    TreatmentID = (int)row["TreatmentID"],
+                    TreatmentName = row["TreatmentName"].ToString()!,
+                    Price = Convert.ToDecimal(row["Price"])
+                });
+            }
+            CmbTreatment.ItemsSource = _treatments;
+        }
+        catch
+        {
+            // تجنب أي توقف في حال حدث خطأ بسيط في الاستعلام
+        }
+    }
+
+    // 💡 حدث تغيير اختيار العلاج: يضع السعر تلقائياً في خانة Total Price
+    private void CmbTreatment_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (CmbTreatment.SelectedItem is TreatmentPresetItem selectedTreatment)
+        {
+            TotalPriceBox.Text = selectedTreatment.Price > 0 ? selectedTreatment.Price.ToString("0.##") : string.Empty;
+        }
+    }
 
     private void PrescriptionButton_Click(object sender, RoutedEventArgs e)
     {
@@ -120,7 +185,6 @@ public partial class PatientFileWindow : Window
         }
     }
 
-    // 📅 الحدث المسؤول عن فتح نافذة حجز موعد مستقبلي للمريض
     private void ScheduleAppointmentButton_Click(object sender, RoutedEventArgs e)
     {
         if (_currentPatient == null)
@@ -172,7 +236,7 @@ public partial class PatientFileWindow : Window
         {
             ChiefComplaintBox.Text = lastSession.ChiefComplaint ?? string.Empty;
             DiagnosisBox.Text = lastSession.Diagnosis ?? string.Empty;
-            TreatmentBox.Text = lastSession.TreatmentPerformed ?? string.Empty;
+            CmbTreatment.Text = lastSession.TreatmentPerformed ?? string.Empty;
             MedicationBox.Text = lastSession.Medication ?? string.Empty;
             TotalPriceBox.Text = lastSession.TotalPrice > 0 ? lastSession.TotalPrice.ToString("0.##") : string.Empty;
             PaidAmountBox.Text = string.Empty;
@@ -215,21 +279,29 @@ public partial class PatientFileWindow : Window
     {
         ErrorText.Text = string.Empty;
 
-        if (!decimal.TryParse(TotalPriceBox.Text.Trim(), out decimal totalPrice) || totalPrice < 0)
+        // 🟢 جعْل الخانات اختيارية: إذا ترك السعر فارغاً، نعتبره 0
+        decimal totalPrice = 0;
+        if (!string.IsNullOrWhiteSpace(TotalPriceBox.Text))
         {
-            ErrorText.Text = "Invalid total price";
-            return;
+            if (!decimal.TryParse(TotalPriceBox.Text.Trim(), out totalPrice) || totalPrice < 0)
+            {
+                ErrorText.Text = "Invalid total price format";
+                return;
+            }
         }
 
+        // 🟢 جعل الدفعة اختيارية: إذا تركها فارغة، نعتبرها 0
         decimal paidAmount = 0;
-        if (!string.IsNullOrWhiteSpace(PaidAmountBox.Text) &&
-            (!decimal.TryParse(PaidAmountBox.Text.Trim(), out paidAmount) || paidAmount < 0))
+        if (!string.IsNullOrWhiteSpace(PaidAmountBox.Text))
         {
-            ErrorText.Text = "Invalid paid amount";
-            return;
+            if (!decimal.TryParse(PaidAmountBox.Text.Trim(), out paidAmount) || paidAmount < 0)
+            {
+                ErrorText.Text = "Invalid paid amount format";
+                return;
+            }
         }
 
-        if (paidAmount > totalPrice)
+        if (paidAmount > totalPrice && totalPrice > 0)
         {
             ErrorText.Text = "Paid amount exceeds the total price";
             return;
@@ -251,7 +323,7 @@ public partial class PatientFileWindow : Window
                     newTotalPaid,
                     string.IsNullOrWhiteSpace(ChiefComplaintBox.Text) ? null : ChiefComplaintBox.Text.Trim(),
                     string.IsNullOrWhiteSpace(DiagnosisBox.Text) ? null : DiagnosisBox.Text.Trim(),
-                    string.IsNullOrWhiteSpace(TreatmentBox.Text) ? null : TreatmentBox.Text.Trim(),
+                    string.IsNullOrWhiteSpace(CmbTreatment.Text) ? null : CmbTreatment.Text.Trim(),
                     string.IsNullOrWhiteSpace(MedicationBox.Text) ? null : MedicationBox.Text.Trim());
 
                 _paymentRepo.AddPayment(_outstandingSessionId.Value, paidAmount, _currentUser.UserID);
@@ -270,7 +342,7 @@ public partial class PatientFileWindow : Window
                     DoctorID = _currentUser.UserID,
                     ChiefComplaint = string.IsNullOrWhiteSpace(ChiefComplaintBox.Text) ? null : ChiefComplaintBox.Text.Trim(),
                     Diagnosis = string.IsNullOrWhiteSpace(DiagnosisBox.Text) ? null : DiagnosisBox.Text.Trim(),
-                    TreatmentPerformed = string.IsNullOrWhiteSpace(TreatmentBox.Text) ? null : TreatmentBox.Text.Trim(),
+                    TreatmentPerformed = string.IsNullOrWhiteSpace(CmbTreatment.Text) ? null : CmbTreatment.Text.Trim(),
                     Medication = string.IsNullOrWhiteSpace(MedicationBox.Text) ? null : MedicationBox.Text.Trim(),
                     TotalPrice = totalPrice,
                     PaidAmount = paidAmount
