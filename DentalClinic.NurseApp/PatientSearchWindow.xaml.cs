@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -47,31 +51,12 @@ public partial class PatientSearchWindow : Window
         string? gender = (GenderFilterBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
         if (gender == "Any Gender") gender = null;
 
-        int? minAge = null;
-        if (!string.IsNullOrWhiteSpace(MinAgeBox.Text))
-        {
-            if (!int.TryParse(MinAgeBox.Text.Trim(), out int parsedMin) || parsedMin < 0)
-            {
-                StatusText.Text = "Invalid minimum age";
-                return;
-            }
-            minAge = parsedMin;
-        }
+        string? paymentFilter = (PaymentFilterBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
 
-        int? maxAge = null;
-        if (!string.IsNullOrWhiteSpace(MaxAgeBox.Text))
+        // السماح بالبحث إذا تم إدخال نص، أو اختيار جنس، أو فلتر حالة دفع معين
+        if (string.IsNullOrWhiteSpace(term) && gender == null && (paymentFilter == null || paymentFilter == "All Payment Statuses"))
         {
-            if (!int.TryParse(MaxAgeBox.Text.Trim(), out int parsedMax) || parsedMax < 0)
-            {
-                StatusText.Text = "Invalid maximum age";
-                return;
-            }
-            maxAge = parsedMax;
-        }
-
-        if (string.IsNullOrWhiteSpace(term) && gender == null && minAge == null && maxAge == null)
-        {
-            StatusText.Text = "Enter a name/phone, or choose at least one filter";
+            StatusText.Text = "Enter a name/phone, or choose a filter";
             return;
         }
 
@@ -81,11 +66,24 @@ public partial class PatientSearchWindow : Window
             var db = new DatabaseHelper(connectionString);
             var patientRepo = new PatientRepository(db);
 
-            var matches = patientRepo.Search(term, gender, minAge, maxAge);
+            // نمرر null للعمر الأدنى والأقصى
+            var matches = patientRepo.Search(term, gender, null, null);
+
+            // جلب قائمة المعرفات للمرضى الذين يملكون ديوناً غير مسددة
+            var unpaidPatientIds = GetUnpaidPatientIds(db, matches.Select(p => p.PatientID));
+
             Results.Clear();
             foreach (var p in matches)
             {
-                Results.Add(new PatientSearchRowViewModel(p));
+                bool owesMoney = unpaidPatientIds.Contains(p.PatientID);
+
+                // 💳 تصفية النتائج بناءً على الخيار المحدد في فلتر الدفع
+                if (paymentFilter == "Has Unpaid Balance" && !owesMoney)
+                    continue;
+                if (paymentFilter == "Fully Paid" && owesMoney)
+                    continue;
+
+                Results.Add(new PatientSearchRowViewModel(p, owesMoney));
             }
 
             if (Results.Count == 0)
@@ -96,6 +94,72 @@ public partial class PatientSearchWindow : Window
         catch (Exception ex)
         {
             StatusText.Text = "Error while searching: " + ex.Message;
+        }
+    }
+
+    private HashSet<int> GetUnpaidPatientIds(DatabaseHelper db, IEnumerable<int> patientIds)
+    {
+        var idList = patientIds.ToList();
+        if (!idList.Any()) return new HashSet<int>();
+
+        try
+        {
+            string inClause = string.Join(",", idList);
+            string sql = $"SELECT DISTINCT PatientID FROM MedicalSessions WHERE PatientID IN ({inClause}) AND TotalPrice > PaidAmount";
+            var table = db.ExecuteQuery(sql);
+
+            var set = new HashSet<int>();
+            foreach (DataRow row in table.Rows)
+            {
+                set.Add(Convert.ToInt32(row["PatientID"]));
+            }
+            return set;
+        }
+        catch
+        {
+            return new HashSet<int>();
+        }
+    }
+
+    private void CollectPaymentButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: PatientSearchRowViewModel selectedRow }) return;
+
+        try
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
+            var db = new DatabaseHelper(connectionString);
+
+            const string sql = @"
+                SELECT TOP 1 SessionID 
+                FROM MedicalSessions 
+                WHERE PatientID = @PatientID AND TotalPrice > PaidAmount 
+                ORDER BY SessionDateTime DESC";
+
+            var table = db.ExecuteQuery(sql, new Microsoft.Data.SqlClient.SqlParameter("@PatientID", selectedRow.PatientID));
+
+            if (table.Rows.Count > 0)
+            {
+                int sessionId = Convert.ToInt32(table.Rows[0]["SessionID"]);
+                var paymentWindow = new CollectPaymentWindow(sessionId, selectedRow.FullName, _currentUser)
+                {
+                    Owner = this
+                };
+
+                if (paymentWindow.ShowDialog() == true)
+                {
+                    var unpaidIds = GetUnpaidPatientIds(db, new[] { selectedRow.PatientID });
+                    selectedRow.HasUnpaidBalance = unpaidIds.Contains(selectedRow.PatientID);
+                }
+            }
+            else
+            {
+                MessageBox.Show($"No outstanding balance or unpaid session found for '{selectedRow.FullName}'.", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error checking payment status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

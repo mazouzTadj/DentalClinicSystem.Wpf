@@ -73,17 +73,27 @@
                     <!-- العمود الخاص بالموعد القادم -->
                     <DataGridTextColumn Header="NEXT APPOINTMENT" Binding="{Binding NextAppointmentText}" Width="160"/>
 
-                    <!-- عمود الإجراءات ممتد ليشمل زر التحصيل والإلغاء -->
+                    <!-- عمود الإجراءات ممتد ليشمل زر التحصيل والشارة والإلغاء -->
                     <DataGridTemplateColumn Header="ACTIONS" Width="170">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <!-- زر الدفع المباشر للسطر -->
+
+                                    <!-- 1. زر الدفع المباشر (يظهر فقط إذا كان المريض مديوناً) -->
                                     <Button Content="Pay" Height="26" Width="65" FontSize="11" Margin="0,0,6,0"
                                             Style="{StaticResource PrimaryButtonStyle}"
+                                            Visibility="{Binding HasUnpaidBalance, Converter={StaticResource BoolToVis}}"
                                             Tag="{Binding}" Click="CollectPaymentButton_Click"/>
 
-                                    <!-- زر إلغاء الزيارة -->
+                                    <!-- 2. شارة "تم الدفع" الخضراء (تظهر عند سداد كامل المبلغ) -->
+                                    <Border Background="#10B981" CornerRadius="6" Height="26" Width="65" Margin="0,0,6,0"
+                                            Visibility="{Binding IsPaid, Converter={StaticResource BoolToVis}}"
+                                            ToolTip="All sessions paid in full">
+                                        <TextBlock Text="Paid ✓" Foreground="White" FontSize="11" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <!-- 3. زر إلغاء الزيارة -->
                                     <Button Content="Cancel" Height="26" Width="65" FontSize="11"
                                             Style="{StaticResource DangerButtonStyle}"
                                             Visibility="{Binding CanCancel, Converter={StaticResource BoolToVis}}"

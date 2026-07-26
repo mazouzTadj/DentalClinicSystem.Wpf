@@ -33,7 +33,6 @@ public partial class MainWindow : Window
         _db = new DatabaseHelper(connectionString);
         _queueRepo = new QueueRepository(_db);
 
-        // تحديث قائمة الانتظار تلقائياً كل 4 ثوانٍ
         _refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
         _refreshTimer.Tick += (s, e) => LoadQueue();
 
@@ -51,6 +50,9 @@ public partial class MainWindow : Window
         {
             var queue = _queueRepo.GetTodayQueue();
 
+            // جلب قائمة المرضى الذين لديهم ديون غير مسددة
+            var unpaidPatientIds = GetUnpaidPatientIds();
+
             var freshIds = new HashSet<int>(queue.Select(q => q.VisitID));
 
             for (int i = QueueRows.Count - 1; i >= 0; i--)
@@ -63,14 +65,21 @@ public partial class MainWindow : Window
 
             foreach (var item in queue)
             {
+                bool owesMoney = unpaidPatientIds.Contains(item.PatientID);
                 var existingRow = QueueRows.FirstOrDefault(r => r.VisitID == item.VisitID);
+
                 if (existingRow != null)
                 {
                     existingRow.UpdateFrom(item);
+                    existingRow.HasUnpaidBalance = owesMoney; // تحديث حالة الدفع تلقائياً
                 }
                 else
                 {
-                    QueueRows.Add(new QueueRowViewModel(item));
+                    var newRow = new QueueRowViewModel(item)
+                    {
+                        HasUnpaidBalance = owesMoney
+                    };
+                    QueueRows.Add(newRow);
                 }
             }
 
@@ -79,6 +88,26 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             CountText.Text = "Could not load the queue: " + ex.Message;
+        }
+    }
+
+    // 🔍 دالة مساعدة سريعة لاستخراج معرّفات المرضى المديونين
+    private HashSet<int> GetUnpaidPatientIds()
+    {
+        try
+        {
+            const string sql = "SELECT DISTINCT PatientID FROM MedicalSessions WHERE TotalPrice > PaidAmount";
+            var table = _db.ExecuteQuery(sql);
+            var set = new HashSet<int>();
+            foreach (DataRow row in table.Rows)
+            {
+                set.Add(Convert.ToInt32(row["PatientID"]));
+            }
+            return set;
+        }
+        catch
+        {
+            return new HashSet<int>();
         }
     }
 
@@ -100,7 +129,6 @@ public partial class MainWindow : Window
         }
     }
 
-    // 💳 حدث تسجيل الدفعات للممرضة (سواء من زر الشريط العلوي أو من زر Pay في الجدول)
     private void CollectPaymentButton_Click(object sender, RoutedEventArgs e)
     {
         QueueRowViewModel? selectedRow = null;
@@ -122,7 +150,6 @@ public partial class MainWindow : Window
 
         try
         {
-            // استعلام جلب آخر جلسة غير مدفوعة بالكامل لهذا المريض
             const string sql = @"
                 SELECT TOP 1 SessionID 
                 FROM MedicalSessions 
@@ -141,7 +168,7 @@ public partial class MainWindow : Window
 
                 if (paymentWindow.ShowDialog() == true)
                 {
-                    LoadQueue(); // إعادة تحميل القائمة لتحديث المبالغ والحالات
+                    LoadQueue(); // إعادة تحميل القائمة لتتغير حالة الزر فوراً إلى Paid
                 }
             }
             else

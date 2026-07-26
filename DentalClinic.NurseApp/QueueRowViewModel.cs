@@ -4,8 +4,6 @@ using DentalClinic.Data.Models;
 
 namespace DentalClinic.NurseApp;
 
-// عنصر عرض قابل للتحديث في مكانه (INotifyPropertyChanged) بدل استبداله بالكامل عند كل تحديث تلقائي
-// هذا يحافظ على أي تحديد للمستخدم في الجدول أثناء التحديث كل 4 ثوانٍ
 public class QueueRowViewModel : INotifyPropertyChanged
 {
     public int VisitID { get; }
@@ -27,7 +25,6 @@ public class QueueRowViewModel : INotifyPropertyChanged
         }
     }
 
-    // المتغير الجديد الخاص بالموعد القادم
     private DateTime? _scheduledDate;
     public DateTime? ScheduledDate
     {
@@ -41,7 +38,23 @@ public class QueueRowViewModel : INotifyPropertyChanged
         }
     }
 
-    // يمكن إلغاء الزيارة فقط إن كانت لا تزال في الانتظار أو قيد المعالجة
+    // 💳 خاصية جديدة: هل يوجد على المريض مبالغ غير مدفوعة؟
+    private bool _hasUnpaidBalance;
+    public bool HasUnpaidBalance
+    {
+        get => _hasUnpaidBalance;
+        set
+        {
+            if (_hasUnpaidBalance == value) return;
+            _hasUnpaidBalance = value;
+            OnPropertyChanged(nameof(HasUnpaidBalance));
+            OnPropertyChanged(nameof(IsPaid));
+        }
+    }
+
+    // تُستخدم لإظهار شارة "Paid ✓" الخضراء عندما لا يكون هناك ديون
+    public bool IsPaid => !HasUnpaidBalance;
+
     public bool CanCancel => Status == VisitStatus.Waiting || Status == VisitStatus.InTreatment;
 
     public string StatusText => Status switch
@@ -53,7 +66,6 @@ public class QueueRowViewModel : INotifyPropertyChanged
         _ => Status.ToString()
     };
 
-    // النص الذي سيظهر في الجدول أمام الممرضة
     public string NextAppointmentText => ScheduledDate.HasValue
         ? ScheduledDate.Value.ToString("dd/MM/yyyy hh:mm tt")
         : "-";
@@ -65,13 +77,13 @@ public class QueueRowViewModel : INotifyPropertyChanged
         PatientFullName = item.PatientFullName;
         CheckInTimeText = item.CheckInTime.ToString("hh:mm tt");
         _status = item.Status;
-        _scheduledDate = item.ScheduledDate; // جلب الموعد عند التحميل الأول
+        _scheduledDate = item.ScheduledDate;
     }
 
     public void UpdateFrom(VisitQueueItem item)
     {
         Status = item.Status;
-        ScheduledDate = item.ScheduledDate; // تحديث الموعد تلقائياً إذا قام الطبيب بإضافته للتو
+        ScheduledDate = item.ScheduledDate;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
