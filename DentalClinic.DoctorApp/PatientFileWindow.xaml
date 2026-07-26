@@ -96,7 +96,7 @@
                                  TextWrapping="Wrap" AcceptsReturn="True" Height="56" VerticalContentAlignment="Top"/>
                     </Border>
 
-                    <!-- 🦷 خانة العلاج الجديدة: ComboBox اختيار من القائمة أو كتابة علاج مخصص -->
+                    <!-- 🦷 خانة العلاج: ComboBox اختيار من القائمة أو كتابة علاج مخصص -->
                     <TextBlock Text="Treatment" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14" Padding="5,2">
                         <ComboBox x:Name="CmbTreatment" BorderThickness="0" Background="Transparent" 
@@ -114,29 +114,17 @@
                         <TextBox x:Name="MedicationBox" Style="{StaticResource PlainTextBoxStyle}"/>
                     </Border>
 
-                    <Grid Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="16"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Total Price *" Style="{StaticResource FieldLabelStyle}"/>
-                            <Border Style="{StaticResource InputContainerStyle}">
-                                <TextBox x:Name="TotalPriceBox" Style="{StaticResource PlainTextBoxStyle}"/>
-                            </Border>
-                        </StackPanel>
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Amount Paid" Style="{StaticResource FieldLabelStyle}"/>
-                            <Border Style="{StaticResource InputContainerStyle}">
-                                <TextBox x:Name="PaidAmountBox" Style="{StaticResource PlainTextBoxStyle}"/>
-                            </Border>
-                        </StackPanel>
-                    </Grid>
+                    <!-- 💰 تحديد التكلفة الإجمالية فقط (تم إلغاء خانة الدفع) -->
+                    <StackPanel Margin="0,0,0,10">
+                        <TextBlock Text="Total Treatment Cost (DZD)" Style="{StaticResource FieldLabelStyle}"/>
+                        <Border Style="{StaticResource InputContainerStyle}">
+                            <TextBox x:Name="TotalPriceBox" Style="{StaticResource PlainTextBoxStyle}"/>
+                        </Border>
+                    </StackPanel>
 
                     <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}"/>
 
-                    <Button x:Name="SaveSessionButton" Content="Save Session &amp; Complete Visit" Height="46" Margin="0,10,0,0"
+                    <Button x:Name="SaveSessionButton" Content="Save Session &amp; Complete Medical Treatment" Height="46" Margin="0,10,0,0"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Click="SaveSessionButton_Click"/>
                     <Button Content="Close" Height="38" Margin="0,10,0,0"

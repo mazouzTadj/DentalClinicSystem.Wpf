@@ -9,6 +9,7 @@ namespace DentalClinic.NurseApp;
 public class QueueRowViewModel : INotifyPropertyChanged
 {
     public int VisitID { get; }
+    public int PatientID { get; }
     public string PatientFullName { get; }
     public string CheckInTimeText { get; }
 
@@ -60,6 +61,7 @@ public class QueueRowViewModel : INotifyPropertyChanged
     public QueueRowViewModel(VisitQueueItem item)
     {
         VisitID = item.VisitID;
+        PatientID = item.PatientID;
         PatientFullName = item.PatientFullName;
         CheckInTimeText = item.CheckInTime.ToString("hh:mm tt");
         _status = item.Status;

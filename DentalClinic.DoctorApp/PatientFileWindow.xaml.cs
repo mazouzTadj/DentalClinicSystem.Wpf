@@ -12,7 +12,6 @@ using DentalClinic.Data.Models;
 
 namespace DentalClinic.DoctorApp;
 
-// كائن بسيط لتمثيل العلاج وسعره
 public class TreatmentPresetItem
 {
     public int TreatmentID { get; set; }
@@ -30,17 +29,12 @@ public partial class PatientFileWindow : Window
     private readonly PatientRepository _patientRepo;
     private readonly SessionRepository _sessionRepo;
     private readonly QueueRepository _queueRepo;
-    private readonly PaymentRepository _paymentRepo;
     private readonly DatabaseHelper _db;
 
     public ObservableCollection<SessionHistoryRowViewModel> History { get; } = new();
     private readonly List<TreatmentPresetItem> _treatments = new();
 
     private Patient? _currentPatient;
-
-    private int? _outstandingSessionId;
-    private decimal? _outstandingSessionTotalPrice;
-    private decimal _outstandingSessionPaidAmount;
 
     public PatientFileWindow(int patientId, int? visitId, UserAccount currentUser)
     {
@@ -56,7 +50,6 @@ public partial class PatientFileWindow : Window
         _patientRepo = new PatientRepository(_db);
         _sessionRepo = new SessionRepository(_db);
         _queueRepo = new QueueRepository(_db);
-        _paymentRepo = new PaymentRepository(_db);
 
         if (_visitId == null)
         {
@@ -78,12 +71,10 @@ public partial class PatientFileWindow : Window
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
 
-    // 🦷 دالة جلب قائمة العلاجات وأسعارها من قاعدة البيانات
     private void LoadTreatments()
     {
         try
         {
-            // إنشاء جدول العلاجات والأسعار تلقائياً إن لم يكن موجوداً
             const string createTableSql = @"
                 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TreatmentPresets')
                 BEGIN
@@ -117,7 +108,6 @@ public partial class PatientFileWindow : Window
         }
     }
 
-    // 💡 حدث تغيير اختيار العلاج: يضع السعر تلقائياً في خانة Total Price
     private void CmbTreatment_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (CmbTreatment.SelectedItem is TreatmentPresetItem selectedTreatment)
@@ -239,7 +229,6 @@ public partial class PatientFileWindow : Window
             CmbTreatment.Text = lastSession.TreatmentPerformed ?? string.Empty;
             MedicationBox.Text = lastSession.Medication ?? string.Empty;
             TotalPriceBox.Text = lastSession.TotalPrice > 0 ? lastSession.TotalPrice.ToString("0.##") : string.Empty;
-            PaidAmountBox.Text = string.Empty;
 
             var lastToothNumbers = _sessionRepo.GetToothNumbersForSession(lastSession.SessionID);
             if (lastToothNumbers.Count > 0)
@@ -247,31 +236,8 @@ public partial class PatientFileWindow : Window
                 Odontogram.SetSelectedTooth(lastToothNumbers[0]);
             }
 
-            if (lastSession.RemainingAmount > 0)
-            {
-                _outstandingSessionId = lastSession.SessionID;
-                _outstandingSessionTotalPrice = lastSession.TotalPrice;
-                _outstandingSessionPaidAmount = lastSession.PaidAmount;
-
-                PrefillNoticeText.Text =
-                    $"Outstanding balance: {lastSession.RemainingAmount:0.##} from the last visit. " +
-                    "Keep the Total Price as-is to record a new payment toward this balance, " +
-                    "or increase it only if this is a new treatment.";
-            }
-            else
-            {
-                _outstandingSessionId = null;
-                _outstandingSessionTotalPrice = null;
-
-                PrefillNoticeText.Text = "Pre-filled from the last visit — please review and update before saving.";
-            }
-
+            PrefillNoticeText.Text = "Pre-filled from the last visit — please review and update before saving.";
             PrefillNoticeText.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            _outstandingSessionId = null;
-            _outstandingSessionTotalPrice = null;
         }
     }
 
@@ -279,7 +245,7 @@ public partial class PatientFileWindow : Window
     {
         ErrorText.Text = string.Empty;
 
-        // 🟢 جعْل الخانات اختيارية: إذا ترك السعر فارغاً، نعتبره 0
+        // 🟢 إدخال التكلفة الإجمالية اختياري (تعتبر 0 إن تركت فارغة)
         decimal totalPrice = 0;
         if (!string.IsNullOrWhiteSpace(TotalPriceBox.Text))
         {
@@ -290,75 +256,27 @@ public partial class PatientFileWindow : Window
             }
         }
 
-        // 🟢 جعل الدفعة اختيارية: إذا تركها فارغة، نعتبرها 0
-        decimal paidAmount = 0;
-        if (!string.IsNullOrWhiteSpace(PaidAmountBox.Text))
-        {
-            if (!decimal.TryParse(PaidAmountBox.Text.Trim(), out paidAmount) || paidAmount < 0)
-            {
-                ErrorText.Text = "Invalid paid amount format";
-                return;
-            }
-        }
-
-        if (paidAmount > totalPrice && totalPrice > 0)
-        {
-            ErrorText.Text = "Paid amount exceeds the total price";
-            return;
-        }
-
         try
         {
-            bool isPaymentOnExistingBalance =
-                _outstandingSessionId.HasValue &&
-                _outstandingSessionTotalPrice.HasValue &&
-                totalPrice == _outstandingSessionTotalPrice.Value;
-
-            if (isPaymentOnExistingBalance && paidAmount > 0)
+            // الطبيب يحفظ تفاصيل العلاج والتكلفة، بينما يبقى المبلغ المدفوع (PaidAmount) صفر ليتولى موظف الاستقبال/الممرضة قبضه
+            var session = new MedicalSession
             {
-                var newTotalPaid = _outstandingSessionPaidAmount + paidAmount;
+                VisitID = _visitId,
+                PatientID = _patientId,
+                DoctorID = _currentUser.UserID,
+                ChiefComplaint = string.IsNullOrWhiteSpace(ChiefComplaintBox.Text) ? null : ChiefComplaintBox.Text.Trim(),
+                Diagnosis = string.IsNullOrWhiteSpace(DiagnosisBox.Text) ? null : DiagnosisBox.Text.Trim(),
+                TreatmentPerformed = string.IsNullOrWhiteSpace(CmbTreatment.Text) ? null : CmbTreatment.Text.Trim(),
+                Medication = string.IsNullOrWhiteSpace(MedicationBox.Text) ? null : MedicationBox.Text.Trim(),
+                TotalPrice = totalPrice,
+                PaidAmount = 0
+            };
 
-                _sessionRepo.UpdateSessionPayment(
-                    _outstandingSessionId!.Value,
-                    newTotalPaid,
-                    string.IsNullOrWhiteSpace(ChiefComplaintBox.Text) ? null : ChiefComplaintBox.Text.Trim(),
-                    string.IsNullOrWhiteSpace(DiagnosisBox.Text) ? null : DiagnosisBox.Text.Trim(),
-                    string.IsNullOrWhiteSpace(CmbTreatment.Text) ? null : CmbTreatment.Text.Trim(),
-                    string.IsNullOrWhiteSpace(MedicationBox.Text) ? null : MedicationBox.Text.Trim());
+            var newSessionId = _sessionRepo.Add(session);
 
-                _paymentRepo.AddPayment(_outstandingSessionId.Value, paidAmount, _currentUser.UserID);
-
-                if (!string.IsNullOrWhiteSpace(Odontogram.SelectedTooth))
-                {
-                    _sessionRepo.AddToothRecord(_outstandingSessionId.Value, Odontogram.SelectedTooth, "Treated", null);
-                }
-            }
-            else
+            if (!string.IsNullOrWhiteSpace(Odontogram.SelectedTooth))
             {
-                var session = new MedicalSession
-                {
-                    VisitID = _visitId,
-                    PatientID = _patientId,
-                    DoctorID = _currentUser.UserID,
-                    ChiefComplaint = string.IsNullOrWhiteSpace(ChiefComplaintBox.Text) ? null : ChiefComplaintBox.Text.Trim(),
-                    Diagnosis = string.IsNullOrWhiteSpace(DiagnosisBox.Text) ? null : DiagnosisBox.Text.Trim(),
-                    TreatmentPerformed = string.IsNullOrWhiteSpace(CmbTreatment.Text) ? null : CmbTreatment.Text.Trim(),
-                    Medication = string.IsNullOrWhiteSpace(MedicationBox.Text) ? null : MedicationBox.Text.Trim(),
-                    TotalPrice = totalPrice,
-                    PaidAmount = paidAmount
-                };
-
-                var newSessionId = _sessionRepo.Add(session);
-
-                if (paidAmount > 0)
-                {
-                    _paymentRepo.AddPayment(newSessionId, paidAmount, _currentUser.UserID);
-                }
-
-                if (!string.IsNullOrWhiteSpace(Odontogram.SelectedTooth))
-                {
-                    _sessionRepo.AddToothRecord(newSessionId, Odontogram.SelectedTooth, "Treated", null);
-                }
+                _sessionRepo.AddToothRecord(newSessionId, Odontogram.SelectedTooth, "Treated", null);
             }
 
             if (_visitId.HasValue)
@@ -367,7 +285,7 @@ public partial class PatientFileWindow : Window
             }
 
             var savedMessage = _visitId.HasValue
-                ? "Session saved and visit completed successfully"
+                ? "Medical treatment completed and saved successfully. Patient can now proceed to payment at reception."
                 : "Session saved successfully";
 
             MessageBox.Show(savedMessage, "Saved", MessageBoxButton.OK, MessageBoxImage.Information);

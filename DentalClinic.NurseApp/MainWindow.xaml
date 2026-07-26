@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:DentalClinic.UI.Converters;assembly=DentalClinic.UI"
-        Title="Reception App" Height="680" Width="1050" MinWidth="820" MinHeight="500"
+        Title="Reception App" Height="680" Width="1100" MinWidth="850" MinHeight="500"
         Icon="pack://application:,,,/DentalClinic.UI;component/Assets/logo_icon.png"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource WindowBackgroundBrush}">
@@ -21,17 +21,21 @@
             </Border.Effect>
             <DockPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="+ Register New Patient" Width="200" Height="42"
+                    <Button Content="+ Register New Patient" Width="180" Height="42"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Click="AddPatientButton_Click"/>
-                    <Button Content="Search Patient" Width="150" Height="42" Margin="12,0,0,0"
+                    <Button Content="Search Patient" Width="130" Height="42" Margin="10,0,0,0"
                             Style="{StaticResource SecondaryButtonStyle}"
                             Click="SearchPatientButton_Click"/>
+                    <!-- زر تحصيل الدفعات العلوي -->
+                    <Button Content="Collect Payment" Width="130" Height="42" Margin="10,0,0,0"
+                            Style="{StaticResource SecondaryButtonStyle}" 
+                            Click="CollectPaymentButton_Click"/>
                 </StackPanel>
-                <Button Content="Logout" DockPanel.Dock="Right" Width="100" Height="42"
+                <Button Content="Logout" DockPanel.Dock="Right" Width="90" Height="42"
                         Style="{StaticResource DangerButtonStyle}"
                         Click="LogoutButton_Click"/>
-                <Button Content="Refresh" DockPanel.Dock="Right" Width="100" Height="42" Margin="0,0,12,0"
+                <Button Content="Refresh" DockPanel.Dock="Right" Width="90" Height="42" Margin="0,0,10,0"
                         Style="{StaticResource SecondaryButtonStyle}"
                         Click="RefreshButton_Click"/>
             </DockPanel>
@@ -54,8 +58,8 @@
                       CellStyle="{StaticResource ModernCellStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="PATIENT NAME" Binding="{Binding PatientFullName}" Width="*"/>
-                    <DataGridTextColumn Header="CHECK-IN TIME" Binding="{Binding CheckInTimeText}" Width="160"/>
-                    <DataGridTemplateColumn Header="STATUS" Width="160">
+                    <DataGridTextColumn Header="CHECK-IN TIME" Binding="{Binding CheckInTimeText}" Width="150"/>
+                    <DataGridTemplateColumn Header="STATUS" Width="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border Background="{Binding StatusText, Converter={StaticResource StatusToBrushConverter}}"
@@ -66,16 +70,25 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <!-- العمود الجديد للموعد القادم -->
-                    <DataGridTextColumn Header="NEXT APPOINTMENT" Binding="{Binding NextAppointmentText}" Width="170"/>
+                    <!-- العمود الخاص بالموعد القادم -->
+                    <DataGridTextColumn Header="NEXT APPOINTMENT" Binding="{Binding NextAppointmentText}" Width="160"/>
 
-                    <DataGridTemplateColumn Header="ACTIONS" Width="100">
+                    <!-- عمود الإجراءات ممتد ليشمل زر التحصيل والإلغاء -->
+                    <DataGridTemplateColumn Header="ACTIONS" Width="170">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Cancel" Height="26" Width="72" FontSize="11"
-                                        Style="{StaticResource DangerButtonStyle}"
-                                        Visibility="{Binding CanCancel, Converter={StaticResource BoolToVis}}"
-                                        Tag="{Binding}" Click="CancelVisitButton_Click"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <!-- زر الدفع المباشر للسطر -->
+                                    <Button Content="Pay" Height="26" Width="65" FontSize="11" Margin="0,0,6,0"
+                                            Style="{StaticResource PrimaryButtonStyle}"
+                                            Tag="{Binding}" Click="CollectPaymentButton_Click"/>
+
+                                    <!-- زر إلغاء الزيارة -->
+                                    <Button Content="Cancel" Height="26" Width="65" FontSize="11"
+                                            Style="{StaticResource DangerButtonStyle}"
+                                            Visibility="{Binding CanCancel, Converter={StaticResource BoolToVis}}"
+                                            Tag="{Binding}" Click="CancelVisitButton_Click"/>
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

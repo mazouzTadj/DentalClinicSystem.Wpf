@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -11,6 +15,7 @@ namespace DentalClinic.NurseApp;
 public partial class MainWindow : Window
 {
     private readonly UserAccount _currentUser;
+    private readonly DatabaseHelper _db;
     private readonly QueueRepository _queueRepo;
     private readonly DispatcherTimer _refreshTimer;
 
@@ -25,10 +30,10 @@ public partial class MainWindow : Window
         QueueGrid.ItemsSource = QueueRows;
 
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
-        var db = new DatabaseHelper(connectionString);
-        _queueRepo = new QueueRepository(db);
+        _db = new DatabaseHelper(connectionString);
+        _queueRepo = new QueueRepository(_db);
 
-        // تحديث قائمة الانتظار تلقائياً كل 4 ثوانٍ (نفس آلية Timer التي استخدمناها في WinForms)
+        // تحديث قائمة الانتظار تلقائياً كل 4 ثوانٍ
         _refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
         _refreshTimer.Tick += (s, e) => LoadQueue();
 
@@ -46,7 +51,6 @@ public partial class MainWindow : Window
         {
             var queue = _queueRepo.GetTodayQueue();
 
-            // دمج ذكي بدل Clear() + إعادة الإضافة: يحافظ على أي تحديد حالي في الجدول أثناء التحديث التلقائي
             var freshIds = new HashSet<int>(queue.Select(q => q.VisitID));
 
             for (int i = QueueRows.Count - 1; i >= 0; i--)
@@ -93,6 +97,61 @@ public partial class MainWindow : Window
         if (window.ShowDialog() == true)
         {
             LoadQueue();
+        }
+    }
+
+    // 💳 حدث تسجيل الدفعات للممرضة (سواء من زر الشريط العلوي أو من زر Pay في الجدول)
+    private void CollectPaymentButton_Click(object sender, RoutedEventArgs e)
+    {
+        QueueRowViewModel? selectedRow = null;
+
+        if (sender is Button { Tag: QueueRowViewModel taggedRow })
+        {
+            selectedRow = taggedRow;
+        }
+        else if (QueueGrid.SelectedItem is QueueRowViewModel rowFromGrid)
+        {
+            selectedRow = rowFromGrid;
+        }
+
+        if (selectedRow == null)
+        {
+            MessageBox.Show("Please select a patient from the queue first.", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        try
+        {
+            // استعلام جلب آخر جلسة غير مدفوعة بالكامل لهذا المريض
+            const string sql = @"
+                SELECT TOP 1 SessionID 
+                FROM MedicalSessions 
+                WHERE PatientID = @PatientID AND TotalPrice > PaidAmount 
+                ORDER BY SessionDateTime DESC";
+
+            var table = _db.ExecuteQuery(sql, new Microsoft.Data.SqlClient.SqlParameter("@PatientID", selectedRow.PatientID));
+
+            if (table.Rows.Count > 0)
+            {
+                int sessionId = Convert.ToInt32(table.Rows[0]["SessionID"]);
+                var paymentWindow = new CollectPaymentWindow(sessionId, selectedRow.PatientFullName, _currentUser)
+                {
+                    Owner = this
+                };
+
+                if (paymentWindow.ShowDialog() == true)
+                {
+                    LoadQueue(); // إعادة تحميل القائمة لتحديث المبالغ والحالات
+                }
+            }
+            else
+            {
+                MessageBox.Show($"No outstanding balance or unpaid session found for '{selectedRow.PatientFullName}'.", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error checking payment status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -147,14 +206,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        // إيقاف المؤقت التلقائي فوراً لضمان عدم استهلاك أي موارد أو استعلامات في الخلفية أثناء تبديل الشاشات
         _refreshTimer.Stop();
 
-        // هذه النافذة مسجَّلة كـ Application.MainWindow تحت ShutdownMode.OnMainWindowClose؛ لو أُغلقت الآن
-        // مباشرة سيُنهي ذلك التطبيق بالكامل بالخطأ. نمنع الإغلاق التلقائي مؤقتاً حتى نُثبّت نافذة رئيسية بديلة.
         Application.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-
-        // نُخفي هذه النافذة فوراً بدل تركها ظاهرة خلف شاشة الدخول أثناء إدخال بيانات المستخدم الجديد
         Hide();
 
         var loginWindow = new LoginWindow();
@@ -167,11 +221,10 @@ public partial class MainWindow : Window
             Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
             newMainWindow.Show();
 
-            Close(); // إغلاق آمن الآن بعد وجود نافذة رئيسية بديلة تحمل راية التطبيق
+            Close();
         }
         else
         {
-            // لم يسجّل أحد دخولاً جديداً: أنهِ التطبيق بالكامل بدل ترك نافذة يتيمة أو عملية معلَّقة في الخلفية
             Application.Current.Shutdown();
         }
     }
