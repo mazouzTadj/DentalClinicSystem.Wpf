@@ -1,22 +1,41 @@
-# الانتقال إلى WPF - دليل سريع
+# 🦷 DentalClinicSystem.Wpf
 
-## هيكل الحل الجديد
-- **DentalClinic.Data** — بدون أي تعديل، منسوخة كما هي من نسخة WinForms.
-- **DentalClinic.UI** (جديد) — مكتبة موارد WPF مشتركة (Theme.xaml): الألوان، أنماط الأزرار المدوّرة، حاويات حقول الإدخال. كلا التطبيقين يستوردها.
-- **DentalClinic.NurseApp** — أصبح الآن تطبيق WPF (أزرق).
-- **DentalClinic.DoctorApp** — أصبح الآن تطبيق WPF (أخضر).
+> نظام إلكتروني متكامل وإدارة عيادات الأسنان المتقدمة باِستخدام **WPF** و **.NET 10.0** مع دعم فصل الأدوار والمهام بين الأطباء وقسم الاستقبال (الممرضة).
 
-## خطوات الإعداد في Visual Studio
-1. **احذف** مشروعي WinForms القديمين (`DentalClinic.NurseApp` و`DentalClinic.DoctorApp`) من الحل القديم، أو ابدأ بحل جديد فارغ.
-2. انسخ محتوى هذا الأرشيف كاملاً إلى مجلد مشروعك، وافتح `DentalClinicSystem.Wpf.sln`.
-3. في `App.config` بكل من `DentalClinic.NurseApp` و`DentalClinic.DoctorApp`، ضع نفس سطر الاتصال (Data Source) الذي كنت تستخدمه سابقاً في نسخة WinForms.
-4. نفّذ `dotnet restore` أو ببساطة افتح الحل في Visual Studio ليعيد استرجاع الحزم تلقائياً (`Microsoft.Data.SqlClient`, `BCrypt.Net-Next`, `System.Configuration.ConfigurationManager`).
-5. فعّل Multiple Startup Projects (كلا التطبيقين) واضغط F5.
+---
 
-## كيف تعمل شاشة الدخول الآن؟
-- لا يوجد `StartupUri` في App.xaml؛ بدلاً من ذلك `App.xaml.cs` يفتح `LoginWindow` يدوياً عبر `ShowDialog()`، ولا يفتح `MainWindow` إلا بعد نجاح الدخول (`ShutdownMode` مضبوط بعناية لمنع إغلاق التطبيق تلقائياً قبل قرارنا).
-- شريط العنوان الافتراضي لويندوز مُلغى (`WindowStyle="None"`) لصالح شريط علوي مخصّص بسيط (زر إغلاق فقط) + زوايا دائرية 18px + ظل ناعم (DropShadowEffect)، لتصميم عصري متكامل.
-- الفائدة الإضافية: WPF يقيس كل شيء بوحدات مستقلة عن الجهاز (Device-Independent Pixels)، فمشكلة "AutoScaleMode" التي واجهتنا في WinForms **غير موجودة إطلاقاً هنا** - لا حاجة لأي إعداد تحجيم يدوي.
+## 📌 عن المشروع (Project Overview)
 
-## الخطوة القادمة
-لوحتا التحكم (Dashboards) - قائمة الانتظار الحيّة + تسجيل مريض عند الممرضة، وفتح ملف المريض عند الطبيب - بنفس تصميم البطاقات المدوّرة.
+**DentalClinicSystem.Wpf** هو تطبيق سطح مكتب (Desktop Application) مُصمم خصيصاً لإدارة العيادات السنية بكفاءة عالية. يتكون النظام من تطبيقين مستقلين للمستخدمين مع الاعتماد على قاعدة بيانات **SQL Server** مركزية وطبقة بيانات مشفّرة ومحمية.
+
+* **تطبيق الطبيب (DoctorApp):** يركز على الكشف الطبي، الملفات المرضية، إعداد الوصفات الطبية (Prescriptions)، اللوحة المالية، وحجز المواعيد.
+* **تطبيق الممرضة / الاستقبال (NurseApp):** يركز على الاستقبال، إدارة قائمة الانتظار اليومية، تسجيل المرضى الجدد، وتحصيل الدفعات المالية.
+
+---
+
+## 🏗️ هيكلية الحل (Solution Architecture)
+
+الحل مقسّم إلى **4 مشاريع** (Projects) لضمان فصل المسؤوليات ورسالة الكود Clean Architecture:
+
+```text
+DentalClinicSystem.Wpf.sln
+│
+├── 📁 DentalClinic.Data          → مكتبة الكيانات وقيادة البيانات (Class Library)
+│   ├── DataAccess/               → Repositories صريحة باِستخدام ADO.NET
+│   ├── Models/                   → الكيانات النظيفة (DTOs & ViewModels)
+│   └── Helpers/                  → تشفير كلمة المرور بـ BCrypt
+│
+├── 🎨 DentalClinic.UI            → مكتبة الموارد المرئية والعناصر المشتركة
+│   ├── Controls/                 → OdontogramControl (مخطط الأسنان التفاعلي)
+│   └── Theme.xaml                → الألوان والأنماط الموحدة
+│
+├── 👩‍⚕️ DentalClinic.NurseApp      → تطبيق الاستقبال والممرضة (WPF WinExe)
+│   ├── CollectPaymentWindow      → تحصيل الدفعات وسداد الفواتير
+│   ├── AddPatientWindow          → تسجيل مريض جديد
+│   └── PatientSearchWindow       → بحث متقدم بالمرضى
+│
+└── 👨‍⚕️ DentalClinic.DoctorApp     → تطبيق الطبيب والإدارة (WPF WinExe)
+    ├── PatientFileWindow         → الملف الطبي الشامل وتوثيق الجلسات
+    ├── PrescriptionWindow        → تحرير وطباعة الوصفات الطبية PDF
+    ├── FinancialDashboardWindow  → لوحة الإحصائيات المباشرة والمداخيل
+    └── UserManagementWindow     → إدارة المستخدمين والصلاحيات
