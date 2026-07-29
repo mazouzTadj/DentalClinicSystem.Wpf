@@ -23,7 +23,7 @@ public partial class AddExpenseWindow : Window
 
     private void SaveButton_Click(object sender, RoutedEventArgs e)
     {
-        if (!decimal.TryParse(AmountBox.Text, out decimal amount) || amount <= 0)
+        if (!decimal.TryParse(AmountBox.Text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out decimal amount) || amount <= 0)
         {
             MessageBox.Show("Please enter a valid amount.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;

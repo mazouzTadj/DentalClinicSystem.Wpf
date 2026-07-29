@@ -106,7 +106,7 @@ public partial class TreatmentManagementWindow : Window
         }
 
         decimal price = 0;
-        if (!string.IsNullOrWhiteSpace(TxtPrice.Text) && (!decimal.TryParse(TxtPrice.Text.Trim(), out price) || price < 0))
+        if (!string.IsNullOrWhiteSpace(TxtPrice.Text) && (!decimal.TryParse(TxtPrice.Text.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out price) || price < 0))
         {
             ErrorText.Text = "Invalid price format";
             return;

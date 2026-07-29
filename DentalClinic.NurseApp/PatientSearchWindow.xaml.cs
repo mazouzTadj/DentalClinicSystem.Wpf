@@ -65,12 +65,13 @@ public partial class PatientSearchWindow : Window
             var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
             var db = new DatabaseHelper(connectionString);
             var patientRepo = new PatientRepository(db);
+            var paymentRepo = new PaymentRepository(db);
 
             // نمرر null للعمر الأدنى والأقصى
             var matches = patientRepo.Search(term, gender, null, null);
 
-            // جلب قائمة المعرفات للمرضى الذين يملكون ديوناً غير مسددة
-            var unpaidPatientIds = GetUnpaidPatientIds(db, matches.Select(p => p.PatientID));
+            // جلب قائمة المعرفات للمرضى الذين يملكون ديوناً غير مسددة (عبر PaymentRepository الموحَّد الآن)
+            var unpaidPatientIds = paymentRepo.GetUnpaidPatientIds(matches.Select(p => p.PatientID));
 
             Results.Clear();
             foreach (var p in matches)
@@ -97,30 +98,6 @@ public partial class PatientSearchWindow : Window
         }
     }
 
-    private HashSet<int> GetUnpaidPatientIds(DatabaseHelper db, IEnumerable<int> patientIds)
-    {
-        var idList = patientIds.ToList();
-        if (!idList.Any()) return new HashSet<int>();
-
-        try
-        {
-            string inClause = string.Join(",", idList);
-            string sql = $"SELECT DISTINCT PatientID FROM MedicalSessions WHERE PatientID IN ({inClause}) AND TotalPrice > PaidAmount";
-            var table = db.ExecuteQuery(sql);
-
-            var set = new HashSet<int>();
-            foreach (DataRow row in table.Rows)
-            {
-                set.Add(Convert.ToInt32(row["PatientID"]));
-            }
-            return set;
-        }
-        catch
-        {
-            return new HashSet<int>();
-        }
-    }
-
     private void CollectPaymentButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button { Tag: PatientSearchRowViewModel selectedRow }) return;
@@ -129,26 +106,20 @@ public partial class PatientSearchWindow : Window
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
             var db = new DatabaseHelper(connectionString);
+            var paymentRepo = new PaymentRepository(db);
 
-            const string sql = @"
-                SELECT TOP 1 SessionID 
-                FROM MedicalSessions 
-                WHERE PatientID = @PatientID AND TotalPrice > PaidAmount 
-                ORDER BY SessionDateTime DESC";
+            var sessionId = paymentRepo.GetLatestUnpaidSessionId(selectedRow.PatientID);
 
-            var table = db.ExecuteQuery(sql, new Microsoft.Data.SqlClient.SqlParameter("@PatientID", selectedRow.PatientID));
-
-            if (table.Rows.Count > 0)
+            if (sessionId.HasValue)
             {
-                int sessionId = Convert.ToInt32(table.Rows[0]["SessionID"]);
-                var paymentWindow = new CollectPaymentWindow(sessionId, selectedRow.FullName, _currentUser)
+                var paymentWindow = new CollectPaymentWindow(sessionId.Value, selectedRow.FullName, _currentUser)
                 {
                     Owner = this
                 };
 
                 if (paymentWindow.ShowDialog() == true)
                 {
-                    var unpaidIds = GetUnpaidPatientIds(db, new[] { selectedRow.PatientID });
+                    var unpaidIds = paymentRepo.GetUnpaidPatientIds(new[] { selectedRow.PatientID });
                     selectedRow.HasUnpaidBalance = unpaidIds.Contains(selectedRow.PatientID);
                 }
             }

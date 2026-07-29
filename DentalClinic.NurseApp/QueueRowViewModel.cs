@@ -22,6 +22,7 @@ public class QueueRowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(Status));
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(CanCancel));
+            OnPropertyChanged(nameof(CanCheckIn));
         }
     }
 
@@ -55,7 +56,10 @@ public class QueueRowViewModel : INotifyPropertyChanged
     // تُستخدم لإظهار شارة "Paid ✓" الخضراء عندما لا يكون هناك ديون
     public bool IsPaid => !HasUnpaidBalance;
 
-    public bool CanCancel => Status == VisitStatus.Waiting || Status == VisitStatus.InTreatment;
+    public bool CanCancel => Status == VisitStatus.Waiting || Status == VisitStatus.InTreatment || Status == VisitStatus.Scheduled;
+
+    // إصلاح: يظهر زر "Check-In" فقط عندما تكون الزيارة موعداً محجوزاً وصل يومه فعلياً
+    public bool CanCheckIn => Status == VisitStatus.Scheduled;
 
     public string StatusText => Status switch
     {

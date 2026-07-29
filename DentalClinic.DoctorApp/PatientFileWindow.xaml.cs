@@ -249,7 +249,7 @@ public partial class PatientFileWindow : Window
         decimal totalPrice = 0;
         if (!string.IsNullOrWhiteSpace(TotalPriceBox.Text))
         {
-            if (!decimal.TryParse(TotalPriceBox.Text.Trim(), out totalPrice) || totalPrice < 0)
+            if (!decimal.TryParse(TotalPriceBox.Text.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out totalPrice) || totalPrice < 0)
             {
                 ErrorText.Text = "Invalid total price format";
                 return;

@@ -87,13 +87,20 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="ACTIONS" Width="100">
+                    <DataGridTemplateColumn Header="ACTIONS" Width="170">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Cancel" Height="26" Width="72" FontSize="11"
-                                        Style="{StaticResource DangerButtonStyle}"
-                                        Visibility="{Binding CanCancel, Converter={StaticResource BoolToVis}}"
-                                        Tag="{Binding}" Click="CancelVisitButton_Click"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <!-- إصلاح: زر تسجيل الحضور لموعد محجوز (Scheduled) وصل يومه فعلياً -->
+                                    <Button Content="Check-In" Height="26" Width="72" FontSize="11" Margin="0,0,6,0"
+                                            Style="{StaticResource PrimaryButtonStyle}"
+                                            Visibility="{Binding CanCheckIn, Converter={StaticResource BoolToVis}}"
+                                            Tag="{Binding}" Click="CheckInButton_Click"/>
+                                    <Button Content="Cancel" Height="26" Width="72" FontSize="11"
+                                            Style="{StaticResource DangerButtonStyle}"
+                                            Visibility="{Binding CanCancel, Converter={StaticResource BoolToVis}}"
+                                            Tag="{Binding}" Click="CancelVisitButton_Click"/>
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

@@ -89,7 +89,7 @@ public partial class CollectPaymentWindow : Window
             return;
         }
 
-        if (!decimal.TryParse(PaymentAmountBox.Text.Trim(), out var amount) || amount <= 0)
+        if (!decimal.TryParse(PaymentAmountBox.Text.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var amount) || amount <= 0)
         {
             ErrorText.Text = "Please enter a valid payment amount greater than 0.";
             return;
@@ -104,12 +104,13 @@ public partial class CollectPaymentWindow : Window
         try
         {
             var newTotalPaid = _alreadyPaid + amount;
+            var notes = string.IsNullOrWhiteSpace(NotesBox.Text) ? null : NotesBox.Text.Trim();
 
             // 1. Update the paid amount in MedicalSessions
             _sessionRepo.UpdateSessionPayment(_sessionId, newTotalPaid, null, null, null, null);
 
-            // 2. Record the payment entry in Payments table
-            _paymentRepo.AddPayment(_sessionId, amount, _currentUser.UserID);
+            // 2. Record the payment entry in Payments table (كانت الملاحظات تُهمَل بالكامل سابقاً - أصبحت تُحفظ الآن)
+            _paymentRepo.AddPayment(_sessionId, amount, _currentUser.UserID, notes);
 
             MessageBox.Show("Payment recorded successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             DialogResult = true;

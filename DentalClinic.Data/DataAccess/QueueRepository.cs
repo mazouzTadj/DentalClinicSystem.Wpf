@@ -96,6 +96,32 @@ public class QueueRepository
         }
     }
 
+    // إصلاح: لم يكن هناك أي طريقة لتحويل موعد محجوز (Scheduled) إلى "في الانتظار" (Waiting) عند
+    // وصول المريض فعلياً يوم موعده - فكانت الزيارة تبقى عالقة بحالة Scheduled بلا أي إجراء ممكن من
+    // الواجهة (لا "بدء معالجة"، ولا "إلغاء"). هذه الدالة تسجّل "تسجيل الحضور" الفعلي: تحدّث الحالة إلى
+    // Waiting وتضبط CheckInTime على الوقت الحالي (بدل وقت الحجز الأصلي) لضمان ترتيب صحيح في قائمة الانتظار.
+    public bool CheckInScheduledVisit(int visitId, int checkedInByUserId)
+    {
+        const string sql = @"
+            UPDATE VisitQueue
+            SET Status = @Status, CheckInTime = GETDATE(),
+                StatusUpdatedAt = GETDATE(), StatusUpdatedByUserID = @UpdatedByUserID
+            WHERE VisitID = @VisitID AND Status = 'Scheduled'";
+
+        try
+        {
+            var rowsAffected = _db.ExecuteNonQuery(sql,
+                new SqlParameter("@Status", VisitStatus.Waiting.ToString()),
+                new SqlParameter("@UpdatedByUserID", checkedInByUserId),
+                new SqlParameter("@VisitID", visitId));
+            return rowsAffected > 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     // تغيير حالة الزيارة - سيُستخدم من تطبيق الطبيب في الخطوة القادمة
     public void UpdateStatus(int visitId, VisitStatus newStatus, int updatedByUserId)
     {

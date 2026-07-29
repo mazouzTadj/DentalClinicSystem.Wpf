@@ -23,11 +23,15 @@ public class QueueRowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(Status));
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(CanCancel));
+            OnPropertyChanged(nameof(CanCheckIn));
         }
     }
 
-    // يمكن إلغاء الزيارة فقط إن كانت لا تزال في الانتظار أو قيد المعالجة
-    public bool CanCancel => Status == VisitStatus.Waiting || Status == VisitStatus.InTreatment;
+    // يمكن إلغاء الزيارة فقط إن كانت لا تزال في الانتظار أو قيد المعالجة أو موعداً محجوزاً لم يبدأ بعد
+    public bool CanCancel => Status == VisitStatus.Waiting || Status == VisitStatus.InTreatment || Status == VisitStatus.Scheduled;
+
+    // إصلاح: يظهر زر "Check-In" فقط عندما تكون الزيارة موعداً محجوزاً وصل يومه فعلياً
+    public bool CanCheckIn => Status == VisitStatus.Scheduled;
 
     public string StatusText => Status switch
     {

@@ -126,6 +126,32 @@ public partial class MainWindow : Window
 
     private void OpenFileButton_Click(object sender, RoutedEventArgs e) => OpenSelectedPatientFile();
 
+    // إصلاح: زر جديد لتسجيل حضور موعد محجوز (Scheduled) فعلياً عند وصول المريض في يوم موعده
+    private void CheckInButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: QueueRowViewModel row })
+        {
+            return;
+        }
+
+        try
+        {
+            var success = _queueRepo.CheckInScheduledVisit(row.VisitID, _currentUser.UserID);
+            if (success)
+            {
+                LoadQueue();
+            }
+            else
+            {
+                MessageBox.Show("Could not check in this appointment.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private void QueueGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e) => OpenSelectedPatientFile();
 
     private void OpenSelectedPatientFile()

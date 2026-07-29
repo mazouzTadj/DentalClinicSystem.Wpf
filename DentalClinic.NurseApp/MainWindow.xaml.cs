@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private readonly UserAccount _currentUser;
     private readonly DatabaseHelper _db;
     private readonly QueueRepository _queueRepo;
+    private readonly PaymentRepository _paymentRepo;
     private readonly DispatcherTimer _refreshTimer;
 
     public ObservableCollection<QueueRowViewModel> QueueRows { get; } = new();
@@ -32,6 +33,7 @@ public partial class MainWindow : Window
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
         _db = new DatabaseHelper(connectionString);
         _queueRepo = new QueueRepository(_db);
+        _paymentRepo = new PaymentRepository(_db);
 
         _refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
         _refreshTimer.Tick += (s, e) => LoadQueue();
@@ -50,8 +52,8 @@ public partial class MainWindow : Window
         {
             var queue = _queueRepo.GetTodayQueue();
 
-            // جلب قائمة المرضى الذين لديهم ديون غير مسددة
-            var unpaidPatientIds = GetUnpaidPatientIds();
+            // جلب قائمة المرضى الذين لديهم ديون غير مسددة (الآن عبر PaymentRepository الموحَّد بدل استعلام محلي مكرر)
+            var unpaidPatientIds = _paymentRepo.GetUnpaidPatientIds();
 
             var freshIds = new HashSet<int>(queue.Select(q => q.VisitID));
 
@@ -88,26 +90,6 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             CountText.Text = "Could not load the queue: " + ex.Message;
-        }
-    }
-
-    // 🔍 دالة مساعدة سريعة لاستخراج معرّفات المرضى المديونين
-    private HashSet<int> GetUnpaidPatientIds()
-    {
-        try
-        {
-            const string sql = "SELECT DISTINCT PatientID FROM MedicalSessions WHERE TotalPrice > PaidAmount";
-            var table = _db.ExecuteQuery(sql);
-            var set = new HashSet<int>();
-            foreach (DataRow row in table.Rows)
-            {
-                set.Add(Convert.ToInt32(row["PatientID"]));
-            }
-            return set;
-        }
-        catch
-        {
-            return new HashSet<int>();
         }
     }
 
@@ -150,18 +132,11 @@ public partial class MainWindow : Window
 
         try
         {
-            const string sql = @"
-                SELECT TOP 1 SessionID 
-                FROM MedicalSessions 
-                WHERE PatientID = @PatientID AND TotalPrice > PaidAmount 
-                ORDER BY SessionDateTime DESC";
+            var sessionId = _paymentRepo.GetLatestUnpaidSessionId(selectedRow.PatientID);
 
-            var table = _db.ExecuteQuery(sql, new Microsoft.Data.SqlClient.SqlParameter("@PatientID", selectedRow.PatientID));
-
-            if (table.Rows.Count > 0)
+            if (sessionId.HasValue)
             {
-                int sessionId = Convert.ToInt32(table.Rows[0]["SessionID"]);
-                var paymentWindow = new CollectPaymentWindow(sessionId, selectedRow.PatientFullName, _currentUser)
+                var paymentWindow = new CollectPaymentWindow(sessionId.Value, selectedRow.PatientFullName, _currentUser)
                 {
                     Owner = this
                 };
@@ -183,6 +158,32 @@ public partial class MainWindow : Window
     }
 
     private void RefreshButton_Click(object sender, RoutedEventArgs e) => LoadQueue();
+
+    // إصلاح: زر جديد لتسجيل حضور موعد محجوز (Scheduled) فعلياً عند وصول المريض في يوم موعده
+    private void CheckInButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: QueueRowViewModel row })
+        {
+            return;
+        }
+
+        try
+        {
+            var success = _queueRepo.CheckInScheduledVisit(row.VisitID, _currentUser.UserID);
+            if (success)
+            {
+                LoadQueue();
+            }
+            else
+            {
+                MessageBox.Show("Could not check in this appointment.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
 
     private void CancelVisitButton_Click(object sender, RoutedEventArgs e)
     {

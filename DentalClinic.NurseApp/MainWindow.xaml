@@ -73,11 +73,17 @@
                     <!-- العمود الخاص بالموعد القادم -->
                     <DataGridTextColumn Header="NEXT APPOINTMENT" Binding="{Binding NextAppointmentText}" Width="160"/>
 
-                    <!-- عمود الإجراءات ممتد ليشمل زر التحصيل والشارة والإلغاء -->
-                    <DataGridTemplateColumn Header="ACTIONS" Width="170">
+                    <!-- عمود الإجراءات ممتد ليشمل زر تسجيل الحضور والتحصيل والشارة والإلغاء -->
+                    <DataGridTemplateColumn Header="ACTIONS" Width="230">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                    <!-- 0. زر تسجيل الحضور (يظهر فقط للمواعيد المحجوزة التي وصل يومها) -->
+                                    <Button Content="Check-In" Height="26" Width="65" FontSize="11" Margin="0,0,6,0"
+                                            Style="{StaticResource PrimaryButtonStyle}"
+                                            Visibility="{Binding CanCheckIn, Converter={StaticResource BoolToVis}}"
+                                            Tag="{Binding}" Click="CheckInButton_Click"/>
 
                                     <!-- 1. زر الدفع المباشر (يظهر فقط إذا كان المريض مديوناً) -->
                                     <Button Content="Pay" Height="26" Width="65" FontSize="11" Margin="0,0,6,0"

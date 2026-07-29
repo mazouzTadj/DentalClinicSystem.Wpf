@@ -12,6 +12,26 @@ public class FinancialRepository
     public FinancialRepository(DatabaseHelper db)
     {
         _db = db;
+        EnsureClinicExpensesTableExists();
+    }
+
+    // إصلاح: الجدول لم يكن يُنشأ في أي مكان بالكود (بعكس TreatmentPresets) فكانت أي عملية على
+    // المصاريف/صافي الربح تفشل بخطأ "Invalid object name 'ClinicExpenses'". نتّبع هنا نفس نمط
+    // الإنشاء التلقائي الآمن (IF NOT EXISTS) المستخدم مع TreatmentPresets.
+    private void EnsureClinicExpensesTableExists()
+    {
+        const string sql = @"
+            IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ClinicExpenses')
+            BEGIN
+                CREATE TABLE ClinicExpenses (
+                    ExpenseID INT IDENTITY(1,1) PRIMARY KEY,
+                    Amount DECIMAL(18,2) NOT NULL,
+                    Description NVARCHAR(500) NOT NULL,
+                    Category NVARCHAR(100) NOT NULL DEFAULT N'General / Other',
+                    ExpenseDate DATETIME NOT NULL
+                );
+            END";
+        _db.ExecuteNonQuery(sql);
     }
 
     // إجمالي المداخيل (المبالغ المُحصَّلة فعلياً PaidAmount، وليس TotalPrice) - يومي/شهري/سنوي + إجمالي المتبقي
