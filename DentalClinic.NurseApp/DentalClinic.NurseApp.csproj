@@ -18,6 +18,9 @@
   <ItemGroup>
     <ProjectReference Include="..\DentalClinic.Data\DentalClinic.Data.csproj" />
     <ProjectReference Include="..\DentalClinic.UI\DentalClinic.UI.csproj" />
+    <!-- مشروع مشترك يحوي كل الشاشات التي قد يحتاجها أي التطبيقين حسب الصلاحيات (Permissions) -->
+    <!-- بدل ربط تطبيق بآخر مباشرة (كان يسبب اعتمادية غير متماثلة) -->
+    <ProjectReference Include="..\DentalClinic.Features\DentalClinic.Features.csproj" />
   </ItemGroup>
 
   <ItemGroup>

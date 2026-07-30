@@ -1,0 +1,118 @@
+<Window x:Class="DentalClinic.Features.PrescriptionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Prescription" Height="720" Width="620" MinWidth="560"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+
+    <Border CornerRadius="18" Background="{StaticResource CardBackgroundBrush}">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="30" ShadowDepth="6"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <TextBlock Text="Prescription" FontWeight="Bold" FontSize="14"
+                           Foreground="{StaticResource AccentBrush}"
+                           VerticalAlignment="Center" Margin="20,0,0,0"/>
+                <Button Content="&#10005;" Style="{StaticResource WindowControlButtonStyle}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,10,0" Click="CloseButton_Click"/>
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="30,10,30,20">
+                <StackPanel>
+
+                    <TextBlock x:Name="PatientHeaderText" FontSize="17" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}" Margin="0,10,0,4"/>
+                    <TextBlock x:Name="DateText" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,18"/>
+
+                    <!-- إضافة سريعة من قائمة الأدوية الجاهزة -->
+                    <TextBlock Text="Add from quick list" Style="{StaticResource FieldLabelStyle}"/>
+                    <Grid Margin="0,0,0,18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}">
+                            <ComboBox x:Name="PresetBox" BorderThickness="0" Background="Transparent"
+                                      Padding="10,8" FontSize="13" VerticalContentAlignment="Center"
+                                      DisplayMemberPath="MedicationName"/>
+                        </Border>
+                        <Button Grid.Column="2" Content="+ Add" Style="{StaticResource PrimaryButtonStyle}"
+                                Click="AddPresetButton_Click"/>
+                    </Grid>
+
+                    <!-- أسطر الوصفة -->
+                    <TextBlock Text="Prescription Lines" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+
+                    <ItemsControl x:Name="LinesItems">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,10" Padding="12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="30"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="6"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding MedicationName, UpdateSourceTrigger=PropertyChanged}"
+                                                 FontWeight="SemiBold" FontSize="13" BorderThickness="0" Background="Transparent"/>
+
+                                        <Grid Grid.Row="2" Grid.Column="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Grid.Column="0" Text="{Binding Dosage, UpdateSourceTrigger=PropertyChanged}"
+                                                     FontSize="12" BorderThickness="0" Background="Transparent"
+                                                     Foreground="{StaticResource TextSecondaryBrush}"/>
+                                            <TextBox Grid.Column="2" Text="{Binding Duration, UpdateSourceTrigger=PropertyChanged}"
+                                                     FontSize="12" BorderThickness="0" Background="Transparent"
+                                                     Foreground="{StaticResource TextSecondaryBrush}"/>
+                                        </Grid>
+
+                                        <Button Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Content="&#10005;"
+                                                Style="{StaticResource WindowControlButtonStyle}" Width="26" Height="26"
+                                                VerticalAlignment="Top" Tag="{Binding}" Click="RemoveLineButton_Click"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Button Content="+ Add Custom Line" Height="36" Margin="0,0,0,18"
+                            Style="{StaticResource SecondaryButtonStyle}" Click="AddCustomLineButton_Click"/>
+
+                    <TextBlock Text="General Instructions / Notes (optional)" Style="{StaticResource FieldLabelStyle}"/>
+                    <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,10">
+                        <TextBox x:Name="NotesBox" Style="{StaticResource PlainTextBoxStyle}"
+                                 TextWrapping="Wrap" AcceptsReturn="True" Height="50" VerticalContentAlignment="Top"/>
+                    </Border>
+
+                    <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}"/>
+
+                    <Button Content="Generate &amp; Print PDF" Height="46" Margin="0,10,0,0"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Click="GenerateButton_Click"/>
+                    <Button Content="Close" Height="38" Margin="0,10,0,0"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Click="CloseButton_Click"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</Window>

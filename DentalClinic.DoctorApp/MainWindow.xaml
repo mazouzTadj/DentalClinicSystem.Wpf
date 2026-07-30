@@ -23,26 +23,38 @@
 
             <!-- تم إضافة LastChildFill="False" لتجنب تمدد أي زر بشكل غير مرغوب -->
             <DockPanel LastChildFill="False">
-                <Button DockPanel.Dock="Left" Content="Open Patient File" Width="180" Height="42"
-                Style="{StaticResource PrimaryButtonStyle}"
+                <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.RegisterPatients -->
+                <Button x:Name="RegisterPatientButton" DockPanel.Dock="Left" Content="+ Register New Patient" Width="180" Height="42"
+                Style="{StaticResource PrimaryButtonStyle}" Visibility="Collapsed"
+                Click="RegisterPatientButton_Click"/>
+                <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.OpenPatientFile -->
+                <Button x:Name="OpenPatientFileButton" DockPanel.Dock="Left" Content="Open Patient File" Width="180" Height="42" Margin="12,0,0,0"
+                Style="{StaticResource PrimaryButtonStyle}" Visibility="Collapsed"
                 Click="OpenFileButton_Click"/>
                 <Button DockPanel.Dock="Left" Content="Search" Width="150" Height="42" Margin="12,0,0,0"
                 Style="{StaticResource SecondaryButtonStyle}"
                 Click="AdvancedSearchButton_Click"/>
 
-                <!-- 🩺 زر إدارة العلاجات والأسعار (تمت إضافته وتصحيح مكانه) -->
-                <Button DockPanel.Dock="Left" Content="Treatments" Width="130" Height="42" Margin="12,0,0,0"
-                Style="{StaticResource SecondaryButtonStyle}"
+                <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.CollectPayments -->
+                <Button x:Name="CollectPaymentButton" DockPanel.Dock="Left" Content="Collect Payment" Width="130" Height="42" Margin="12,0,0,0"
+                Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                Click="CollectPaymentButton_Click"/>
+
+                <!-- 🩺 زر إدارة العلاجات والأسعار - يظهر فقط لمن يملك صلاحية UserPermission.ManageTreatments -->
+                <Button x:Name="ManageTreatmentsButton" DockPanel.Dock="Left" Content="Treatments" Width="130" Height="42" Margin="12,0,0,0"
+                Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
                 Click="ManageTreatmentsButton_Click"/>
 
-                <Button DockPanel.Dock="Left" Content="Backup" Width="100" Height="42" Margin="12,0,0,0"
-                Style="{StaticResource SecondaryButtonStyle}"
+                <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.AccessBackup -->
+                <Button x:Name="BackupButton" DockPanel.Dock="Left" Content="Backup" Width="100" Height="42" Margin="12,0,0,0"
+                Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
                 Click="BackupButton_Click"/>
 
-                <!-- مخفي افتراضياً - يظهر فقط إذا كان المستخدم الحالي مديراً عاماً (IsAdmin) -->
+                <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.ManageUsers -->
                 <Button x:Name="ManageUsersButton" DockPanel.Dock="Left" Content="Manage Users" Width="140" Height="42" Margin="12,0,0,0"
                 Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
                 Click="ManageUsersButton_Click"/>
+                <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.AccessFinance -->
                 <Button x:Name="FinancialDashboardButton" DockPanel.Dock="Left" Content="Finances" Width="110" Height="42" Margin="12,0,0,0"
                 Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
                 Click="FinancialDashboardButton_Click"/>

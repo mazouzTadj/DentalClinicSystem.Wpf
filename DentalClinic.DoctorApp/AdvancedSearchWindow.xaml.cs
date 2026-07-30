@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Windows;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.Features; // PatientFileWindow انتقلت إلى المشروع المشترك
 
 namespace DentalClinic.DoctorApp;
 

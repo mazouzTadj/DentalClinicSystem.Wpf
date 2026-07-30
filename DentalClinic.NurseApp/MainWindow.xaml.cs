@@ -6,9 +6,11 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.Features; // الشاشات المشتركة (PatientFileWindow, FinancialDashboardWindow, BackupWindow, ...)
 
 namespace DentalClinic.NurseApp;
 
@@ -28,6 +30,15 @@ public partial class MainWindow : Window
         InitializeComponent();
         Title = $"Reception App - Dental Clinic | Welcome {_currentUser.FullName}";
 
+        // كل زر يظهر فقط إذا كان المستخدم الحالي يملك الصلاحية المقابلة له - مستقلة تماماً عن الدور (Doctor/Nurse)
+        OpenPatientFileButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.OpenPatientFile));
+        RegisterPatientButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.RegisterPatients));
+        CollectPaymentTopButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.CollectPayments));
+        ManageTreatmentsButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.ManageTreatments));
+        BackupButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.AccessBackup));
+        ManageUsersButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.ManageUsers));
+        FinancialDashboardButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.AccessFinance));
+
         QueueGrid.ItemsSource = QueueRows;
 
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
@@ -45,6 +56,9 @@ public partial class MainWindow : Window
         };
         Closed += (s, e) => _refreshTimer.Stop();
     }
+
+    private static Visibility ToVisibility(bool hasPermission) =>
+        hasPermission ? Visibility.Visible : Visibility.Collapsed;
 
     private void LoadQueue()
     {
@@ -95,6 +109,12 @@ public partial class MainWindow : Window
 
     private void AddPatientButton_Click(object sender, RoutedEventArgs e)
     {
+        // فحص دفاعي إضافي: حتى لو ظهر الزر بطريقة غير متوقعة، لن تُفتح الشاشة إلا لمن يملك الصلاحية فعلاً
+        if (!_currentUser.HasPermission(UserPermission.RegisterPatients))
+        {
+            return;
+        }
+
         var window = new AddPatientWindow(_currentUser) { Owner = this };
         if (window.ShowDialog() == true)
         {
@@ -111,8 +131,93 @@ public partial class MainWindow : Window
         }
     }
 
+    // 🩺 فتح نافذة إدارة العلاجات والأسعار - نفس الشاشة المستخدَمة في تطبيق الطبيب
+    private void ManageTreatmentsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_currentUser.HasPermission(UserPermission.ManageTreatments))
+        {
+            return;
+        }
+
+        var window = new TreatmentManagementWindow { Owner = this };
+        window.ShowDialog();
+    }
+
+    private void BackupButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_currentUser.HasPermission(UserPermission.AccessBackup))
+        {
+            return;
+        }
+
+        var window = new BackupWindow { Owner = this };
+        window.ShowDialog();
+    }
+
+    private void ManageUsersButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_currentUser.HasPermission(UserPermission.ManageUsers))
+        {
+            return;
+        }
+
+        var window = new UserManagementWindow(_currentUser) { Owner = this };
+        window.ShowDialog();
+    }
+
+    private void FinancialDashboardButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_currentUser.HasPermission(UserPermission.AccessFinance))
+        {
+            return;
+        }
+
+        var window = new FinancialDashboardWindow { Owner = this };
+        window.ShowDialog();
+    }
+
+    // فتح الملف الطبي الكامل للمريض المحدَّد في قائمة الانتظار (زر علوي أو نقر مزدوج على الصف)
+    private void OpenPatientFileButton_Click(object sender, RoutedEventArgs e) => OpenSelectedPatientFile();
+
+    private void QueueGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e) => OpenSelectedPatientFile();
+
+    private void OpenSelectedPatientFile()
+    {
+        // فحص دفاعي: حتى لو ظهر الزر أو استُخدم النقر المزدوج بطريقة غير متوقعة،
+        // لن يُفتح الملف الطبي إلا لمن يملك صلاحية OpenPatientFile فعلاً.
+        if (!_currentUser.HasPermission(UserPermission.OpenPatientFile))
+        {
+            MessageBox.Show("You don't have permission to open patient files.", "Access Denied",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (QueueGrid.SelectedItem is not QueueRowViewModel selected)
+        {
+            MessageBox.Show("Please select a patient from the list first", "Notice",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        // نفس شاشة الملف الطبي المستخدَمة في المشروع المشترك (DentalClinic.Features.PatientFileWindow)
+        var window = new PatientFileWindow(selected.PatientID, selected.VisitID, _currentUser)
+        {
+            Owner = this
+        };
+        window.ShowDialog();
+        LoadQueue();
+    }
+
     private void CollectPaymentButton_Click(object sender, RoutedEventArgs e)
     {
+        // فحص دفاعي: يغطي زر الشريط العلوي وزر كل صف في القائمة معاً، حتى لو ظهر أحدهما بطريقة غير متوقعة
+        if (!_currentUser.HasPermission(UserPermission.CollectPayments))
+        {
+            MessageBox.Show("You don't have permission to collect payments.", "Access Denied",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
         QueueRowViewModel? selectedRow = null;
 
         if (sender is Button { Tag: QueueRowViewModel taggedRow })

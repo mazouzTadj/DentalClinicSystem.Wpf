@@ -1,0 +1,110 @@
+﻿<Window x:Class="DentalClinic.Features.TreatmentManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Manage Treatments" Height="680" Width="720" MinWidth="550" MinHeight="450"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        ShowInTaskbar="False">
+
+    <Border CornerRadius="18" Background="{StaticResource CardBackgroundBrush}">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="30" ShadowDepth="6"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- الشريط العلوي -->
+            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <TextBlock Text="Manage Treatments &amp; Prices" FontWeight="Bold" FontSize="14"
+                           Foreground="{StaticResource AccentBrush}"
+                           VerticalAlignment="Center" Margin="20,0,0,0"/>
+
+                <Button Content="&#10005;" HorizontalAlignment="Right" Margin="0,0,10,0"
+                        Style="{StaticResource WindowControlButtonStyle}"
+                        Click="CloseButton_Click"/>
+            </Grid>
+
+            <!-- المحتوى الرئيسي -->
+            <Grid Grid.Row="1" Margin="24,10,24,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- نموذج الإضافة والتعديل -->
+                <Border Grid.Row="0" Background="{StaticResource WindowBackgroundBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- اسم العلاج -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Treatment Name *" Style="{StaticResource FieldLabelStyle}"/>
+                                <Border Style="{StaticResource InputContainerStyle}">
+                                    <TextBox x:Name="TxtTreatmentName" Style="{StaticResource PlainTextBoxStyle}"/>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- السعر -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Price (DA / USD) *" Style="{StaticResource FieldLabelStyle}"/>
+                                <Border Style="{StaticResource InputContainerStyle}">
+                                    <TextBox x:Name="TxtPrice" Style="{StaticResource PlainTextBoxStyle}"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}" Margin="0,6,0,0"/>
+
+                        <!-- أزرار الحفظ والإلغاء -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                            <Button x:Name="BtnCancelEdit" Content="Cancel Edit" Width="100" Height="36" Margin="0,0,8,0"
+                                    Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                                    Click="BtnCancelEdit_Click"/>
+                            <Button x:Name="BtnSave" Content="+ Add Treatment" Width="140" Height="36"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Click="BtnSave_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- جدول عرض العلاجات -->
+                <Border Grid.Row="1" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" ClipToBounds="True">
+                    <DataGrid x:Name="TreatmentsGrid"
+                              Style="{StaticResource ModernDataGridStyle}"
+                              ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                              RowStyle="{StaticResource ModernRowStyle}"
+                              CellStyle="{StaticResource ModernCellStyle}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="TREATMENT NAME" Binding="{Binding TreatmentName}" Width="*"/>
+                            <DataGridTextColumn Header="PRICE" Binding="{Binding PriceText}" Width="120"/>
+
+                            <DataGridTemplateColumn Header="ACTIONS" Width="140">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="Edit" Height="26" Width="55" FontSize="11" Margin="0,0,6,0"
+                                                    Style="{StaticResource SecondaryButtonStyle}"
+                                                    Tag="{Binding}" Click="BtnEdit_Click"/>
+                                            <Button Content="Delete" Height="26" Width="55" FontSize="11"
+                                                    Style="{StaticResource DangerButtonStyle}"
+                                                    Tag="{Binding}" Click="BtnDelete_Click"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

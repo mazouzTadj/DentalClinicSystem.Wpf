@@ -1,0 +1,62 @@
+<Window x:Class="DentalClinic.Features.BackupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Database Backup" Height="460" Width="460"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+
+    <Border CornerRadius="18" Background="{StaticResource CardBackgroundBrush}">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="30" ShadowDepth="6"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Button Content="&#10005;" Style="{StaticResource WindowControlButtonStyle}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,10,0" Click="CloseButton_Click"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1" Margin="40,0,40,30" VerticalAlignment="Center">
+
+                <Border Width="60" Height="60" CornerRadius="30" Background="{StaticResource AccentBrush}"
+                        HorizontalAlignment="Center" Margin="0,0,0,16">
+                    <TextBlock Text="&#128451;" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="Database Backup" FontSize="20" FontWeight="Bold"
+                           Foreground="{StaticResource AccentBrush}"
+                           HorizontalAlignment="Center" Margin="0,0,0,24"/>
+
+                <TextBlock Text="Last successful backup" Style="{StaticResource FieldLabelStyle}"/>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,16">
+                    <TextBlock x:Name="LastBackupText" Padding="12,10" FontSize="14"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                </Border>
+
+                <TextBlock Text="Backup folder (on the SQL Server machine)" Style="{StaticResource FieldLabelStyle}"/>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,16">
+                    <TextBlock x:Name="FolderPathText" Padding="12,10" FontSize="13"
+                               Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                </Border>
+
+                <TextBlock x:Name="RetentionText" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                           Margin="4,0,0,10"/>
+
+                <TextBlock x:Name="StatusText" Style="{StaticResource ErrorTextStyle}"/>
+
+                <Button x:Name="BackupNowButton" Content="Backup Now" Height="46" Margin="0,10,0,0"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Click="BackupNowButton_Click"/>
+                <Button Content="Close" Height="38" Margin="0,10,0,0"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Click="CloseButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

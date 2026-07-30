@@ -18,7 +18,7 @@ public class UserRepository
     public UserAccount? FindByUsername(string username)
     {
         const string sql = @"
-            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, IsAdmin, CreatedAt, LastLoginAt
+            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, PermissionsMask, CreatedAt, LastLoginAt
             FROM Users
             WHERE Username = @Username AND IsActive = 1";
 
@@ -28,8 +28,8 @@ public class UserRepository
 
     // تسجيل الدخول: يتحقق من اسم المستخدم، كلمة المرور، وأن الدور مطابق للتطبيق المُستخدَم
     // (مثال: حساب ممرضة لا يمكنه الدخول إلى تطبيق الطبيب والعكس صحيح)
-    // ملاحظة: IsAdmin لا علاقة له بهذا التحقق إطلاقاً - هو صلاحية إضافية فوق الدور الأساسي فقط،
-    // فحساب "جلولي زيد" (IsAdmin=1, Role=Doctor) يسجّل دخوله لتطبيق الطبيب بشكل طبيعي تماماً كأي طبيب آخر.
+    // ملاحظة: الصلاحيات (Permissions) لا علاقة لها بهذا التحقق إطلاقاً - هي صلاحيات إضافية فوق الدور الأساسي فقط،
+    // فحساب "جلولي زيد" (Permissions تتضمن ManageUsers, Role=Doctor) يسجّل دخوله لتطبيق الطبيب بشكل طبيعي تماماً كأي طبيب آخر.
     public UserAccount? Authenticate(string username, string password, UserRole requiredRole, out string errorMessage)
     {
         errorMessage = string.Empty;
@@ -63,13 +63,13 @@ public class UserRepository
         _db.ExecuteNonQuery(sql, new SqlParameter("@UserID", userId));
     }
 
-    // ===================== إدارة المستخدمين (Super Admin فقط) =====================
+    // ===================== إدارة المستخدمين (يتطلب صلاحية ManageUsers) =====================
 
     // كل المستخدمين بما فيهم غير النشطين - تُستخدم في شاشة إدارة المستخدمين فقط (بعكس FindByUsername)
     public List<UserAccount> GetAllUsers()
     {
         const string sql = @"
-            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, IsAdmin, CreatedAt, LastLoginAt
+            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, PermissionsMask, CreatedAt, LastLoginAt
             FROM Users
             ORDER BY FullName";
 
@@ -82,12 +82,12 @@ public class UserRepository
         return result;
     }
 
-    // إضافة مستخدم جديد (طبيب أو ممرضة، مع/بدون صلاحية مدير عام) - يرجع UserID الجديد
+    // إضافة مستخدم جديد (طبيب أو ممرضة، بأي مجموعة صلاحيات) - يرجع UserID الجديد
     public int AddUser(UserAccount user, string plainPassword)
     {
         const string sql = @"
-            INSERT INTO Users (FullName, Username, PasswordHash, RoleID, PhoneNumber, IsAdmin, IsActive)
-            VALUES (@FullName, @Username, @PasswordHash, @RoleID, @PhoneNumber, @IsAdmin, 1)";
+            INSERT INTO Users (FullName, Username, PasswordHash, RoleID, PhoneNumber, PermissionsMask, IsActive)
+            VALUES (@FullName, @Username, @PasswordHash, @RoleID, @PhoneNumber, @PermissionsMask, 1)";
 
         return _db.ExecuteInsertAndGetId(sql,
             new SqlParameter("@FullName", user.FullName),
@@ -95,7 +95,7 @@ public class UserRepository
             new SqlParameter("@PasswordHash", PasswordHelper.Hash(plainPassword)),
             new SqlParameter("@RoleID", user.Role == UserRole.Doctor ? 1 : 2),
             new SqlParameter("@PhoneNumber", (object?)user.PhoneNumber ?? DBNull.Value),
-            new SqlParameter("@IsAdmin", user.IsAdmin));
+            new SqlParameter("@PermissionsMask", (int)user.Permissions));
     }
 
     // تعديل بيانات مستخدم موجود (بدون تغيير كلمة المرور - لذلك دالة منفصلة UpdatePassword أدناه)
@@ -104,7 +104,7 @@ public class UserRepository
         const string sql = @"
             UPDATE Users
             SET FullName = @FullName, Username = @Username, RoleID = @RoleID,
-                PhoneNumber = @PhoneNumber, IsAdmin = @IsAdmin, IsActive = @IsActive
+                PhoneNumber = @PhoneNumber, PermissionsMask = @PermissionsMask, IsActive = @IsActive
             WHERE UserID = @UserID";
 
         _db.ExecuteNonQuery(sql,
@@ -112,7 +112,7 @@ public class UserRepository
             new SqlParameter("@Username", user.Username),
             new SqlParameter("@RoleID", user.Role == UserRole.Doctor ? 1 : 2),
             new SqlParameter("@PhoneNumber", (object?)user.PhoneNumber ?? DBNull.Value),
-            new SqlParameter("@IsAdmin", user.IsAdmin),
+            new SqlParameter("@PermissionsMask", (int)user.Permissions),
             new SqlParameter("@IsActive", user.IsActive),
             new SqlParameter("@UserID", user.UserID));
     }
@@ -133,6 +133,26 @@ public class UserRepository
         _db.ExecuteNonQuery(sql,
             new SqlParameter("@IsActive", isActive),
             new SqlParameter("@UserID", userId));
+    }
+
+    // كم عدد المستخدمين النشطين الذين يملكون صلاحية ManageUsers حالياً؟
+    // تُستخدم لمنع إزالة آخر مدير عام في النظام (وإلا يُقفل الجميع من شاشة الإدارة نهائياً)
+    public int CountActiveSuperAdmins(int? excludeUserId = null)
+    {
+        var sql = "SELECT COUNT(*) FROM Users WHERE IsActive = 1 AND (PermissionsMask & @ManageUsersFlag) = @ManageUsersFlag";
+        var parameters = new List<SqlParameter>
+        {
+            new SqlParameter("@ManageUsersFlag", (int)UserPermission.ManageUsers)
+        };
+
+        if (excludeUserId.HasValue)
+        {
+            sql += " AND UserID <> @ExcludeUserID";
+            parameters.Add(new SqlParameter("@ExcludeUserID", excludeUserId.Value));
+        }
+
+        var result = _db.ExecuteScalar(sql, parameters.ToArray());
+        return result == null ? 0 : Convert.ToInt32(result);
     }
 
     // هل اسم المستخدم هذا مستخدَم بالفعل من قِبل حساب آخر؟ (لإظهار رسالة واضحة بدل خطأ SQL خام)
@@ -158,7 +178,7 @@ public class UserRepository
         Username = row["Username"].ToString()!,
         PasswordHash = row["PasswordHash"].ToString()!,
         Role = (int)row["RoleID"] == 1 ? UserRole.Doctor : UserRole.Nurse,
-        IsAdmin = (bool)row["IsAdmin"],
+        Permissions = (UserPermission)(int)row["PermissionsMask"],
         PhoneNumber = row["PhoneNumber"] as string,
         IsActive = (bool)row["IsActive"],
         CreatedAt = (DateTime)row["CreatedAt"],

@@ -1,0 +1,75 @@
+﻿<Window x:Class="DentalClinic.Features.ScheduleAppointmentDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Schedule Appointment" Height="360" Width="420"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        ShowInTaskbar="False">
+
+    <Border CornerRadius="18" Background="{StaticResource CardBackgroundBrush}">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="30" ShadowDepth="6"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- شريط العنوان المخصص -->
+            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <TextBlock Text="Schedule Appointment" FontWeight="Bold" FontSize="14"
+                           Foreground="{StaticResource AccentBrush}"
+                           VerticalAlignment="Center" Margin="20,0,0,0"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <Button Content="&#10005;" Style="{StaticResource WindowControlButtonStyle}"
+                            Click="CloseButton_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- محتوى النافذة -->
+            <StackPanel Grid.Row="1" Margin="30,10,30,20">
+
+                <!-- عنوان داخلي -->
+                <TextBlock Text="Schedule New Visit" FontSize="18" FontWeight="Bold"
+                           Foreground="{StaticResource AccentBrush}" Margin="0,0,0,25" HorizontalAlignment="Center"/>
+
+                <!-- حقل التاريخ -->
+                <TextBlock Text="Appointment Date *" Style="{StaticResource FieldLabelStyle}"/>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,16" Padding="5">
+                    <DatePicker x:Name="DpAppointmentDate" BorderThickness="0" Background="Transparent" FontSize="14" VerticalAlignment="Center">
+                        <DatePicker.CalendarStyle>
+                            <Style TargetType="Calendar">
+                                <Setter Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <!-- الرقم 1.4 يعني تكبير بنسبة 40%، يمكنك تغييره حسب رغبتك -->
+                                        <ScaleTransform ScaleX="1.4" ScaleY="1.4" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DatePicker.CalendarStyle>
+                    </DatePicker>
+                </Border>
+
+                <!-- حقل الوقت -->
+                <TextBlock Text="Appointment Time *" Style="{StaticResource FieldLabelStyle}"/>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,30" Padding="5">
+                    <ComboBox x:Name="CmbAppointmentTime" BorderThickness="0" Background="Transparent" FontSize="14" VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- أزرار الحفظ والإلغاء -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="Cancel" Width="120" Height="42" Margin="0,0,15,0"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Click="BtnCancel_Click"/>
+                    <Button Content="Save Appointment" Width="160" Height="42"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Click="BtnSave_Click"/>
+                </StackPanel>
+
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
