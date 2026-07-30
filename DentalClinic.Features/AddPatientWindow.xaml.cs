@@ -41,9 +41,9 @@ public partial class AddPatientWindow : Window
         var fullName = FullNameBox.Text.Trim();
         var phone = PhoneBox.Text.Trim();
 
-        if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(phone))
+        if (string.IsNullOrWhiteSpace(fullName))
         {
-            ErrorText.Text = "Full name and phone number are required";
+            ErrorText.Text = "Full name is required";
             return;
         }
 
@@ -68,7 +68,8 @@ public partial class AddPatientWindow : Window
             var queueRepo = new QueueRepository(db);
 
             // تحقق أولاً: هل هذا المريض مسجَّل مسبقاً بنفس الاسم ونفس رقم الهاتف؟
-            var existing = patientRepo.FindDuplicate(fullName, phone);
+            // (يُتخطى هذا الفحص إن لم يُدخَل رقم هاتف، لأن التطابق يفقد معناه بلا رقم مرجعي)
+            var existing = string.IsNullOrWhiteSpace(phone) ? null : patientRepo.FindDuplicate(fullName, phone);
             if (existing != null)
             {
                 var confirm = MessageBox.Show(
