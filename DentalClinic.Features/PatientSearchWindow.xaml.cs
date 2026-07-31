@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -35,7 +36,7 @@ public partial class PatientSearchWindow : Window
         // فحص دفاعي إضافي: حتى لو ظهر الزر بطريقة غير متوقعة، لن يُفتح الملف إلا لمن يملك الصلاحية فعلاً
         if (!_currentUser.HasPermission(UserPermission.OpenPatientFile))
         {
-            MessageBox.Show("You don't have permission to open patient files.", "Access Denied",
+            MessageBox.Show(LocalizationManager.T("Main_NoPermissionOpenFile"), LocalizationManager.T("Common_AccessDenied"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -73,15 +74,17 @@ public partial class PatientSearchWindow : Window
 
         var term = SearchBox.Text.Trim();
 
-        string? gender = (GenderFilterBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
-        if (gender == "Any Gender") gender = null;
+        // نقرأ Tag (قيمة ثابتة: Any/Male/Female، All/Unpaid/Paid) بدل Content (النص المترجَم المعروض)
+        // حتى تعمل المقارنة بشكل صحيح بغض النظر عن لغة الواجهة الحالية
+        string? genderTag = (GenderFilterBox.SelectedItem as ComboBoxItem)?.Tag?.ToString();
+        string? gender = genderTag == "Male" ? "Male" : genderTag == "Female" ? "Female" : null;
 
-        string? paymentFilter = (PaymentFilterBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
+        string? paymentFilter = (PaymentFilterBox.SelectedItem as ComboBoxItem)?.Tag?.ToString();
 
         // السماح بالبحث إذا تم إدخال نص، أو اختيار جنس، أو فلتر حالة دفع معين
-        if (string.IsNullOrWhiteSpace(term) && gender == null && (paymentFilter == null || paymentFilter == "All Payment Statuses"))
+        if (string.IsNullOrWhiteSpace(term) && gender == null && (paymentFilter == null || paymentFilter == "All"))
         {
-            StatusText.Text = "Enter a name/phone, or choose a filter";
+            StatusText.Text = LocalizationManager.T("Search_EnterTermOrFilter");
             return;
         }
 
@@ -104,9 +107,9 @@ public partial class PatientSearchWindow : Window
                 bool owesMoney = unpaidPatientIds.Contains(p.PatientID);
 
                 // 💳 تصفية النتائج بناءً على الخيار المحدد في فلتر الدفع
-                if (paymentFilter == "Has Unpaid Balance" && !owesMoney)
+                if (paymentFilter == "Unpaid" && !owesMoney)
                     continue;
-                if (paymentFilter == "Fully Paid" && owesMoney)
+                if (paymentFilter == "Paid" && owesMoney)
                     continue;
 
                 Results.Add(new PatientSearchRowViewModel(p, owesMoney));
@@ -114,12 +117,12 @@ public partial class PatientSearchWindow : Window
 
             if (Results.Count == 0)
             {
-                StatusText.Text = "No matching patient found";
+                StatusText.Text = LocalizationManager.T("Search_NoMatchFound");
             }
         }
         catch (Exception ex)
         {
-            StatusText.Text = "Error while searching: " + ex.Message;
+            StatusText.Text = LocalizationManager.T("Search_ErrorWhileSearchingFormat", ex.Message);
         }
     }
 
@@ -150,12 +153,12 @@ public partial class PatientSearchWindow : Window
             }
             else
             {
-                MessageBox.Show($"No outstanding balance or unpaid session found for '{selectedRow.FullName}'.", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(LocalizationManager.T("Main_NoUnpaidSessionFormat", selectedRow.FullName), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error checking payment status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Main_ErrorCheckingPaymentFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -166,7 +169,7 @@ public partial class PatientSearchWindow : Window
         if (ResultsGrid.SelectedItem is not PatientSearchRowViewModel selected)
         {
             StatusText.Foreground = (Brush)FindResource("ErrorBrush");
-            StatusText.Text = "Please select a patient from the list first";
+            StatusText.Text = LocalizationManager.T("Main_SelectPatientFirst");
             return;
         }
 
@@ -189,7 +192,7 @@ public partial class PatientSearchWindow : Window
         catch (Exception ex)
         {
             StatusText.Foreground = (Brush)FindResource("ErrorBrush");
-            StatusText.Text = "Error: " + ex.Message;
+            StatusText.Text = LocalizationManager.T("Main_ErrorPrefixFormat", ex.Message);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.NurseApp;
 
@@ -38,6 +39,33 @@ public partial class LoginWindow : Window
         }
     }
 
+    private void EnglishLangButton_Click(object sender, RoutedEventArgs e) => TrySwitchLanguage(AppLanguage.English);
+
+    private void ArabicLangButton_Click(object sender, RoutedEventArgs e) => TrySwitchLanguage(AppLanguage.Arabic);
+
+    // يحفظ اللغة الجديدة ويطلب تأكيد إعادة التشغيل، لأن التبديل هنا ليس فورياً بتصميم مقصود
+    private void TrySwitchLanguage(AppLanguage newLanguage)
+    {
+        if (newLanguage == LocalizationManager.CurrentLanguage)
+        {
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            LocalizationManager.T("Login_RestartMessage"),
+            LocalizationManager.T("Login_RestartTitle"),
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (confirm != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        LocalizationManager.SaveLanguagePreference(newLanguage);
+        LocalizationManager.RestartApplication();
+    }
+
     private void LoginButton_Click(object sender, RoutedEventArgs e)
     {
         ErrorText.Text = string.Empty;
@@ -47,7 +75,7 @@ public partial class LoginWindow : Window
 
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
-            ErrorText.Text = "Please enter username and password";
+            ErrorText.Text = LocalizationManager.T("Login_EnterCredentials");
             return;
         }
 
@@ -71,7 +99,7 @@ public partial class LoginWindow : Window
         }
         catch (Exception ex)
         {
-            ErrorText.Text = "Could not connect to the database: " + ex.Message;
+            ErrorText.Text = LocalizationManager.T("Login_ConnectionErrorFormat", ex.Message);
         }
     }
 }

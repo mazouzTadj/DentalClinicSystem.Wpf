@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using DentalClinic.Data.Models;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.NurseApp;
 
@@ -63,10 +64,11 @@ public class QueueRowViewModel : INotifyPropertyChanged
 
     public string StatusText => Status switch
     {
-        VisitStatus.Waiting => "Waiting",
-        VisitStatus.InTreatment => "In Treatment",
-        VisitStatus.Completed => "Completed",
-        VisitStatus.Cancelled => "Cancelled",
+        VisitStatus.Waiting => LocalizationManager.T("Main_StatusWaiting"),
+        VisitStatus.InTreatment => LocalizationManager.T("Main_StatusInTreatment"),
+        VisitStatus.Completed => LocalizationManager.T("Main_StatusCompleted"),
+        VisitStatus.Cancelled => LocalizationManager.T("Main_StatusCancelled"),
+        VisitStatus.Scheduled => LocalizationManager.T("Main_StatusScheduled"),
         _ => Status.ToString()
     };
 

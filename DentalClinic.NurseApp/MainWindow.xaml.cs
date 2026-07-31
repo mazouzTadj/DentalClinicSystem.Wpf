@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
 using DentalClinic.Features; // الشاشات المشتركة (PatientFileWindow, FinancialDashboardWindow, BackupWindow, ...)
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.NurseApp;
 
@@ -28,15 +29,15 @@ public partial class MainWindow : Window
     {
         _currentUser = currentUser;
         InitializeComponent();
-        Title = $"Reception App - Dental Clinic | Welcome {_currentUser.FullName}";
+        Title = LocalizationManager.T("App_NurseTitleWithNameFormat", _currentUser.FullName);
 
         // كل زر يظهر فقط إذا كان المستخدم الحالي يملك الصلاحية المقابلة له - مستقلة تماماً عن الدور (Doctor/Nurse)
-        OpenPatientFileButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.OpenPatientFile));
-        RegisterPatientButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.RegisterPatients));
-        CollectPaymentTopButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.CollectPayments));
-        ManageTreatmentsButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.ManageTreatments));
-        BackupButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.AccessBackup));
-        ManageUsersButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.ManageUsers));
+        OpenPatientFileButton.Visibility    = ToVisibility(_currentUser.HasPermission(UserPermission.OpenPatientFile));
+        RegisterPatientButton.Visibility    = ToVisibility(_currentUser.HasPermission(UserPermission.RegisterPatients));
+        CollectPaymentTopButton.Visibility  = ToVisibility(_currentUser.HasPermission(UserPermission.CollectPayments));
+        ManageTreatmentsButton.Visibility   = ToVisibility(_currentUser.HasPermission(UserPermission.ManageTreatments));
+        BackupButton.Visibility             = ToVisibility(_currentUser.HasPermission(UserPermission.AccessBackup));
+        ManageUsersButton.Visibility        = ToVisibility(_currentUser.HasPermission(UserPermission.ManageUsers));
         FinancialDashboardButton.Visibility = ToVisibility(_currentUser.HasPermission(UserPermission.AccessFinance));
 
         QueueGrid.ItemsSource = QueueRows;
@@ -99,11 +100,11 @@ public partial class MainWindow : Window
                 }
             }
 
-            CountText.Text = $"Patients today: {queue.Count}";
+            CountText.Text = LocalizationManager.T("Main_PatientsTodayFormat", queue.Count);
         }
         catch (Exception ex)
         {
-            CountText.Text = "Could not load the queue: " + ex.Message;
+            CountText.Text = LocalizationManager.T("Main_CouldNotLoadQueueFormat", ex.Message);
         }
     }
 
@@ -187,14 +188,14 @@ public partial class MainWindow : Window
         // لن يُفتح الملف الطبي إلا لمن يملك صلاحية OpenPatientFile فعلاً.
         if (!_currentUser.HasPermission(UserPermission.OpenPatientFile))
         {
-            MessageBox.Show("You don't have permission to open patient files.", "Access Denied",
+            MessageBox.Show(LocalizationManager.T("Main_NoPermissionOpenFile"), LocalizationManager.T("Common_AccessDenied"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         if (QueueGrid.SelectedItem is not QueueRowViewModel selected)
         {
-            MessageBox.Show("Please select a patient from the list first", "Notice",
+            MessageBox.Show(LocalizationManager.T("Main_SelectPatientFirst"), LocalizationManager.T("Common_Notice"),
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -213,7 +214,7 @@ public partial class MainWindow : Window
         // فحص دفاعي: يغطي زر الشريط العلوي وزر كل صف في القائمة معاً، حتى لو ظهر أحدهما بطريقة غير متوقعة
         if (!_currentUser.HasPermission(UserPermission.CollectPayments))
         {
-            MessageBox.Show("You don't have permission to collect payments.", "Access Denied",
+            MessageBox.Show(LocalizationManager.T("Main_NoPermissionCollectPayment"), LocalizationManager.T("Common_AccessDenied"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -231,7 +232,7 @@ public partial class MainWindow : Window
 
         if (selectedRow == null)
         {
-            MessageBox.Show("Please select a patient from the queue first.", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(LocalizationManager.T("Main_SelectPatientFromQueueFirst"), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
@@ -253,12 +254,12 @@ public partial class MainWindow : Window
             }
             else
             {
-                MessageBox.Show($"No outstanding balance or unpaid session found for '{selectedRow.PatientFullName}'.", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(LocalizationManager.T("Main_NoUnpaidSessionFormat", selectedRow.PatientFullName), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error checking payment status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Main_ErrorCheckingPaymentFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -281,12 +282,12 @@ public partial class MainWindow : Window
             }
             else
             {
-                MessageBox.Show("Could not check in this appointment.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LocalizationManager.T("Main_CheckInFailed"), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Main_ErrorPrefixFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -298,8 +299,8 @@ public partial class MainWindow : Window
         }
 
         var confirm = MessageBox.Show(
-            $"Are you sure you want to cancel this visit for \"{row.PatientFullName}\"?",
-            "Confirm Cancellation",
+            LocalizationManager.T("Main_ConfirmCancelMessageFormat", row.PatientFullName),
+            LocalizationManager.T("Main_ConfirmCancelTitle"),
             MessageBoxButton.YesNo,
             MessageBoxImage.Warning);
 
@@ -317,20 +318,20 @@ public partial class MainWindow : Window
             }
             else
             {
-                MessageBox.Show("Could not cancel the visit", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LocalizationManager.T("Main_CouldNotCancelVisit"), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Main_ErrorPrefixFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
         var confirm = MessageBox.Show(
-            "Are you sure you want to log out?",
-            "Confirm Logout",
+            LocalizationManager.T("Main_ConfirmLogoutMessage"),
+            LocalizationManager.T("Main_ConfirmLogoutTitle"),
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -27,11 +28,12 @@ public partial class UserEditWindow : Window
         {
             // وضع الإضافة: لا داعي لخيار تفعيل/تعطيل الحساب، فهو نشط دائماً عند الإنشاء
             ActivePanel.Visibility = Visibility.Collapsed;
+            TitleText.Text = LocalizationManager.T("UserEdit_TitleAdd");
         }
         else
         {
-            TitleText.Text = "Edit User";
-            PasswordLabel.Text = "New Password (leave blank to keep current)";
+            TitleText.Text = LocalizationManager.T("UserEdit_TitleEdit");
+            PasswordLabel.Text = LocalizationManager.T("UserEdit_PasswordKeepCurrent");
 
             FullNameBox.Text = _existingUser.FullName;
             UsernameBox.Text = _existingUser.Username;
@@ -46,9 +48,12 @@ public partial class UserEditWindow : Window
             PermPaymentsCheck.IsChecked     = _existingUser.HasPermission(UserPermission.CollectPayments);
             PermRegisterPatientsCheck.IsChecked = _existingUser.HasPermission(UserPermission.RegisterPatients);
 
+            // نطابق عبر Tag (القيمة الثابتة Doctor/Nurse) بدل Content (النص المترجَم المعروض)
+            // هذا يصحح خللاً سابقاً كان يمنع تحديد الدور الصحيح تلقائياً عند فتح شاشة التعديل
+            var targetRoleTag = _existingUser.Role == UserRole.Doctor ? "Doctor" : "Nurse";
             foreach (ComboBoxItem item in RoleBox.Items)
             {
-                if ((string)item.Content == (_existingUser.Role == UserRole.Doctor ? "Doctor" : "Nurse"))
+                if ((string?)item.Tag == targetRoleTag)
                 {
                     item.IsSelected = true;
                 }
@@ -97,17 +102,19 @@ public partial class UserEditWindow : Window
 
         if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(username))
         {
-            ErrorText.Text = "Full name and username are required";
+            ErrorText.Text = LocalizationManager.T("UserEdit_FullNameUsernameRequired");
             return;
         }
 
         if (_existingUser == null && string.IsNullOrWhiteSpace(password))
         {
-            ErrorText.Text = "Password is required for a new account";
+            ErrorText.Text = LocalizationManager.T("UserEdit_PasswordRequiredForNew");
             return;
         }
 
-        var role = (RoleBox.SelectedItem as ComboBoxItem)?.Content?.ToString() == "Nurse"
+        // نقرأ Tag (القيمة الثابتة Doctor/Nurse) بدل Content (النص المترجَم) حتى يعمل الاختيار
+        // بشكل صحيح بغض النظر عن لغة الواجهة الحالية (يصحح خللاً سابقاً كان يحفظ الجميع كـ Doctor دائماً)
+        var role = (RoleBox.SelectedItem as ComboBoxItem)?.Tag?.ToString() == "Nurse"
             ? UserRole.Nurse
             : UserRole.Doctor;
 
@@ -120,7 +127,7 @@ public partial class UserEditWindow : Window
             && _existingUser.HasPermission(UserPermission.ManageUsers)
             && !selectedPermissions.HasFlag(UserPermission.ManageUsers))
         {
-            ErrorText.Text = "You cannot remove your own 'Manage Users' permission while logged in";
+            ErrorText.Text = LocalizationManager.T("UserEdit_CannotRemoveOwnManageUsers");
             return;
         }
 
@@ -132,7 +139,7 @@ public partial class UserEditWindow : Window
             var remainingAdmins = _userRepo.CountActiveSuperAdmins(excludeUserId: _existingUser.UserID);
             if (remainingAdmins == 0)
             {
-                ErrorText.Text = "You cannot remove the last remaining Super Admin in the system";
+                ErrorText.Text = LocalizationManager.T("UserEdit_CannotRemoveLastAdmin");
                 return;
             }
         }
@@ -142,7 +149,7 @@ public partial class UserEditWindow : Window
             var excludeId = _existingUser?.UserID;
             if (_userRepo.UsernameExists(username, excludeId))
             {
-                ErrorText.Text = "This username is already taken";
+                ErrorText.Text = LocalizationManager.T("UserEdit_UsernameTaken");
                 return;
             }
 
@@ -188,7 +195,7 @@ public partial class UserEditWindow : Window
         }
         catch (Exception ex)
         {
-            ErrorText.Text = "An error occurred while saving: " + ex.Message;
+            ErrorText.Text = LocalizationManager.T("UserEdit_SaveErrorFormat", ex.Message);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features
 {
@@ -61,7 +62,7 @@ namespace DentalClinic.Features
         {
             if (!DpAppointmentDate.SelectedDate.HasValue)
             {
-                MessageBox.Show("Please select an appointment date.", "Notice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(LocalizationManager.T("Sched_SelectDateMsg"), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -75,13 +76,13 @@ namespace DentalClinic.Features
 
             if (success)
             {
-                MessageBox.Show("Appointment scheduled successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(LocalizationManager.T("Sched_SuccessMsg"), LocalizationManager.T("Common_Success"), MessageBoxButton.OK, MessageBoxImage.Information);
                 DialogResult = true;
                 Close();
             }
             else
             {
-                MessageBox.Show("An error occurred while saving the appointment.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LocalizationManager.T("Sched_SaveErrorMsg"), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

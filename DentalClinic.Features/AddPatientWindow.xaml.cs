@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -43,7 +44,7 @@ public partial class AddPatientWindow : Window
 
         if (string.IsNullOrWhiteSpace(fullName))
         {
-            ErrorText.Text = "Full name is required";
+            ErrorText.Text = LocalizationManager.T("AddPatient_FullNameRequired");
             return;
         }
 
@@ -52,13 +53,15 @@ public partial class AddPatientWindow : Window
         {
             if (!int.TryParse(AgeBox.Text.Trim(), out int parsedAge) || parsedAge < 0 || parsedAge > 130)
             {
-                ErrorText.Text = "Invalid age";
+                ErrorText.Text = LocalizationManager.T("AddPatient_InvalidAge");
                 return;
             }
             age = parsedAge;
         }
 
-        string? gender = (GenderBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
+        // نقرأ Tag (القيمة الثابتة: Male/Female) بدل Content (النص المترجَم) حتى تبقى القيمة المخزَّنة
+        // في قاعدة البيانات متسقة بغض النظر عن لغة الواجهة المستخدَمة عند التسجيل
+        string? gender = (GenderBox.SelectedItem as ComboBoxItem)?.Tag?.ToString();
 
         try
         {
@@ -73,9 +76,8 @@ public partial class AddPatientWindow : Window
             if (existing != null)
             {
                 var confirm = MessageBox.Show(
-                    $"A patient is already registered with the same name and phone number:\n{existing.FullName} - {existing.PhoneNumber}\n\n" +
-                    "Do you want to add them to the queue instead of creating a new record?",
-                    "Possible Duplicate Patient",
+                    LocalizationManager.T("AddPatient_DuplicateFoundFormat", existing.FullName, existing.PhoneNumber),
+                    LocalizationManager.T("AddPatient_DuplicateTitle"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
@@ -114,7 +116,7 @@ public partial class AddPatientWindow : Window
         }
         catch (Exception ex)
         {
-            ErrorText.Text = "An error occurred while saving: " + ex.Message;
+            ErrorText.Text = LocalizationManager.T("AddPatient_SaveErrorFormat", ex.Message);
         }
     }
 }

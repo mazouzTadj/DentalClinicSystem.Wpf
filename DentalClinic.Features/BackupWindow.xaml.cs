@@ -2,6 +2,7 @@ using System.Configuration;
 using System.Windows;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -23,10 +24,13 @@ public partial class BackupWindow : Window
         _retainDays = int.TryParse(ConfigurationManager.AppSettings["BackupRetainDays"], out var d) ? d : 14;
 
         FolderPathText.Text = string.IsNullOrWhiteSpace(_folderPath)
-            ? "Not configured - add BackupFolderPath to App.config"
+            ? LocalizationManager.T("Backup_NotConfigured")
             : _folderPath;
 
-        RetentionText.Text = $"Backups older than {_retainDays} days are deleted automatically.";
+        RetentionText.Text = LocalizationManager.T("Backup_RetentionFormat", _retainDays);
+
+        // إصلاح: الزر لم يكن يحمل أي نص عند فتح النافذة أول مرة (كان فارغاً حتى أول نقرة)
+        BackupNowButton.Content = LocalizationManager.T("Backup_NowButton");
 
         Loaded += (s, e) => RefreshLastBackupText();
     }
@@ -38,11 +42,11 @@ public partial class BackupWindow : Window
             var last = _backupRepo.GetLastBackupDate();
             LastBackupText.Text = last.HasValue
                 ? last.Value.ToString("yyyy-MM-dd HH:mm")
-                : "No backup found yet";
+                : LocalizationManager.T("Backup_NoBackupYet");
         }
         catch (Exception ex)
         {
-            LastBackupText.Text = "Could not read backup history: " + ex.Message;
+            LastBackupText.Text = LocalizationManager.T("Backup_ReadHistoryErrorFormat", ex.Message);
         }
     }
 
@@ -59,12 +63,12 @@ public partial class BackupWindow : Window
 
         if (string.IsNullOrWhiteSpace(_folderPath))
         {
-            StatusText.Text = "Backup folder is not configured. Add BackupFolderPath to App.config first.";
+            StatusText.Text = LocalizationManager.T("Backup_FolderNotConfigured");
             return;
         }
 
         BackupNowButton.IsEnabled = false;
-        BackupNowButton.Content = "Backing up...";
+        BackupNowButton.Content = LocalizationManager.T("Backup_InProgress");
 
         try
         {
@@ -74,7 +78,7 @@ public partial class BackupWindow : Window
             {
                 _backupRepo.CleanupOldBackups(_folderPath, _retainDays);
                 StatusText.Foreground = System.Windows.Media.Brushes.SeaGreen;
-                StatusText.Text = "Backup completed successfully.";
+                StatusText.Text = LocalizationManager.T("Backup_Success");
                 RefreshLastBackupText();
             }
             else
@@ -86,7 +90,7 @@ public partial class BackupWindow : Window
         finally
         {
             BackupNowButton.IsEnabled = true;
-            BackupNowButton.Content = "Backup Now";
+            BackupNowButton.Content = LocalizationManager.T("Backup_NowButton");
         }
     }
 }

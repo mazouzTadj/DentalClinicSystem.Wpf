@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Windows;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -44,11 +45,11 @@ public partial class UserManagementWindow : Window
             {
                 Users.Add(new UserRowViewModel(u));
             }
-            StatusText.Text = $"{users.Count} user(s)";
+            StatusText.Text = LocalizationManager.T("UserMgmt_CountFormat", users.Count);
         }
         catch (Exception ex)
         {
-            StatusText.Text = "Could not load users: " + ex.Message;
+            StatusText.Text = LocalizationManager.T("UserMgmt_LoadErrorFormat", ex.Message);
         }
     }
 
@@ -69,7 +70,7 @@ public partial class UserManagementWindow : Window
     {
         if (UsersGrid.SelectedItem is not UserRowViewModel selected)
         {
-            MessageBox.Show("Please select a user from the list first", "Notice",
+            MessageBox.Show(LocalizationManager.T("UserMgmt_SelectUserFirst"), LocalizationManager.T("Common_Notice"),
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -85,7 +86,7 @@ public partial class UserManagementWindow : Window
     {
         if (UsersGrid.SelectedItem is not UserRowViewModel selected)
         {
-            MessageBox.Show("Please select a user from the list first", "Notice",
+            MessageBox.Show(LocalizationManager.T("UserMgmt_SelectUserFirst"), LocalizationManager.T("Common_Notice"),
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -93,7 +94,7 @@ public partial class UserManagementWindow : Window
         // يمنع المدير من تعطيل حسابه الخاص أثناء استخدامه (لتفادي إقفال وصوله للنظام بالخطأ)
         if (selected.UserID == _currentUser.UserID)
         {
-            MessageBox.Show("You cannot deactivate your own account while logged in", "Not Allowed",
+            MessageBox.Show(LocalizationManager.T("UserMgmt_CannotDeactivateSelf"), LocalizationManager.T("UserMgmt_NotAllowedTitle"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -103,17 +104,17 @@ public partial class UserManagementWindow : Window
             && selected.User.HasPermission(UserPermission.ManageUsers)
             && _userRepo.CountActiveSuperAdmins(excludeUserId: selected.UserID) == 0)
         {
-            MessageBox.Show("You cannot deactivate the last remaining Super Admin in the system", "Not Allowed",
+            MessageBox.Show(LocalizationManager.T("UserMgmt_CannotDeactivateLastAdmin"), LocalizationManager.T("UserMgmt_NotAllowedTitle"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         var newState = !selected.User.IsActive;
-        var actionWord = newState ? "activate" : "deactivate";
+        var actionWord = LocalizationManager.T(newState ? "UserMgmt_ConfirmActivate" : "UserMgmt_ConfirmDeactivate");
 
         var confirm = MessageBox.Show(
-            $"Are you sure you want to {actionWord} the account of \"{selected.FullName}\"?",
-            "Confirm",
+            LocalizationManager.T("UserMgmt_ConfirmToggleFormat", actionWord, selected.FullName),
+            LocalizationManager.T("Common_Confirm"),
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 
@@ -126,7 +127,7 @@ public partial class UserManagementWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Failed to update account status: " + ex.Message, "Error",
+            MessageBox.Show(LocalizationManager.T("UserMgmt_UpdateStatusErrorFormat", ex.Message), LocalizationManager.T("Common_Error"),
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

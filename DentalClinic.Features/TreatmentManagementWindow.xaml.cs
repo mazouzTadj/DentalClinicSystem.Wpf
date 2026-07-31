@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using Microsoft.Data.SqlClient;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -66,7 +67,7 @@ public partial class TreatmentManagementWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error initializing treatments table: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Treat_InitErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -90,7 +91,7 @@ public partial class TreatmentManagementWindow : Window
         }
         catch (Exception ex)
         {
-            ErrorText.Text = "Failed to load treatments: " + ex.Message;
+            ErrorText.Text = LocalizationManager.T("Treat_LoadErrorFormat", ex.Message);
         }
     }
 
@@ -101,14 +102,14 @@ public partial class TreatmentManagementWindow : Window
         var name = TxtTreatmentName.Text.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            ErrorText.Text = "Please enter treatment name";
+            ErrorText.Text = LocalizationManager.T("Treat_NameRequired");
             return;
         }
 
         decimal price = 0;
         if (!string.IsNullOrWhiteSpace(TxtPrice.Text) && (!decimal.TryParse(TxtPrice.Text.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out price) || price < 0))
         {
-            ErrorText.Text = "Invalid price format";
+            ErrorText.Text = LocalizationManager.T("Treat_InvalidPrice");
             return;
         }
 
@@ -137,7 +138,7 @@ public partial class TreatmentManagementWindow : Window
         }
         catch (Exception ex)
         {
-            ErrorText.Text = "Error saving treatment: " + ex.Message;
+            ErrorText.Text = LocalizationManager.T("Treat_SaveErrorFormat", ex.Message);
         }
     }
 
@@ -149,7 +150,7 @@ public partial class TreatmentManagementWindow : Window
             TxtTreatmentName.Text = item.TreatmentName;
             TxtPrice.Text = item.Price.ToString("0.##");
 
-            BtnSave.Content = "Update Treatment";
+            BtnSave.Content = LocalizationManager.T("Treat_UpdateButton");
             BtnCancelEdit.Visibility = Visibility.Visible;
         }
     }
@@ -158,7 +159,7 @@ public partial class TreatmentManagementWindow : Window
     {
         if (sender is Button btn && btn.Tag is TreatmentGridRowModel item)
         {
-            var result = MessageBox.Show($"Are you sure you want to delete '{item.TreatmentName}'?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show(LocalizationManager.T("Treat_ConfirmDeleteFormat", item.TreatmentName), LocalizationManager.T("Treat_ConfirmDeleteTitle"), MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
                 try
@@ -172,7 +173,7 @@ public partial class TreatmentManagementWindow : Window
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error deleting: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(LocalizationManager.T("Treat_DeleteErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -188,7 +189,7 @@ public partial class TreatmentManagementWindow : Window
         _editingTreatmentId = null;
         TxtTreatmentName.Text = string.Empty;
         TxtPrice.Text = string.Empty;
-        BtnSave.Content = "+ Add Treatment";
+        BtnSave.Content = LocalizationManager.T("Treat_AddButton");
         BtnCancelEdit.Visibility = Visibility.Collapsed;
         ErrorText.Text = string.Empty;
     }

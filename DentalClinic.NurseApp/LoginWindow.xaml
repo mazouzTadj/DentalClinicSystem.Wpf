@@ -1,7 +1,7 @@
 <Window x:Class="DentalClinic.NurseApp.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Login" Height="540" Width="420"
+        Title="{DynamicResource Login_TitleNurse}" Height="560" Width="420"
         Icon="pack://application:,,,/DentalClinic.UI;component/Assets/logo_icon.png"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
@@ -17,8 +17,20 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- شريط عنوان مخصّص: قابل للسحب، وزر إغلاق فقط -->
+            <!-- شريط عنوان مخصّص: اختيار اللغة على جهة، زر إغلاق على الجهة الأخرى -->
             <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0"
+                            FlowDirection="LeftToRight">
+                    <Button x:Name="EnglishLangButton" Content="{DynamicResource Login_English}" FontSize="12"
+                            Background="Transparent" BorderThickness="0" Cursor="Hand"
+                            Foreground="{StaticResource TextSecondaryBrush}" Padding="6,2"
+                            Click="EnglishLangButton_Click"/>
+                    <TextBlock Text="|" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                    <Button x:Name="ArabicLangButton" Content="{DynamicResource Login_Arabic}" FontSize="12"
+                            Background="Transparent" BorderThickness="0" Cursor="Hand"
+                            Foreground="{StaticResource TextSecondaryBrush}" Padding="6,2"
+                            Click="ArabicLangButton_Click"/>
+                </StackPanel>
                 <Button Content="&#10005;" Style="{StaticResource WindowControlButtonStyle}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0,0,10,0" Click="CloseButton_Click"/>
@@ -33,16 +45,16 @@
                            Width="66" Height="66" Stretch="Uniform"/>
                 </Border>
 
-                <TextBlock Text="Reception Login" FontSize="22" FontWeight="Bold"
+                <TextBlock Text="{DynamicResource Login_TitleNurse}" FontSize="22" FontWeight="Bold"
                            Foreground="{StaticResource AccentBrush}"
                            HorizontalAlignment="Center" Margin="0,0,0,28"/>
 
-                <TextBlock Text="Username" Style="{StaticResource FieldLabelStyle}"/>
+                <TextBlock Text="{DynamicResource Login_Username}" Style="{StaticResource FieldLabelStyle}"/>
                 <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,16">
                     <TextBox x:Name="UsernameBox" Style="{StaticResource PlainTextBoxStyle}"/>
                 </Border>
 
-                <TextBlock Text="Password" Style="{StaticResource FieldLabelStyle}"/>
+                <TextBlock Text="{DynamicResource Login_Password}" Style="{StaticResource FieldLabelStyle}"/>
                 <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,6">
                     <PasswordBox x:Name="PasswordBox" Style="{StaticResource PlainPasswordBoxStyle}"
                                  KeyDown="PasswordBox_KeyDown"/>
@@ -50,7 +62,7 @@
 
                 <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}"/>
 
-                <Button Content="Login" Height="46" Margin="0,16,0,0"
+                <Button Content="{DynamicResource Login_LoginButton}" Height="46" Margin="0,16,0,0"
                         Style="{StaticResource PrimaryButtonStyle}"
                         Click="LoginButton_Click" IsDefault="True"/>
             </StackPanel>

@@ -1,0 +1,390 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- اتجاه الواجهة: من اليمين إلى اليسار للعربية -->
+    <FlowDirection x:Key="AppFlowDirection">RightToLeft</FlowDirection>
+
+    <!-- ===== عام / مشترك ===== -->
+    <sys:String x:Key="App_DoctorTitle">تطبيق الطبيب - عيادة الأسنان</sys:String>
+    <sys:String x:Key="App_NurseTitle">تطبيق الاستقبال - عيادة الأسنان</sys:String>
+    <sys:String x:Key="App_DoctorTitleWithNameFormat">تطبيق الطبيب - عيادة الأسنان | د. {0}</sys:String>
+    <sys:String x:Key="App_NurseTitleWithNameFormat">تطبيق الاستقبال - عيادة الأسنان | مرحباً {0}</sys:String>
+    <sys:String x:Key="Common_Welcome">مرحباً</sys:String>
+    <sys:String x:Key="Common_Save">حفظ</sys:String>
+    <sys:String x:Key="Common_Cancel">إلغاء</sys:String>
+    <sys:String x:Key="Common_OK">حسناً</sys:String>
+    <sys:String x:Key="Common_Notice">ملاحظة</sys:String>
+    <sys:String x:Key="Common_Error">خطأ</sys:String>
+    <sys:String x:Key="Common_AccessDenied">صلاحية مرفوضة</sys:String>
+    <sys:String x:Key="Common_Confirm">تأكيد</sys:String>
+    <sys:String x:Key="Common_Close">إغلاق</sys:String>
+    <sys:String x:Key="Common_Success">تم بنجاح</sys:String>
+
+    <!-- ===== شاشة تسجيل الدخول ===== -->
+    <sys:String x:Key="Login_TitleDoctor">تسجيل دخول الطبيب</sys:String>
+    <sys:String x:Key="Login_TitleNurse">تسجيل دخول الاستقبال</sys:String>
+    <sys:String x:Key="Login_Username">اسم المستخدم</sys:String>
+    <sys:String x:Key="Login_Password">كلمة المرور</sys:String>
+    <sys:String x:Key="Login_LoginButton">تسجيل الدخول</sys:String>
+    <sys:String x:Key="Login_EnterCredentials">الرجاء إدخال اسم المستخدم وكلمة المرور</sys:String>
+    <sys:String x:Key="Login_ConnectionErrorFormat">تعذّر الاتصال بقاعدة البيانات: {0}</sys:String>
+    <sys:String x:Key="Login_ChooseLanguage">اللغة</sys:String>
+    <sys:String x:Key="Login_English">English</sys:String>
+    <sys:String x:Key="Login_Arabic">العربية</sys:String>
+    <sys:String x:Key="Login_RestartTitle">تغيير اللغة</sys:String>
+    <sys:String x:Key="Login_RestartMessage">يحتاج التطبيق لإعادة التشغيل لتطبيق اللغة الجديدة. هل تريد إعادة التشغيل الآن؟</sys:String>
+
+    <!-- ===== النافذة الرئيسية (مشتركة بين تطبيقي الطبيب والاستقبال) ===== -->
+    <sys:String x:Key="Main_RegisterPatient">+ تسجيل مريض جديد</sys:String>
+    <sys:String x:Key="Main_OpenPatientFile">فتح ملف المريض</sys:String>
+    <sys:String x:Key="Main_Search">بحث</sys:String>
+    <sys:String x:Key="Main_SearchPatient">بحث عن مريض</sys:String>
+    <sys:String x:Key="Main_CollectPayment">تحصيل دفعة</sys:String>
+    <sys:String x:Key="Main_Treatments">العلاجات</sys:String>
+    <sys:String x:Key="Main_Backup">نسخ احتياطي</sys:String>
+    <sys:String x:Key="Main_ManageUsers">إدارة المستخدمين</sys:String>
+    <sys:String x:Key="Main_Finances">الفاينانس</sys:String>
+    <sys:String x:Key="Main_Refresh">تحديث</sys:String>
+    <sys:String x:Key="Main_Logout">تسجيل الخروج</sys:String>
+
+    <sys:String x:Key="Main_ColPatientName">اسم المريض</sys:String>
+    <sys:String x:Key="Main_ColCheckInTime">وقت الوصول</sys:String>
+    <sys:String x:Key="Main_ColStatus">الحالة</sys:String>
+    <sys:String x:Key="Main_ColNextAppointment">الموعد القادم</sys:String>
+    <sys:String x:Key="Main_ColActions">الإجراءات</sys:String>
+
+    <sys:String x:Key="Main_PatientsTodayFormat">عدد مرضى اليوم: {0}</sys:String>
+    <sys:String x:Key="Main_CouldNotLoadQueueFormat">تعذّر تحميل قائمة الانتظار: {0}</sys:String>
+
+    <sys:String x:Key="Main_StatusWaiting">في الانتظار</sys:String>
+    <sys:String x:Key="Main_StatusInTreatment">قيد المعالجة</sys:String>
+    <sys:String x:Key="Main_StatusCompleted">مكتملة</sys:String>
+    <sys:String x:Key="Main_StatusCancelled">ملغاة</sys:String>
+    <sys:String x:Key="Main_StatusScheduled">موعد محجوز</sys:String>
+
+    <sys:String x:Key="Main_Cancel">إلغاء</sys:String>
+    <sys:String x:Key="Main_CheckIn">تسجيل حضور</sys:String>
+    <sys:String x:Key="Main_Pay">دفع</sys:String>
+    <sys:String x:Key="Main_Paid">مدفوع ✓</sys:String>
+    <sys:String x:Key="Main_AllSessionsPaidTooltip">كل الجلسات مدفوعة بالكامل</sys:String>
+
+    <sys:String x:Key="Main_ConfirmCancelTitle">تأكيد الإلغاء</sys:String>
+    <sys:String x:Key="Main_ConfirmCancelMessageFormat">هل أنت متأكد من إلغاء هذه الزيارة لـ "{0}"؟</sys:String>
+    <sys:String x:Key="Main_CouldNotCancelVisit">تعذّر إلغاء الزيارة</sys:String>
+    <sys:String x:Key="Main_ErrorPrefixFormat">خطأ: {0}</sys:String>
+    <sys:String x:Key="Main_CheckInFailed">تعذّر تسجيل حضور هذا الموعد.</sys:String>
+    <sys:String x:Key="Main_SelectPatientFirst">الرجاء اختيار مريض من القائمة أولاً</sys:String>
+    <sys:String x:Key="Main_NoPermissionOpenFile">ليست لديك صلاحية فتح ملفات المرضى.</sys:String>
+    <sys:String x:Key="Main_NoPermissionCollectPayment">ليست لديك صلاحية تحصيل الدفعات.</sys:String>
+    <sys:String x:Key="Main_NoUnpaidSessionFormat">لا توجد مستحقات أو جلسة غير مدفوعة لـ '{0}'.</sys:String>
+    <sys:String x:Key="Main_ErrorCheckingPaymentFormat">خطأ أثناء التحقق من حالة الدفع: {0}</sys:String>
+    <sys:String x:Key="Main_ConfirmLogoutTitle">تأكيد تسجيل الخروج</sys:String>
+    <sys:String x:Key="Main_ConfirmLogoutMessage">هل أنت متأكد من تسجيل الخروج؟</sys:String>
+    <sys:String x:Key="Main_SelectPatientFromQueueFirst">الرجاء اختيار مريض من القائمة أولاً.</sys:String>
+
+    <!-- ===== شاشة تسجيل مريض جديد ===== -->
+    <sys:String x:Key="AddPatient_Title">تسجيل مريض جديد</sys:String>
+    <sys:String x:Key="AddPatient_FullName">الاسم الكامل *</sys:String>
+    <sys:String x:Key="AddPatient_Age">العمر</sys:String>
+    <sys:String x:Key="AddPatient_Gender">الجنس</sys:String>
+    <sys:String x:Key="AddPatient_GenderMale">ذكر</sys:String>
+    <sys:String x:Key="AddPatient_GenderFemale">أنثى</sys:String>
+    <sys:String x:Key="AddPatient_Phone">رقم الهاتف</sys:String>
+    <sys:String x:Key="AddPatient_Address">العنوان</sys:String>
+    <sys:String x:Key="AddPatient_Notes">ملاحظات طبية أساسية (حساسية / أمراض مزمنة)</sys:String>
+    <sys:String x:Key="AddPatient_SaveButton">حفظ وإضافة لقائمة الانتظار</sys:String>
+    <sys:String x:Key="AddPatient_FullNameRequired">الاسم الكامل مطلوب</sys:String>
+    <sys:String x:Key="AddPatient_InvalidAge">العمر غير صحيح</sys:String>
+    <sys:String x:Key="AddPatient_DuplicateFoundFormat">يوجد مريض مسجَّل مسبقاً بنفس الاسم ورقم الهاتف:&#10;{0} - {1}&#10;&#10;هل تريد إضافته إلى قائمة الانتظار بدل إنشاء سجل جديد؟</sys:String>
+    <sys:String x:Key="AddPatient_DuplicateTitle">احتمال وجود مريض مكرَّر</sys:String>
+    <sys:String x:Key="AddPatient_SaveErrorFormat">حدث خطأ أثناء الحفظ: {0}</sys:String>
+
+    <!-- ===== شاشة البحث عن مريض ===== -->
+    <sys:String x:Key="Search_TitleBar">البحث عن مريض موجود</sys:String>
+    <sys:String x:Key="Search_ColName">الاسم</sys:String>
+    <sys:String x:Key="Search_ColAge">العمر</sys:String>
+    <sys:String x:Key="Search_ColPhone">الهاتف</sys:String>
+    <sys:String x:Key="Search_ColFile">الملف</sys:String>
+    <sys:String x:Key="Search_ColPayment">الدفع</sys:String>
+    <sys:String x:Key="Search_OpenFileBtn">فتح</sys:String>
+    <sys:String x:Key="Search_GenderAny">أي جنس</sys:String>
+    <sys:String x:Key="Search_PaymentAll">كل حالات الدفع</sys:String>
+    <sys:String x:Key="Search_PaymentUnpaid">لديه رصيد غير مدفوع</sys:String>
+    <sys:String x:Key="Search_PaymentPaid">مدفوع بالكامل</sys:String>
+    <sys:String x:Key="Search_EnterTermOrFilter">أدخل اسماً/رقم هاتف، أو اختر فلتراً</sys:String>
+    <sys:String x:Key="Search_NoMatchFound">لم يُعثر على مريض مطابق</sys:String>
+    <sys:String x:Key="Search_ErrorWhileSearchingFormat">خطأ أثناء البحث: {0}</sys:String>
+    <sys:String x:Key="Search_AddToQueueButton">إضافة لقائمة الانتظار</sys:String>
+
+    <!-- ===== شاشة تحصيل الدفعة ===== -->
+    <sys:String x:Key="Payment_Header">💳 تحصيل الدفعة</sys:String>
+    <sys:String x:Key="Payment_PatientFormat">المريض: {0}</sys:String>
+    <sys:String x:Key="Payment_TotalPrice">التكلفة الإجمالية:</sys:String>
+    <sys:String x:Key="Payment_AlreadyPaid">المدفوع مسبقًا:</sys:String>
+    <sys:String x:Key="Payment_Remaining">الرصيد المتبقي:</sys:String>
+    <sys:String x:Key="Payment_AmountFormat">{0:N0} دج</sys:String>
+    <sys:String x:Key="Payment_AmountLabel">المبلغ المدفوع الآن (دج) *</sys:String>
+    <sys:String x:Key="Payment_NotesLabel">ملاحظات / طريقة الدفع (اختياري)</sys:String>
+    <sys:String x:Key="Payment_ConfirmButton">تأكيد الدفع</sys:String>
+    <sys:String x:Key="Payment_DbInitErrorFormat">خطأ في تهيئة قاعدة البيانات: {0}</sys:String>
+    <sys:String x:Key="Payment_SessionNotFound">تفاصيل الجلسة غير موجودة.</sys:String>
+    <sys:String x:Key="Payment_LoadFailedFormat">تعذّر تحميل تفاصيل الدفع: {0}</sys:String>
+    <sys:String x:Key="Payment_DbNotAvailable">الاتصال بقاعدة البيانات غير متاح.</sys:String>
+    <sys:String x:Key="Payment_InvalidAmount">الرجاء إدخال مبلغ دفع صحيح أكبر من 0.</sys:String>
+    <sys:String x:Key="Payment_ExceedsBalanceFormat">المبلغ المُدخَل يتجاوز الرصيد المتبقي ({0:N0} دج).</sys:String>
+    <sys:String x:Key="Payment_SuccessMessage">تم تسجيل الدفعة بنجاح!</sys:String>
+    <sys:String x:Key="Payment_SuccessTitle">تم بنجاح</sys:String>
+    <sys:String x:Key="Payment_SaveErrorFormat">خطأ أثناء حفظ الدفعة: {0}</sys:String>
+
+    <!-- ===== شاشة إدارة المستخدمين ===== -->
+    <sys:String x:Key="UserMgmt_Title">إدارة المستخدمين</sys:String>
+    <sys:String x:Key="UserMgmt_AddUser">+ إضافة مستخدم</sys:String>
+    <sys:String x:Key="UserMgmt_ToggleActive">تفعيل/تعطيل الحساب</sys:String>
+    <sys:String x:Key="UserMgmt_EditSelected">تعديل المحدَّد</sys:String>
+    <sys:String x:Key="UserMgmt_ColFullName">الاسم الكامل</sys:String>
+    <sys:String x:Key="UserMgmt_ColUsername">اسم المستخدم</sys:String>
+    <sys:String x:Key="UserMgmt_ColRole">الدور</sys:String>
+    <sys:String x:Key="UserMgmt_ColAdmin">مدير</sys:String>
+    <sys:String x:Key="UserMgmt_ColStatus">الحالة</sys:String>
+    <sys:String x:Key="UserMgmt_ColLastLogin">آخر تسجيل دخول</sys:String>
+    <sys:String x:Key="UserMgmt_RoleDoctor">طبيب</sys:String>
+    <sys:String x:Key="UserMgmt_RoleNurse">ممرضة</sys:String>
+    <sys:String x:Key="UserMgmt_AdminYes">مدير</sys:String>
+    <sys:String x:Key="UserMgmt_StatusActive">نشط</sys:String>
+    <sys:String x:Key="UserMgmt_StatusInactive">معطَّل</sys:String>
+    <sys:String x:Key="UserMgmt_Never">أبداً</sys:String>
+    <sys:String x:Key="UserMgmt_CountFormat">{0} مستخدم(ين)</sys:String>
+    <sys:String x:Key="UserMgmt_LoadErrorFormat">تعذّر تحميل المستخدمين: {0}</sys:String>
+    <sys:String x:Key="UserMgmt_SelectUserFirst">الرجاء اختيار مستخدم من القائمة أولاً</sys:String>
+    <sys:String x:Key="UserMgmt_CannotDeactivateSelf">لا يمكنك تعطيل حسابك الخاص أثناء تسجيل الدخول به</sys:String>
+    <sys:String x:Key="UserMgmt_NotAllowedTitle">غير مسموح</sys:String>
+    <sys:String x:Key="UserMgmt_CannotDeactivateLastAdmin">لا يمكنك تعطيل آخر مدير عام متبقٍ في النظام</sys:String>
+    <sys:String x:Key="UserMgmt_ConfirmActivate">تفعيل</sys:String>
+    <sys:String x:Key="UserMgmt_ConfirmDeactivate">تعطيل</sys:String>
+    <sys:String x:Key="UserMgmt_ConfirmToggleFormat">هل أنت متأكد من {0} حساب "{1}"؟</sys:String>
+    <sys:String x:Key="UserMgmt_UpdateStatusErrorFormat">تعذّر تحديث حالة الحساب: {0}</sys:String>
+
+    <sys:String x:Key="Perm_Users">المستخدمون</sys:String>
+    <sys:String x:Key="Perm_Finance">الفاينانس</sys:String>
+    <sys:String x:Key="Perm_PatientFiles">ملفات المرضى</sys:String>
+    <sys:String x:Key="Perm_Backup">النسخ الاحتياطي</sys:String>
+    <sys:String x:Key="Perm_Treatments">العلاجات</sys:String>
+    <sys:String x:Key="Perm_Payments">الدفعات</sys:String>
+    <sys:String x:Key="Perm_RegisterPatients">تسجيل المرضى</sys:String>
+
+    <!-- ===== شاشة إضافة/تعديل مستخدم ===== -->
+    <sys:String x:Key="UserEdit_TitleAdd">إضافة مستخدم</sys:String>
+    <sys:String x:Key="UserEdit_TitleEdit">تعديل مستخدم</sys:String>
+    <sys:String x:Key="UserEdit_FullName">الاسم الكامل *</sys:String>
+    <sys:String x:Key="UserEdit_Username">اسم المستخدم *</sys:String>
+    <sys:String x:Key="UserEdit_PasswordNew">كلمة المرور *</sys:String>
+    <sys:String x:Key="UserEdit_PasswordKeepCurrent">كلمة مرور جديدة (اتركها فارغة للإبقاء على الحالية)</sys:String>
+    <sys:String x:Key="UserEdit_Role">الدور</sys:String>
+    <sys:String x:Key="UserEdit_Phone">الهاتف</sys:String>
+    <sys:String x:Key="UserEdit_PermissionsHeader">الصلاحيات</sys:String>
+    <sys:String x:Key="UserEdit_PermManageUsers">إدارة المستخدمين (مدير عام)</sys:String>
+    <sys:String x:Key="UserEdit_PermFinance">الدخول إلى لوحة الفاينانس</sys:String>
+    <sys:String x:Key="UserEdit_PermPatientFile">فتح ملفات المرضى</sys:String>
+    <sys:String x:Key="UserEdit_PermBackup">الدخول إلى النسخ الاحتياطي</sys:String>
+    <sys:String x:Key="UserEdit_PermTreatments">إدارة العلاجات والأسعار</sys:String>
+    <sys:String x:Key="UserEdit_PermPayments">تحصيل الدفعات</sys:String>
+    <sys:String x:Key="UserEdit_PermRegisterPatients">تسجيل مرضى جدد</sys:String>
+    <sys:String x:Key="UserEdit_AccountActive">الحساب مفعَّل</sys:String>
+    <sys:String x:Key="UserEdit_FullNameUsernameRequired">الاسم الكامل واسم المستخدم مطلوبان</sys:String>
+    <sys:String x:Key="UserEdit_PasswordRequiredForNew">كلمة المرور مطلوبة للحساب الجديد</sys:String>
+    <sys:String x:Key="UserEdit_CannotRemoveOwnManageUsers">لا يمكنك إزالة صلاحية "إدارة المستخدمين" عن حسابك أثناء استخدامه</sys:String>
+    <sys:String x:Key="UserEdit_CannotRemoveLastAdmin">لا يمكنك إزالة آخر مدير عام متبقٍ في النظام</sys:String>
+    <sys:String x:Key="UserEdit_UsernameTaken">اسم المستخدم هذا مستخدَم بالفعل</sys:String>
+    <sys:String x:Key="UserEdit_SaveErrorFormat">حدث خطأ أثناء الحفظ: {0}</sys:String>
+
+    <!-- ===== لوحة الفاينانس ===== -->
+    <sys:String x:Key="Fin_Title">لوحة الفاينانس</sys:String>
+    <sys:String x:Key="Fin_TabIncome">الإيرادات</sys:String>
+    <sys:String x:Key="Fin_TabExpenses">المصاريف</sys:String>
+    <sys:String x:Key="Fin_TabNetProfit">صافي الربح</sys:String>
+    <sys:String x:Key="Fin_Export">📥 تصدير</sys:String>
+    <sys:String x:Key="Fin_ExportTooltip">تصدير التقرير إلى CSV/Excel</sys:String>
+    <sys:String x:Key="Fin_Refresh">🔄 تحديث</sys:String>
+    <sys:String x:Key="Fin_TodayRevenue">إيرادات اليوم</sys:String>
+    <sys:String x:Key="Fin_ThisMonth">هذا الشهر</sys:String>
+    <sys:String x:Key="Fin_ThisYear">هذه السنة</sys:String>
+    <sys:String x:Key="Fin_Outstanding">المستحق</sys:String>
+    <sys:String x:Key="Fin_DailyPatientsChart">المرضى يوميًا (آخر 14 يومًا)</sys:String>
+    <sys:String x:Key="Fin_NoPatientActivity">لا يوجد نشاط للمرضى مسجَّل في هذه الفترة</sys:String>
+    <sys:String x:Key="Fin_TopTreatments">أكثر العلاجات شيوعًا</sys:String>
+    <sys:String x:Key="Fin_NotEnoughData">لا توجد بيانات كافية بعد</sys:String>
+    <sys:String x:Key="Fin_OutstandingBalances">الأرصدة المستحقة</sys:String>
+    <sys:String x:Key="Fin_ColPatient">المريض</sys:String>
+    <sys:String x:Key="Fin_ColPhone">الهاتف</sys:String>
+    <sys:String x:Key="Fin_ColLastVisit">آخر زيارة</sys:String>
+    <sys:String x:Key="Fin_ColAmountOwed">المبلغ المستحق</sys:String>
+    <sys:String x:Key="Fin_TodayExpense">مصاريف اليوم</sys:String>
+    <sys:String x:Key="Fin_MonthExpense">مصاريف هذا الشهر</sys:String>
+    <sys:String x:Key="Fin_YearExpense">مصاريف هذه السنة</sys:String>
+    <sys:String x:Key="Fin_AddExpense">+ إضافة مصروف</sys:String>
+    <sys:String x:Key="Fin_RecentExpenses">المصاريف الأخيرة</sys:String>
+    <sys:String x:Key="Fin_ColDate">التاريخ</sys:String>
+    <sys:String x:Key="Fin_ColCategory">الفئة</sys:String>
+    <sys:String x:Key="Fin_ColDescription">الوصف</sys:String>
+    <sys:String x:Key="Fin_ColAmount">المبلغ</sys:String>
+    <sys:String x:Key="Fin_PeriodOverview">نظرة عامة على الفترة</sys:String>
+    <sys:String x:Key="Fin_TotalRevenue">إجمالي الإيرادات:</sys:String>
+    <sys:String x:Key="Fin_TotalExpenses">إجمالي المصاريف:</sys:String>
+    <sys:String x:Key="Fin_NetProfit">صافي الربح:</sys:String>
+    <sys:String x:Key="Fin_Last7Days">آخر 7 أيام</sys:String>
+    <sys:String x:Key="Fin_Last6Months">آخر 6 أشهر</sys:String>
+    <sys:String x:Key="Fin_Last5Years">آخر 5 سنوات</sys:String>
+    <sys:String x:Key="Fin_From">من:</sys:String>
+    <sys:String x:Key="Fin_To">إلى:</sys:String>
+    <sys:String x:Key="Fin_ApplyFilter">تطبيق الفلتر</sys:String>
+    <sys:String x:Key="Fin_RevenueVsExpenses">مقارنة الإيرادات بالمصاريف</sys:String>
+    <sys:String x:Key="Fin_NoDataForPeriod">لا توجد بيانات إيرادات أو مصاريف للفترة المحددة.</sys:String>
+    <sys:String x:Key="Fin_LoadingData">جارٍ تحميل البيانات المالية...</sys:String>
+    <sys:String x:Key="Fin_LoadErrorFormat">تعذّر تحميل اللوحة: {0}</sys:String>
+    <sys:String x:Key="Fin_DateRangeErrorTitle">خطأ في نطاق التاريخ</sys:String>
+    <sys:String x:Key="Fin_SelectBothDates">الرجاء اختيار تاريخ البداية والنهاية.</sys:String>
+    <sys:String x:Key="Fin_StartAfterEnd">لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية.</sys:String>
+    <sys:String x:Key="Fin_ExportErrorFormat">تعذّر تصدير البيانات: {0}</sys:String>
+    <sys:String x:Key="Fin_ExportErrorTitle">خطأ في التصدير</sys:String>
+    <sys:String x:Key="Fin_ExportDoneTitle">اكتمل التصدير</sys:String>
+    <sys:String x:Key="Fin_ExpensesExportedMsg">تم تصدير المصاريف بنجاح!</sys:String>
+    <sys:String x:Key="Fin_OutstandingExportedMsg">تم تصدير الأرصدة المستحقة بنجاح!</sys:String>
+    <sys:String x:Key="Fin_NetProfitExportedMsg">تم تصدير تقرير صافي الربح بنجاح!</sys:String>
+
+    <!-- ===== شاشة إضافة مصروف ===== -->
+    <sys:String x:Key="Expense_Title">إضافة مصروف</sys:String>
+    <sys:String x:Key="Expense_Header">إضافة مصروف جديد</sys:String>
+    <sys:String x:Key="Expense_Category">الفئة</sys:String>
+    <sys:String x:Key="Expense_Amount">المبلغ</sys:String>
+    <sys:String x:Key="Expense_Description">الوصف</sys:String>
+    <sys:String x:Key="Expense_Date">التاريخ</sys:String>
+    <sys:String x:Key="Expense_CatMedicalSupplies">المستلزمات الطبية والتخدير</sys:String>
+    <sys:String x:Key="Expense_CatLabFees">رسوم المخبر السني</sys:String>
+    <sys:String x:Key="Expense_CatSalaries">الرواتب وأجور الموظفين</sys:String>
+    <sys:String x:Key="Expense_CatUtilities">الفواتير والخدمات</sys:String>
+    <sys:String x:Key="Expense_CatMaintenance">صيانة المعدات</sys:String>
+    <sys:String x:Key="Expense_CatRent">إيجار العيادة</sys:String>
+    <sys:String x:Key="Expense_CatOther">عام / أخرى</sys:String>
+    <sys:String x:Key="Expense_InvalidAmount">الرجاء إدخال مبلغ صحيح.</sys:String>
+    <sys:String x:Key="Expense_ValidationErrorTitle">خطأ في التحقق</sys:String>
+    <sys:String x:Key="Expense_DescriptionRequired">الرجاء إدخال وصف.</sys:String>
+    <sys:String x:Key="Expense_SaveErrorFormat">خطأ أثناء حفظ المصروف: {0}</sys:String>
+
+    <!-- ===== شاشة إدارة العلاجات والأسعار ===== -->
+    <sys:String x:Key="Treat_Title">إدارة العلاجات</sys:String>
+    <sys:String x:Key="Treat_Header">إدارة العلاجات والأسعار</sys:String>
+    <sys:String x:Key="Treat_Name">اسم العلاج *</sys:String>
+    <sys:String x:Key="Treat_Price">السعر (دج / دولار) *</sys:String>
+    <sys:String x:Key="Treat_CancelEdit">إلغاء التعديل</sys:String>
+    <sys:String x:Key="Treat_AddButton">+ إضافة علاج</sys:String>
+    <sys:String x:Key="Treat_UpdateButton">تحديث العلاج</sys:String>
+    <sys:String x:Key="Treat_ColName">اسم العلاج</sys:String>
+    <sys:String x:Key="Treat_ColPrice">السعر</sys:String>
+    <sys:String x:Key="Treat_ColActions">الإجراءات</sys:String>
+    <sys:String x:Key="Treat_EditButton">تعديل</sys:String>
+    <sys:String x:Key="Treat_DeleteButton">حذف</sys:String>
+    <sys:String x:Key="Treat_InitErrorFormat">خطأ في تهيئة جدول العلاجات: {0}</sys:String>
+    <sys:String x:Key="Treat_LoadErrorFormat">تعذّر تحميل العلاجات: {0}</sys:String>
+    <sys:String x:Key="Treat_NameRequired">الرجاء إدخال اسم العلاج</sys:String>
+    <sys:String x:Key="Treat_InvalidPrice">صيغة السعر غير صحيحة</sys:String>
+    <sys:String x:Key="Treat_SaveErrorFormat">خطأ أثناء حفظ العلاج: {0}</sys:String>
+    <sys:String x:Key="Treat_ConfirmDeleteFormat">هل أنت متأكد من حذف '{0}'؟</sys:String>
+    <sys:String x:Key="Treat_ConfirmDeleteTitle">تأكيد الحذف</sys:String>
+    <sys:String x:Key="Treat_DeleteErrorFormat">خطأ أثناء الحذف: {0}</sys:String>
+
+    <!-- ===== شاشة الوصفة الطبية ===== -->
+    <sys:String x:Key="Rx_Title">الوصفة الطبية</sys:String>
+    <sys:String x:Key="Rx_PatientHeaderFormat">وصفة طبية للمريض: {0}</sys:String>
+    <sys:String x:Key="Rx_QuickAddLabel">إضافة من القائمة السريعة</sys:String>
+    <sys:String x:Key="Rx_AddButton">+ إضافة</sys:String>
+    <sys:String x:Key="Rx_LinesLabel">بنود الوصفة الطبية</sys:String>
+    <sys:String x:Key="Rx_AddCustomLine">+ إضافة سطر مخصص</sys:String>
+    <sys:String x:Key="Rx_NotesLabel">تعليمات عامة / ملاحظات (اختياري)</sys:String>
+    <sys:String x:Key="Rx_GenerateButton">إنشاء وطباعة PDF</sys:String>
+    <sys:String x:Key="Rx_SelectMedicationFirst">الرجاء اختيار دواء من القائمة أولاً</sys:String>
+    <sys:String x:Key="Rx_AddAtLeastOne">أضف دواءً واحداً على الأقل قبل إنشاء الوصفة</sys:String>
+    <sys:String x:Key="Rx_SavedSuccessMessage">تم حفظ الوصفة بنجاح. هل تريد فتحها الآن للطباعة؟</sys:String>
+    <sys:String x:Key="Rx_ExportCompleteTitle">اكتمل التصدير</sys:String>
+    <sys:String x:Key="Rx_GenerateErrorFormat">تعذّر إنشاء الوصفة: {0}</sys:String>
+
+    <!-- ===== شاشة حجز موعد ===== -->
+    <sys:String x:Key="Sched_Title">حجز موعد</sys:String>
+    <sys:String x:Key="Sched_HeaderNewVisit">حجز زيارة جديدة</sys:String>
+    <sys:String x:Key="Sched_DateLabel">تاريخ الموعد *</sys:String>
+    <sys:String x:Key="Sched_TimeLabel">وقت الموعد *</sys:String>
+    <sys:String x:Key="Sched_SaveButton">حفظ الموعد</sys:String>
+    <sys:String x:Key="Sched_SelectDateMsg">الرجاء اختيار تاريخ الموعد.</sys:String>
+    <sys:String x:Key="Sched_SuccessMsg">تم حجز الموعد بنجاح!</sys:String>
+    <sys:String x:Key="Sched_SaveErrorMsg">حدث خطأ أثناء حفظ الموعد.</sys:String>
+
+    <!-- ===== شاشة البحث المتقدم (تطبيق الطبيب) ===== -->
+    <sys:String x:Key="AdvSearch_Title">بحث متقدم</sys:String>
+    <sys:String x:Key="AdvSearch_CriteriaLabel">معايير البحث (كل الحقول اختيارية)</sys:String>
+    <sys:String x:Key="AdvSearch_NameOrPhone">اسم المريض أو الهاتف</sys:String>
+    <sys:String x:Key="AdvSearch_DiagnosisContains">التشخيص يحتوي على</sys:String>
+    <sys:String x:Key="AdvSearch_ToothNumber">رقم السن</sys:String>
+    <sys:String x:Key="AdvSearch_FromDate">من تاريخ</sys:String>
+    <sys:String x:Key="AdvSearch_ToDate">إلى تاريخ</sys:String>
+    <sys:String x:Key="AdvSearch_OutstandingOnly">الرصيد المستحق فقط</sys:String>
+    <sys:String x:Key="AdvSearch_ClearButton">مسح</sys:String>
+    <sys:String x:Key="AdvSearch_HintDoubleClick">  (انقر مرتين على الصف، أو حدده ثم اضغط فتح)</sys:String>
+    <sys:String x:Key="AdvSearch_ColDiagnosis">التشخيص</sys:String>
+    <sys:String x:Key="AdvSearch_ColTreatment">العلاج</sys:String>
+    <sys:String x:Key="AdvSearch_ColTotal">الإجمالي</sys:String>
+    <sys:String x:Key="AdvSearch_ColPaid">مدفوع</sys:String>
+    <sys:String x:Key="AdvSearch_ColRemaining">المتبقي</sys:String>
+    <sys:String x:Key="AdvSearch_InitialHint">أدخل أي مزيج من المعايير أعلاه واضغط بحث</sys:String>
+    <sys:String x:Key="AdvSearch_ResultsCountFormat">{0} نتيجة موجودة</sys:String>
+    <sys:String x:Key="AdvSearch_SearchErrorFormat">خطأ في البحث: {0}</sys:String>
+    <sys:String x:Key="AdvSearch_SelectResultFirst">الرجاء اختيار نتيجة من القائمة أولاً</sys:String>
+
+    <!-- ===== مخطط الأسنان (Odontogram) ===== -->
+    <sys:String x:Key="Odonto_UpperArch">علوي</sys:String>
+    <sys:String x:Key="Odonto_LowerArch">سفلي</sys:String>
+    <sys:String x:Key="Odonto_SelectedPrefix">الأسنان المحدَّدة: </sys:String>
+    <sys:String x:Key="Odonto_None">لا شيء</sys:String>
+
+    <!-- ===== شاشة ملف المريض الكامل ===== -->
+    <sys:String x:Key="File_Title">ملف المريض</sys:String>
+    <sys:String x:Key="File_PrescriptionButton">الوصفة الطبية</sys:String>
+    <sys:String x:Key="File_ExportPdfButton">تصدير إلى PDF</sys:String>
+    <sys:String x:Key="File_ScheduleButton">📅 حجز الزيارة القادمة</sys:String>
+    <sys:String x:Key="File_HistorySectionTitle">سجل الزيارات السابقة</sys:String>
+    <sys:String x:Key="File_TodaySession">جلسة اليوم</sys:String>
+    <sys:String x:Key="File_PrefillNotice">معبّأ مسبقًا من آخر زيارة — يرجى المراجعة والتحديث قبل الحفظ.</sys:String>
+    <sys:String x:Key="File_ChiefComplaint">سبب الزيارة</sys:String>
+    <sys:String x:Key="File_Diagnosis">التشخيص</sys:String>
+    <sys:String x:Key="File_Treatment">العلاج</sys:String>
+    <sys:String x:Key="File_AffectedTeeth">الأسنان المصابة (اختياري، يمكن اختيار أكثر من سن)</sys:String>
+    <sys:String x:Key="File_Medication">الدواء</sys:String>
+    <sys:String x:Key="File_TotalCost">التكلفة الإجمالية للعلاج (دج)</sys:String>
+    <sys:String x:Key="File_SaveButton">حفظ الجلسة وإتمام العلاج الطبي</sys:String>
+    <sys:String x:Key="File_SaveButtonSimple">حفظ الجلسة</sys:String>
+    <sys:String x:Key="File_PatientDataNotLoaded">بيانات المريض لم تُحمَّل بعد</sys:String>
+    <sys:String x:Key="File_PdfSavedMessage">تم حفظ الملف بصيغة PDF بنجاح. هل تريد فتحه الآن؟</sys:String>
+    <sys:String x:Key="File_ExportPdfErrorFormat">تعذّر تصدير PDF: {0}</sys:String>
+    <sys:String x:Key="File_PatientNotFound">تعذّر العثور على بيانات هذا المريض</sys:String>
+    <sys:String x:Key="File_HeaderFormat">ملف المريض: {0}</sys:String>
+    <sys:String x:Key="File_InfoLineFormat">العمر: {0}   |   الجنس: {1}   |   الهاتف: {2}</sys:String>
+    <sys:String x:Key="File_BasicNotesFormat">{0}ملاحظات أساسية من الاستقبال: {1}</sys:String>
+    <sys:String x:Key="File_InvalidTotalPrice">صيغة التكلفة الإجمالية غير صحيحة</sys:String>
+    <sys:String x:Key="File_CompletedSavedMessage">تم إتمام العلاج الطبي وحفظه بنجاح. يمكن للمريض التوجه الآن للدفع في الاستقبال.</sys:String>
+    <sys:String x:Key="File_SessionSavedMessage">تم حفظ الجلسة بنجاح</sys:String>
+    <sys:String x:Key="File_SavedTitle">تم الحفظ</sys:String>
+    <sys:String x:Key="File_SaveErrorFormat">حدث خطأ أثناء الحفظ: {0}</sys:String>
+
+    <!-- ===== شاشة النسخ الاحتياطي ===== -->
+    <sys:String x:Key="Backup_Title">نسخ احتياطي لقاعدة البيانات</sys:String>
+    <sys:String x:Key="Backup_LastBackupLabel">آخر نسخة احتياطية ناجحة</sys:String>
+    <sys:String x:Key="Backup_FolderLabel">مجلد النسخ الاحتياطي (على جهاز SQL Server)</sys:String>
+    <sys:String x:Key="Backup_RetentionFormat">يتم حذف النسخ الاحتياطية الأقدم من {0} يوماً تلقائياً.</sys:String>
+    <sys:String x:Key="Backup_NotConfigured">غير مُهيَّأ - أضف BackupFolderPath إلى App.config</sys:String>
+    <sys:String x:Key="Backup_NoBackupYet">لا توجد نسخة احتياطية بعد</sys:String>
+    <sys:String x:Key="Backup_ReadHistoryErrorFormat">تعذّر قراءة سجل النسخ الاحتياطي: {0}</sys:String>
+    <sys:String x:Key="Backup_FolderNotConfigured">مجلد النسخ الاحتياطي غير مُهيَّأ. أضف BackupFolderPath إلى App.config أولاً.</sys:String>
+    <sys:String x:Key="Backup_InProgress">جارٍ النسخ الاحتياطي...</sys:String>
+    <sys:String x:Key="Backup_NowButton">نسخ احتياطي الآن</sys:String>
+    <sys:String x:Key="Backup_Success">تم النسخ الاحتياطي بنجاح.</sys:String>
+
+</ResourceDictionary>

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -108,7 +109,7 @@ public partial class FinancialDashboardWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Could not load the dashboard: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Fin_LoadErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -240,7 +241,7 @@ public partial class FinancialDashboardWindow : Window
     {
         if (!DpStartDate.SelectedDate.HasValue || !DpEndDate.SelectedDate.HasValue)
         {
-            MessageBox.Show("Please select both start and end dates.", "Date Range Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(LocalizationManager.T("Fin_SelectBothDates"), LocalizationManager.T("Fin_DateRangeErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -249,7 +250,7 @@ public partial class FinancialDashboardWindow : Window
 
         if (startDate > endDate)
         {
-            MessageBox.Show("Start date cannot be after end date.", "Date Range Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(LocalizationManager.T("Fin_StartAfterEnd"), LocalizationManager.T("Fin_DateRangeErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -333,7 +334,7 @@ public partial class FinancialDashboardWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Failed to export data: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Fin_ExportErrorFormat", ex.Message), LocalizationManager.T("Fin_ExportErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -351,7 +352,7 @@ public partial class FinancialDashboardWindow : Window
         }
 
         File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8);
-        MessageBox.Show("Expenses exported successfully!", "Export Done", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show(LocalizationManager.T("Fin_ExpensesExportedMsg"), LocalizationManager.T("Fin_ExportDoneTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void ExportOutstandingToCsv(string filePath)
@@ -368,7 +369,7 @@ public partial class FinancialDashboardWindow : Window
         }
 
         File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8);
-        MessageBox.Show("Outstanding balances exported successfully!", "Export Done", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show(LocalizationManager.T("Fin_OutstandingExportedMsg"), LocalizationManager.T("Fin_ExportDoneTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void ExportNetProfitToCsv(string filePath)
@@ -380,6 +381,6 @@ public partial class FinancialDashboardWindow : Window
         csv.AppendLine($"Net Profit,{NetProfitText.Text}");
 
         File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8);
-        MessageBox.Show("Net profit report exported successfully!", "Export Done", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show(LocalizationManager.T("Fin_NetProfitExportedMsg"), LocalizationManager.T("Fin_ExportDoneTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }

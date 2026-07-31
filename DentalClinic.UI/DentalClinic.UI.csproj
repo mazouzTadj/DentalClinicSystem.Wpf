@@ -13,4 +13,9 @@
     <Resource Include="Assets\logo_full.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- مطلوب فقط من أجل enum VisitStatus المستخدَم في StatusToBrushConverter -->
+    <ProjectReference Include="..\DentalClinic.Data\DentalClinic.Data.csproj" />
+  </ItemGroup>
+
 </Project>

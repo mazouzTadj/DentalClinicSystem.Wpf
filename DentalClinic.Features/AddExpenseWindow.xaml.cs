@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using DentalClinic.Data.DataAccess;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -25,19 +26,20 @@ public partial class AddExpenseWindow : Window
     {
         if (!decimal.TryParse(AmountBox.Text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out decimal amount) || amount <= 0)
         {
-            MessageBox.Show("Please enter a valid amount.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(LocalizationManager.T("Expense_InvalidAmount"), LocalizationManager.T("Expense_ValidationErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(DescriptionBox.Text))
         {
-            MessageBox.Show("Please enter a description.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(LocalizationManager.T("Expense_DescriptionRequired"), LocalizationManager.T("Expense_ValidationErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        // 1. Get selected category from ComboBox
+        // 1. نقرأ Tag (القيمة الإنجليزية الثابتة) بدل Content (النص المترجَم) حتى تبقى فئات
+        // المصاريف المخزَّنة متسقة دائماً بغض النظر عن لغة الواجهة عند الإضافة
         var selectedCategoryItem = CategoryComboBox.SelectedItem as ComboBoxItem;
-        string category = selectedCategoryItem?.Content?.ToString() ?? "General / Other";
+        string category = selectedCategoryItem?.Tag?.ToString() ?? "General / Other";
 
         var selectedDate = ExpenseDatePicker.SelectedDate ?? DateTime.Now;
 
@@ -51,7 +53,7 @@ public partial class AddExpenseWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error saving expense: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Expense_SaveErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

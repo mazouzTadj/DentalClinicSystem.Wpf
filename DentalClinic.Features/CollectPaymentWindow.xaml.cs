@@ -4,6 +4,7 @@ using System.Data;
 using System.Windows;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -36,11 +37,11 @@ public partial class CollectPaymentWindow : Window
                 _paymentRepo = new PaymentRepository(_db);
             }
 
-            PatientNameText.Text = $"Patient: {patientName}";
+            PatientNameText.Text = LocalizationManager.T("Payment_PatientFormat", patientName);
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error initializing database: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Payment_DbInitErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         Loaded += (s, e) => LoadSessionData();
@@ -57,7 +58,7 @@ public partial class CollectPaymentWindow : Window
 
             if (table.Rows.Count == 0)
             {
-                MessageBox.Show("Session details not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LocalizationManager.T("Payment_SessionNotFound"), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                 Close();
                 return;
             }
@@ -67,15 +68,15 @@ public partial class CollectPaymentWindow : Window
             _alreadyPaid = row["PaidAmount"] != DBNull.Value ? Convert.ToDecimal(row["PaidAmount"]) : 0m;
             _remainingBalance = _totalPrice - _alreadyPaid;
 
-            TotalPriceText.Text = $"{_totalPrice:N0} DA";
-            AlreadyPaidText.Text = $"{_alreadyPaid:N0} DA";
-            RemainingText.Text = $"{_remainingBalance:N0} DA";
+            TotalPriceText.Text = LocalizationManager.T("Payment_AmountFormat", _totalPrice);
+            AlreadyPaidText.Text = LocalizationManager.T("Payment_AmountFormat", _alreadyPaid);
+            RemainingText.Text = LocalizationManager.T("Payment_AmountFormat", _remainingBalance);
 
             PaymentAmountBox.Text = _remainingBalance > 0 ? _remainingBalance.ToString("0.##") : "0";
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Failed to load payment details: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(LocalizationManager.T("Payment_LoadFailedFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -85,19 +86,19 @@ public partial class CollectPaymentWindow : Window
 
         if (_sessionRepo == null || _paymentRepo == null)
         {
-            ErrorText.Text = "Database connection is not available.";
+            ErrorText.Text = LocalizationManager.T("Payment_DbNotAvailable");
             return;
         }
 
         if (!decimal.TryParse(PaymentAmountBox.Text.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var amount) || amount <= 0)
         {
-            ErrorText.Text = "Please enter a valid payment amount greater than 0.";
+            ErrorText.Text = LocalizationManager.T("Payment_InvalidAmount");
             return;
         }
 
         if (amount > _remainingBalance)
         {
-            ErrorText.Text = $"Entered amount exceeds the remaining balance ({_remainingBalance:N0} DA).";
+            ErrorText.Text = LocalizationManager.T("Payment_ExceedsBalanceFormat", _remainingBalance);
             return;
         }
 
@@ -112,13 +113,13 @@ public partial class CollectPaymentWindow : Window
             // 2. Record the payment entry in Payments table (كانت الملاحظات تُهمَل بالكامل سابقاً - أصبحت تُحفظ الآن)
             _paymentRepo.AddPayment(_sessionId, amount, _currentUser.UserID, notes);
 
-            MessageBox.Show("Payment recorded successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(LocalizationManager.T("Payment_SuccessMessage"), LocalizationManager.T("Payment_SuccessTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
             DialogResult = true;
             Close();
         }
         catch (Exception ex)
         {
-            ErrorText.Text = "Error saving payment: " + ex.Message;
+            ErrorText.Text = LocalizationManager.T("Payment_SaveErrorFormat", ex.Message);
         }
     }
 

@@ -1,4 +1,5 @@
 using System.Windows;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.NurseApp;
 
@@ -9,6 +10,10 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // يجب أن يكون أول شيء يحدث: يحمّل قاموس النصوص واتجاه الواجهة (RTL/LTR) المناسبين
+        // قبل إنشاء أي نافذة، لأن StaticResource في كل XAML يُحلّ عند InitializeComponent مباشرة.
+        LocalizationManager.Initialize();
 
         // نمنع أي إغلاق تلقائي للتطبيق قبل أن نقرر نحن متى ينتهي
         ShutdownMode = ShutdownMode.OnExplicitShutdown;

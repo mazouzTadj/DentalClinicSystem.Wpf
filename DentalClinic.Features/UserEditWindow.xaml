@@ -1,7 +1,7 @@
 <Window x:Class="DentalClinic.Features.UserEditWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="User" Height="700" Width="440"
+        Title="{DynamicResource UserEdit_TitleAdd}" Height="700" Width="440"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
 
@@ -17,7 +17,7 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
-                <TextBlock x:Name="TitleText" Text="Add User" FontWeight="Bold" FontSize="14"
+                <TextBlock x:Name="TitleText" FontWeight="Bold" FontSize="14"
                            Foreground="{StaticResource AccentBrush}"
                            VerticalAlignment="Center" Margin="20,0,0,0"/>
                 <Button Content="&#10005;" Style="{StaticResource WindowControlButtonStyle}"
@@ -28,17 +28,17 @@
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="30,10,30,20">
                 <StackPanel>
 
-                    <TextBlock Text="Full Name *" Style="{StaticResource FieldLabelStyle}" Margin="4,10,0,4"/>
+                    <TextBlock Text="{DynamicResource UserEdit_FullName}" Style="{StaticResource FieldLabelStyle}" Margin="4,10,0,4"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
                         <TextBox x:Name="FullNameBox" Style="{StaticResource PlainTextBoxStyle}"/>
                     </Border>
 
-                    <TextBlock Text="Username *" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBlock Text="{DynamicResource UserEdit_Username}" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
                         <TextBox x:Name="UsernameBox" Style="{StaticResource PlainTextBoxStyle}"/>
                     </Border>
 
-                    <TextBlock x:Name="PasswordLabel" Text="Password *" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBlock x:Name="PasswordLabel" Text="{DynamicResource UserEdit_PasswordNew}" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
                         <PasswordBox x:Name="PasswordBox" Style="{StaticResource PlainPasswordBoxStyle}"/>
                     </Border>
@@ -50,17 +50,19 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Role" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBlock Text="{DynamicResource UserEdit_Role}" Style="{StaticResource FieldLabelStyle}"/>
                             <Border Style="{StaticResource InputContainerStyle}">
+                                <!-- Tag = القيمة الثابتة (Doctor/Nurse) المستخدَمة في المقارنات البرمجية
+                                     Content = النص المعروض فقط (مترجَم حسب اللغة) -->
                                 <ComboBox x:Name="RoleBox" BorderThickness="0" Background="Transparent"
                                           Padding="10,8" FontSize="14" VerticalContentAlignment="Center">
-                                    <ComboBoxItem Content="Doctor" IsSelected="True"/>
-                                    <ComboBoxItem Content="Nurse"/>
+                                    <ComboBoxItem Tag="Doctor" Content="{DynamicResource UserMgmt_RoleDoctor}" IsSelected="True"/>
+                                    <ComboBoxItem Tag="Nurse" Content="{DynamicResource UserMgmt_RoleNurse}"/>
                                 </ComboBox>
                             </Border>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Phone" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBlock Text="{DynamicResource UserEdit_Phone}" Style="{StaticResource FieldLabelStyle}"/>
                             <Border Style="{StaticResource InputContainerStyle}">
                                 <TextBox x:Name="PhoneBox" Style="{StaticResource PlainTextBoxStyle}"/>
                             </Border>
@@ -68,42 +70,42 @@
                     </Grid>
 
                     <!-- ===== صلاحيات دقيقة ومستقلة عن الدور (Doctor/Nurse) ===== -->
-                    <TextBlock Text="Permissions" Style="{StaticResource FieldLabelStyle}" Margin="4,0,0,6"/>
+                    <TextBlock Text="{DynamicResource UserEdit_PermissionsHeader}" Style="{StaticResource FieldLabelStyle}" Margin="4,0,0,6"/>
                     <Border Style="{StaticResource InputContainerStyle}" Padding="12,10" Margin="0,0,0,14">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <CheckBox x:Name="PermManageUsersCheck" VerticalAlignment="Center"/>
-                                <TextBlock Text="Manage Users (Super Admin)" FontSize="13"
+                                <TextBlock Text="{DynamicResource UserEdit_PermManageUsers}" FontSize="13"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <CheckBox x:Name="PermFinanceCheck" VerticalAlignment="Center"/>
-                                <TextBlock Text="Access Finance Dashboard" FontSize="13"
+                                <TextBlock Text="{DynamicResource UserEdit_PermFinance}" FontSize="13"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <CheckBox x:Name="PermPatientFileCheck" VerticalAlignment="Center"/>
-                                <TextBlock Text="Open Patient Files" FontSize="13"
+                                <TextBlock Text="{DynamicResource UserEdit_PermPatientFile}" FontSize="13"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <CheckBox x:Name="PermBackupCheck" VerticalAlignment="Center"/>
-                                <TextBlock Text="Access Backup" FontSize="13"
+                                <TextBlock Text="{DynamicResource UserEdit_PermBackup}" FontSize="13"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <CheckBox x:Name="PermTreatmentsCheck" VerticalAlignment="Center"/>
-                                <TextBlock Text="Manage Treatments &amp; Prices" FontSize="13"
+                                <TextBlock Text="{DynamicResource UserEdit_PermTreatments}" FontSize="13"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox x:Name="PermPaymentsCheck" VerticalAlignment="Center"/>
-                                <TextBlock Text="Collect Payments" FontSize="13"
+                                <TextBlock Text="{DynamicResource UserEdit_PermPayments}" FontSize="13"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                 <CheckBox x:Name="PermRegisterPatientsCheck" VerticalAlignment="Center"/>
-                                <TextBlock Text="Register New Patients" FontSize="13"
+                                <TextBlock Text="{DynamicResource UserEdit_PermRegisterPatients}" FontSize="13"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </StackPanel>
@@ -111,16 +113,16 @@
 
                     <StackPanel x:Name="ActivePanel" Orientation="Horizontal" Margin="4,0,0,14">
                         <CheckBox x:Name="IsActiveCheck" VerticalAlignment="Center" IsChecked="True"/>
-                        <TextBlock Text="Account is active" FontSize="13"
+                        <TextBlock Text="{DynamicResource UserEdit_AccountActive}" FontSize="13"
                                    Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}"/>
 
-                    <Button Content="Save" Height="46" Margin="0,10,0,0"
+                    <Button Content="{DynamicResource Common_Save}" Height="46" Margin="0,10,0,0"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Click="SaveButton_Click"/>
-                    <Button Content="Cancel" Height="38" Margin="0,10,0,0"
+                    <Button Content="{DynamicResource Common_Cancel}" Height="38" Margin="0,10,0,0"
                             Style="{StaticResource SecondaryButtonStyle}"
                             Click="CancelButton_Click"/>
                 </StackPanel>
