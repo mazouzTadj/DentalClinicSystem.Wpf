@@ -1,27 +1,17 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using DentalClinic.UI.Localization;
 
 namespace DentalClinic.UI.Controls;
 
-// عنصر تفاعلي لاختيار سن واحد أو أكثر بترقيم FDI (32 سناً)
-// التحديد المتعدد: CheckBox بدل RadioButton، كل سن يُحدَّد/يُلغى تحديده بشكل مستقل عن البقية
+// عنصر تفاعلي لاختيار سن واحد بترقيم FDI (32 سناً، تحديد واحد في كل مرة)
 public partial class OdontogramControl : UserControl
 {
-    private CheckBox[] _allTeeth = Array.Empty<CheckBox>();
+    private RadioButton[] _allTeeth = Array.Empty<RadioButton>();
 
-    // مجموعة الأسنان المحدَّدة حالياً - تحافظ على ترتيب الاختيار (وليس ترتيب الترقيم)
-    private readonly List<string> _selectedTeeth = new();
+    // يُطلَق عند تغيّر السن المحدَّد - يحمل رقم السن أو null عند عدم وجود تحديد
+    public event EventHandler<string?>? SelectionChanged;
 
-    // يُطلَق عند تغيّر التحديد (إضافة أو إزالة سن) - يحمل القائمة الكاملة المحدَّثة
-    public event EventHandler<IReadOnlyList<string>>? SelectionChanged;
-
-    public IReadOnlyList<string> SelectedTeeth => _selectedTeeth.AsReadOnly();
-
-    // للتوافق مع الكود القديم الذي كان يتعامل مع سن واحد فقط: يعيد أول سن محدَّد أو null
-    public string? SelectedTooth => _selectedTeeth.Count > 0 ? _selectedTeeth[0] : null;
+    public string? SelectedTooth { get; private set; }
 
     public OdontogramControl()
     {
@@ -34,67 +24,36 @@ public partial class OdontogramControl : UserControl
             Tooth48, Tooth47, Tooth46, Tooth45, Tooth44, Tooth43, Tooth42, Tooth41,
             Tooth31, Tooth32, Tooth33, Tooth34, Tooth35, Tooth36, Tooth37, Tooth38
         };
-
-        UpperArchLabel.Text = LocalizationManager.T("Odonto_UpperArch");
-        LowerArchLabel.Text = LocalizationManager.T("Odonto_LowerArch");
-        SelectedToothPrefixLabel.Text = LocalizationManager.T("Odonto_SelectedPrefix");
-        UpdateSelectedLabel();
     }
 
     private void Tooth_Checked(object sender, RoutedEventArgs e)
     {
-        if (sender is CheckBox { Tag: string toothNumber } && !_selectedTeeth.Contains(toothNumber))
+        if (sender is RadioButton rb && rb.Tag is string toothNumber)
         {
-            _selectedTeeth.Add(toothNumber);
-            UpdateSelectedLabel();
-            SelectionChanged?.Invoke(this, SelectedTeeth);
+            SelectedTooth = toothNumber;
+            SelectedToothLabel.Text = toothNumber;
+            SelectionChanged?.Invoke(this, SelectedTooth);
         }
-    }
-
-    private void Tooth_Unchecked(object sender, RoutedEventArgs e)
-    {
-        if (sender is CheckBox { Tag: string toothNumber })
-        {
-            _selectedTeeth.Remove(toothNumber);
-            UpdateSelectedLabel();
-            SelectionChanged?.Invoke(this, SelectedTeeth);
-        }
-    }
-
-    private void UpdateSelectedLabel()
-    {
-        SelectedToothLabel.Text = _selectedTeeth.Count == 0
-            ? LocalizationManager.T("Odonto_None")
-            : string.Join(", ", _selectedTeeth.OrderBy(t => t));
     }
 
     // إعادة ضبط التحديد بالكامل - تُستدعى عند فتح ملف مريض جديد
     public void ClearSelection()
     {
+        SelectedTooth = null;
+        SelectedToothLabel.Text = "لا شيء";
         foreach (var rb in _allTeeth)
         {
-            rb.IsChecked = false; // يُطلق Tooth_Unchecked تلقائياً لكل سن كان محدَّداً فيُفرِغ _selectedTeeth تدريجياً
+            rb.IsChecked = false;
         }
-        _selectedTeeth.Clear();
-        UpdateSelectedLabel();
     }
 
-    // تحديد سن واحد برمجياً (يُبقي على أي تحديد سابق - للتوافق مع الاستخدام القديم لسن واحد)
+    // تحديد سن برمجياً مسبقاً (يُستخدم عند التعبئة التلقائية من بيانات آخر زيارة)
     public void SetSelectedTooth(string toothNumber)
     {
         var match = Array.Find(_allTeeth, t => (string?)t.Tag == toothNumber);
         if (match != null)
         {
-            match.IsChecked = true; // يُطلق Tooth_Checked تلقائياً فيضيف السن إلى القائمة ويحدّث التسمية
-        }
-    }
-
-    // تحديد عدة أسنان دفعة واحدة برمجياً (تُستخدم عند التعبئة التلقائية من بيانات آخر زيارة)
-    public void SetSelectedTeeth(IEnumerable<string> toothNumbers)
-    {
-        foreach (var toothNumber in toothNumbers)
-        {
-            SetSelectedTooth(toothNumber);
+            match.IsChecked = true; // يُطلق Tooth_Checked تلقائياً فيحدّث SelectedTooth والتسمية
         }
     }
 }

@@ -3,16 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <UserControl.Resources>
-        <!-- زر السن: مربع صغير مدوّر الحواف، يتحول للون التمييز عند التحديد
-             CheckBox بدل RadioButton حتى يمكن تحديد أكثر من سن واحد في نفس الوقت -->
-        <Style x:Key="ToothButtonStyle" TargetType="CheckBox">
+        <!-- زر السن: مربع صغير مدوّر الحواف، يتحول للون التمييز عند التحديد -->
+        <Style x:Key="ToothButtonStyle" TargetType="RadioButton">
+            <Setter Property="GroupName" Value="TeethGroup"/>
             <Setter Property="Width" Value="30"/>
             <Setter Property="Height" Value="30"/>
             <Setter Property="Margin" Value="1.5"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="CheckBox">
+                    <ControlTemplate TargetType="RadioButton">
                         <Border x:Name="Bg" CornerRadius="7" Background="#F1F5F9"
                                 BorderBrush="#DDE3EA" BorderThickness="1">
                             <TextBlock Text="{TemplateBinding Content}" FontSize="10.5" FontWeight="SemiBold"
@@ -45,27 +45,27 @@
 
         <!-- الصف العلوي (Upper Arch): 18..11 | 21..28 -->
         <StackPanel x:Name="UpperPanel" Orientation="Horizontal" Margin="0,0,0,6">
-            <TextBlock x:Name="UpperArchLabel" Style="{StaticResource ArchLabelStyle}"/>
+            <TextBlock Text="علوي" Style="{StaticResource ArchLabelStyle}"/>
 
-            <CheckBox x:Name="Tooth18" Content="18" Tag="18" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth17" Content="17" Tag="17" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth16" Content="16" Tag="16" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth15" Content="15" Tag="15" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth14" Content="14" Tag="14" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth13" Content="13" Tag="13" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth12" Content="12" Tag="12" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth11" Content="11" Tag="11" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
+            <RadioButton x:Name="Tooth18" Content="18" Tag="18" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth17" Content="17" Tag="17" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth16" Content="16" Tag="16" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth15" Content="15" Tag="15" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth14" Content="14" Tag="14" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth13" Content="13" Tag="13" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth12" Content="12" Tag="12" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth11" Content="11" Tag="11" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
 
             <Border Width="12"/> <!-- خط المنتصف -->
 
-            <CheckBox x:Name="Tooth21" Content="21" Tag="21" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth22" Content="22" Tag="22" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth23" Content="23" Tag="23" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth24" Content="24" Tag="24" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth25" Content="25" Tag="25" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth26" Content="26" Tag="26" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth27" Content="27" Tag="27" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth28" Content="28" Tag="28" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
+            <RadioButton x:Name="Tooth21" Content="21" Tag="21" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth22" Content="22" Tag="22" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth23" Content="23" Tag="23" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth24" Content="24" Tag="24" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth25" Content="25" Tag="25" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth26" Content="26" Tag="26" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth27" Content="27" Tag="27" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth28" Content="28" Tag="28" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
         </StackPanel>
 
         <!-- خط الإطباق -->
@@ -73,38 +73,37 @@
 
         <!-- الصف السفلي (Lower Arch): 48..41 | 31..38 -->
         <StackPanel x:Name="LowerPanel" Orientation="Horizontal">
-            <TextBlock x:Name="LowerArchLabel" Style="{StaticResource ArchLabelStyle}"/>
+            <TextBlock Text="سفلي" Style="{StaticResource ArchLabelStyle}"/>
 
-            <CheckBox x:Name="Tooth48" Content="48" Tag="48" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth47" Content="47" Tag="47" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth46" Content="46" Tag="46" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth45" Content="45" Tag="45" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth44" Content="44" Tag="44" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth43" Content="43" Tag="43" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth42" Content="42" Tag="42" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth41" Content="41" Tag="41" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
+            <RadioButton x:Name="Tooth48" Content="48" Tag="48" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth47" Content="47" Tag="47" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth46" Content="46" Tag="46" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth45" Content="45" Tag="45" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth44" Content="44" Tag="44" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth43" Content="43" Tag="43" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth42" Content="42" Tag="42" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth41" Content="41" Tag="41" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
 
             <Border Width="12"/> <!-- خط المنتصف -->
 
-            <CheckBox x:Name="Tooth31" Content="31" Tag="31" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth32" Content="32" Tag="32" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth33" Content="33" Tag="33" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth34" Content="34" Tag="34" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth35" Content="35" Tag="35" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth36" Content="36" Tag="36" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth37" Content="37" Tag="37" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
-            <CheckBox x:Name="Tooth38" Content="38" Tag="38" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked" Unchecked="Tooth_Unchecked"/>
+            <RadioButton x:Name="Tooth31" Content="31" Tag="31" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth32" Content="32" Tag="32" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth33" Content="33" Tag="33" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth34" Content="34" Tag="34" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth35" Content="35" Tag="35" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth36" Content="36" Tag="36" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth37" Content="37" Tag="37" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
+            <RadioButton x:Name="Tooth38" Content="38" Tag="38" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
         </StackPanel>
 
-        <!-- سطر الحالة: يعرض السن (أو الأسنان) المختارة حالياً -->
+        <!-- سطر الحالة: يعرض السن المختار حالياً -->
         <Grid Margin="42,10,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="SelectedToothPrefixLabel" Grid.Column="0" FontSize="12" Foreground="#6B7280"/>
-            <TextBlock x:Name="SelectedToothLabel" Grid.Column="1" FontSize="12" FontWeight="SemiBold"
-                       TextWrapping="Wrap" MaxWidth="260"
+            <TextBlock Grid.Column="0" Text="السن المحدَّد: " FontSize="12" Foreground="#6B7280"/>
+            <TextBlock x:Name="SelectedToothLabel" Grid.Column="1" Text="لا شيء" FontSize="12" FontWeight="SemiBold"
                        Foreground="{DynamicResource AccentBrush}"/>
         </Grid>
 

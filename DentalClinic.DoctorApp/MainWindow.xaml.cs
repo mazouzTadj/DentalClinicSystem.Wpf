@@ -281,7 +281,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var window = new FinancialDashboardWindow { Owner = this };
+        var window = new FinancialDashboardWindow(_currentUser) { Owner = this };
         window.ShowDialog();
     }
 

@@ -19,7 +19,6 @@
     <sys:String x:Key="Common_AccessDenied">صلاحية مرفوضة</sys:String>
     <sys:String x:Key="Common_Confirm">تأكيد</sys:String>
     <sys:String x:Key="Common_Close">إغلاق</sys:String>
-    <sys:String x:Key="Common_Success">تم بنجاح</sys:String>
 
     <!-- ===== شاشة تسجيل الدخول ===== -->
     <sys:String x:Key="Login_TitleDoctor">تسجيل دخول الطبيب</sys:String>
@@ -214,6 +213,20 @@
     <sys:String x:Key="Fin_NoPatientActivity">لا يوجد نشاط للمرضى مسجَّل في هذه الفترة</sys:String>
     <sys:String x:Key="Fin_TopTreatments">أكثر العلاجات شيوعًا</sys:String>
     <sys:String x:Key="Fin_NotEnoughData">لا توجد بيانات كافية بعد</sys:String>
+    <sys:String x:Key="Fin_DoctorStats">إحصائيات الأطباء</sys:String>
+    <sys:String x:Key="Fin_CommissionSettingsButton">⚙ إعدادات العمولات</sys:String>
+    <sys:String x:Key="Fin_PrimaryDoctorTooltip">الطبيب الرئيسي - يأخذ 100% من الدخل، لا عمولة عليه</sys:String>
+    <sys:String x:Key="Commission_Title">إعدادات عمولات الأطباء</sys:String>
+    <sys:String x:Key="Commission_Header">عمولات الأطباء</sys:String>
+    <sys:String x:Key="Commission_SubHeader">الطبيب الرئيسي يأخذ 100% من كل دفعة. أي طبيب آخر تُخصَم تلقائياً نسبة عمولته كمصروف عيادة عند تحصيل كل دفعة.</sys:String>
+    <sys:String x:Key="Commission_DefaultLabel">النسبة العامة الافتراضية</sys:String>
+    <sys:String x:Key="Commission_DefaultHint">تُطبَّق على أي طبيب ليس له نسبة مخصَّصة أدناه.</sys:String>
+    <sys:String x:Key="Commission_PerDoctorLabel">نسبة مخصَّصة لكل طبيب (اختياري)</sys:String>
+    <sys:String x:Key="Commission_PrimaryPickerHint">اختر ⚪ بجانب الطبيب الذي تريد اعتباره "الطبيب الرئيسي" (يأخذ 100% من كل دفعة، بلا عمولة). إن لم تحدّد أحداً، يُستخدم أول طبيب مسجَّل في النظام تلقائياً.</sys:String>
+    <sys:String x:Key="Commission_SetPrimaryTooltip">تعيين هذا الطبيب كالطبيب الرئيسي</sys:String>
+    <sys:String x:Key="Commission_InvalidPercent">الرجاء إدخال نسبة عامة صحيحة بين 0 و100.</sys:String>
+    <sys:String x:Key="Commission_InvalidDoctorPercentFormat">النسبة المدخلة للطبيب "{0}" غير صحيحة (يجب أن تكون بين 0 و100).</sys:String>
+    <sys:String x:Key="Commission_SaveErrorFormat">تعذّر حفظ الإعدادات: {0}</sys:String>
     <sys:String x:Key="Fin_OutstandingBalances">الأرصدة المستحقة</sys:String>
     <sys:String x:Key="Fin_ColPatient">المريض</sys:String>
     <sys:String x:Key="Fin_ColPhone">الهاتف</sys:String>
@@ -228,6 +241,7 @@
     <sys:String x:Key="Fin_ColCategory">الفئة</sys:String>
     <sys:String x:Key="Fin_ColDescription">الوصف</sys:String>
     <sys:String x:Key="Fin_ColAmount">المبلغ</sys:String>
+    <sys:String x:Key="Fin_ColActions">&#160;</sys:String>
     <sys:String x:Key="Fin_PeriodOverview">نظرة عامة على الفترة</sys:String>
     <sys:String x:Key="Fin_TotalRevenue">إجمالي الإيرادات:</sys:String>
     <sys:String x:Key="Fin_TotalExpenses">إجمالي المصاريف:</sys:String>
@@ -261,6 +275,7 @@
     <sys:String x:Key="Expense_Date">التاريخ</sys:String>
     <sys:String x:Key="Expense_CatMedicalSupplies">المستلزمات الطبية والتخدير</sys:String>
     <sys:String x:Key="Expense_CatLabFees">رسوم المخبر السني</sys:String>
+    <sys:String x:Key="Expense_CatDoctorCommission">عمولة طبيب</sys:String>
     <sys:String x:Key="Expense_CatSalaries">الرواتب وأجور الموظفين</sys:String>
     <sys:String x:Key="Expense_CatUtilities">الفواتير والخدمات</sys:String>
     <sys:String x:Key="Expense_CatMaintenance">صيانة المعدات</sys:String>
@@ -270,6 +285,11 @@
     <sys:String x:Key="Expense_ValidationErrorTitle">خطأ في التحقق</sys:String>
     <sys:String x:Key="Expense_DescriptionRequired">الرجاء إدخال وصف.</sys:String>
     <sys:String x:Key="Expense_SaveErrorFormat">خطأ أثناء حفظ المصروف: {0}</sys:String>
+    <sys:String x:Key="Expense_DeleteTooltip">حذف هذا المصروف</sys:String>
+    <sys:String x:Key="Expense_DeleteConfirmTitle">تأكيد الحذف</sys:String>
+    <sys:String x:Key="Expense_DeleteConfirmMessageFormat">هل أنت متأكد من حذف المصروف التالي؟&#10;"{0}" - {1}&#10;لا يمكن التراجع عن هذا الإجراء.</sys:String>
+    <sys:String x:Key="Expense_DeleteConfirmAutoMessageFormat">هذا مصروف عمولة طبيب مُولَّد تلقائياً من دفعة فعلية:&#10;"{0}" - {1}&#10;حذفه لن يؤثر على الدفعة نفسها، لكنه سيزيد صافي ربح العيادة المحسوب لهذه الفترة. هل تريد المتابعة؟</sys:String>
+    <sys:String x:Key="Expense_DeleteErrorFormat">تعذّر حذف المصروف: {0}</sys:String>
 
     <!-- ===== شاشة إدارة العلاجات والأسعار ===== -->
     <sys:String x:Key="Treat_Title">إدارة العلاجات</sys:String>
@@ -292,87 +312,6 @@
     <sys:String x:Key="Treat_ConfirmDeleteFormat">هل أنت متأكد من حذف '{0}'؟</sys:String>
     <sys:String x:Key="Treat_ConfirmDeleteTitle">تأكيد الحذف</sys:String>
     <sys:String x:Key="Treat_DeleteErrorFormat">خطأ أثناء الحذف: {0}</sys:String>
-
-    <!-- ===== شاشة الوصفة الطبية ===== -->
-    <sys:String x:Key="Rx_Title">الوصفة الطبية</sys:String>
-    <sys:String x:Key="Rx_PatientHeaderFormat">وصفة طبية للمريض: {0}</sys:String>
-    <sys:String x:Key="Rx_QuickAddLabel">إضافة من القائمة السريعة</sys:String>
-    <sys:String x:Key="Rx_AddButton">+ إضافة</sys:String>
-    <sys:String x:Key="Rx_LinesLabel">بنود الوصفة الطبية</sys:String>
-    <sys:String x:Key="Rx_AddCustomLine">+ إضافة سطر مخصص</sys:String>
-    <sys:String x:Key="Rx_NotesLabel">تعليمات عامة / ملاحظات (اختياري)</sys:String>
-    <sys:String x:Key="Rx_GenerateButton">إنشاء وطباعة PDF</sys:String>
-    <sys:String x:Key="Rx_SelectMedicationFirst">الرجاء اختيار دواء من القائمة أولاً</sys:String>
-    <sys:String x:Key="Rx_AddAtLeastOne">أضف دواءً واحداً على الأقل قبل إنشاء الوصفة</sys:String>
-    <sys:String x:Key="Rx_SavedSuccessMessage">تم حفظ الوصفة بنجاح. هل تريد فتحها الآن للطباعة؟</sys:String>
-    <sys:String x:Key="Rx_ExportCompleteTitle">اكتمل التصدير</sys:String>
-    <sys:String x:Key="Rx_GenerateErrorFormat">تعذّر إنشاء الوصفة: {0}</sys:String>
-
-    <!-- ===== شاشة حجز موعد ===== -->
-    <sys:String x:Key="Sched_Title">حجز موعد</sys:String>
-    <sys:String x:Key="Sched_HeaderNewVisit">حجز زيارة جديدة</sys:String>
-    <sys:String x:Key="Sched_DateLabel">تاريخ الموعد *</sys:String>
-    <sys:String x:Key="Sched_TimeLabel">وقت الموعد *</sys:String>
-    <sys:String x:Key="Sched_SaveButton">حفظ الموعد</sys:String>
-    <sys:String x:Key="Sched_SelectDateMsg">الرجاء اختيار تاريخ الموعد.</sys:String>
-    <sys:String x:Key="Sched_SuccessMsg">تم حجز الموعد بنجاح!</sys:String>
-    <sys:String x:Key="Sched_SaveErrorMsg">حدث خطأ أثناء حفظ الموعد.</sys:String>
-
-    <!-- ===== شاشة البحث المتقدم (تطبيق الطبيب) ===== -->
-    <sys:String x:Key="AdvSearch_Title">بحث متقدم</sys:String>
-    <sys:String x:Key="AdvSearch_CriteriaLabel">معايير البحث (كل الحقول اختيارية)</sys:String>
-    <sys:String x:Key="AdvSearch_NameOrPhone">اسم المريض أو الهاتف</sys:String>
-    <sys:String x:Key="AdvSearch_DiagnosisContains">التشخيص يحتوي على</sys:String>
-    <sys:String x:Key="AdvSearch_ToothNumber">رقم السن</sys:String>
-    <sys:String x:Key="AdvSearch_FromDate">من تاريخ</sys:String>
-    <sys:String x:Key="AdvSearch_ToDate">إلى تاريخ</sys:String>
-    <sys:String x:Key="AdvSearch_OutstandingOnly">الرصيد المستحق فقط</sys:String>
-    <sys:String x:Key="AdvSearch_ClearButton">مسح</sys:String>
-    <sys:String x:Key="AdvSearch_HintDoubleClick">  (انقر مرتين على الصف، أو حدده ثم اضغط فتح)</sys:String>
-    <sys:String x:Key="AdvSearch_ColDiagnosis">التشخيص</sys:String>
-    <sys:String x:Key="AdvSearch_ColTreatment">العلاج</sys:String>
-    <sys:String x:Key="AdvSearch_ColTotal">الإجمالي</sys:String>
-    <sys:String x:Key="AdvSearch_ColPaid">مدفوع</sys:String>
-    <sys:String x:Key="AdvSearch_ColRemaining">المتبقي</sys:String>
-    <sys:String x:Key="AdvSearch_InitialHint">أدخل أي مزيج من المعايير أعلاه واضغط بحث</sys:String>
-    <sys:String x:Key="AdvSearch_ResultsCountFormat">{0} نتيجة موجودة</sys:String>
-    <sys:String x:Key="AdvSearch_SearchErrorFormat">خطأ في البحث: {0}</sys:String>
-    <sys:String x:Key="AdvSearch_SelectResultFirst">الرجاء اختيار نتيجة من القائمة أولاً</sys:String>
-
-    <!-- ===== مخطط الأسنان (Odontogram) ===== -->
-    <sys:String x:Key="Odonto_UpperArch">علوي</sys:String>
-    <sys:String x:Key="Odonto_LowerArch">سفلي</sys:String>
-    <sys:String x:Key="Odonto_SelectedPrefix">الأسنان المحدَّدة: </sys:String>
-    <sys:String x:Key="Odonto_None">لا شيء</sys:String>
-
-    <!-- ===== شاشة ملف المريض الكامل ===== -->
-    <sys:String x:Key="File_Title">ملف المريض</sys:String>
-    <sys:String x:Key="File_PrescriptionButton">الوصفة الطبية</sys:String>
-    <sys:String x:Key="File_ExportPdfButton">تصدير إلى PDF</sys:String>
-    <sys:String x:Key="File_ScheduleButton">📅 حجز الزيارة القادمة</sys:String>
-    <sys:String x:Key="File_HistorySectionTitle">سجل الزيارات السابقة</sys:String>
-    <sys:String x:Key="File_TodaySession">جلسة اليوم</sys:String>
-    <sys:String x:Key="File_PrefillNotice">معبّأ مسبقًا من آخر زيارة — يرجى المراجعة والتحديث قبل الحفظ.</sys:String>
-    <sys:String x:Key="File_ChiefComplaint">سبب الزيارة</sys:String>
-    <sys:String x:Key="File_Diagnosis">التشخيص</sys:String>
-    <sys:String x:Key="File_Treatment">العلاج</sys:String>
-    <sys:String x:Key="File_AffectedTeeth">الأسنان المصابة (اختياري، يمكن اختيار أكثر من سن)</sys:String>
-    <sys:String x:Key="File_Medication">الدواء</sys:String>
-    <sys:String x:Key="File_TotalCost">التكلفة الإجمالية للعلاج (دج)</sys:String>
-    <sys:String x:Key="File_SaveButton">حفظ الجلسة وإتمام العلاج الطبي</sys:String>
-    <sys:String x:Key="File_SaveButtonSimple">حفظ الجلسة</sys:String>
-    <sys:String x:Key="File_PatientDataNotLoaded">بيانات المريض لم تُحمَّل بعد</sys:String>
-    <sys:String x:Key="File_PdfSavedMessage">تم حفظ الملف بصيغة PDF بنجاح. هل تريد فتحه الآن؟</sys:String>
-    <sys:String x:Key="File_ExportPdfErrorFormat">تعذّر تصدير PDF: {0}</sys:String>
-    <sys:String x:Key="File_PatientNotFound">تعذّر العثور على بيانات هذا المريض</sys:String>
-    <sys:String x:Key="File_HeaderFormat">ملف المريض: {0}</sys:String>
-    <sys:String x:Key="File_InfoLineFormat">العمر: {0}   |   الجنس: {1}   |   الهاتف: {2}</sys:String>
-    <sys:String x:Key="File_BasicNotesFormat">{0}ملاحظات أساسية من الاستقبال: {1}</sys:String>
-    <sys:String x:Key="File_InvalidTotalPrice">صيغة التكلفة الإجمالية غير صحيحة</sys:String>
-    <sys:String x:Key="File_CompletedSavedMessage">تم إتمام العلاج الطبي وحفظه بنجاح. يمكن للمريض التوجه الآن للدفع في الاستقبال.</sys:String>
-    <sys:String x:Key="File_SessionSavedMessage">تم حفظ الجلسة بنجاح</sys:String>
-    <sys:String x:Key="File_SavedTitle">تم الحفظ</sys:String>
-    <sys:String x:Key="File_SaveErrorFormat">حدث خطأ أثناء الحفظ: {0}</sys:String>
 
     <!-- ===== شاشة النسخ الاحتياطي ===== -->
     <sys:String x:Key="Backup_Title">نسخ احتياطي لقاعدة البيانات</sys:String>

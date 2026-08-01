@@ -16,6 +16,7 @@
             <ComboBox x:Name="CategoryComboBox" Height="35" FontSize="14" Padding="5" Margin="0,0,0,12" SelectedIndex="0">
                 <ComboBoxItem Tag="Medical Supplies &amp; Anesthesia" Content="{DynamicResource Expense_CatMedicalSupplies}"/>
                 <ComboBoxItem Tag="Dental Lab Fees" Content="{DynamicResource Expense_CatLabFees}"/>
+                <ComboBoxItem Tag="Doctor Commission" Content="{DynamicResource Expense_CatDoctorCommission}"/>
                 <ComboBoxItem Tag="Salaries &amp; Staff Wages" Content="{DynamicResource Expense_CatSalaries}"/>
                 <ComboBoxItem Tag="Bills &amp; Utilities" Content="{DynamicResource Expense_CatUtilities}"/>
                 <ComboBoxItem Tag="Equipment Maintenance" Content="{DynamicResource Expense_CatMaintenance}"/>

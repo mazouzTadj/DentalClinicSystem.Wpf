@@ -8,23 +8,39 @@ namespace DentalClinic.Data.DataAccess;
 public class PaymentRepository
 {
     private readonly DatabaseHelper _db;
+    private readonly DoctorCommissionService _commissionService;
 
     public PaymentRepository(DatabaseHelper db)
     {
         _db = db;
+        _commissionService = new DoctorCommissionService(db);
     }
 
+    // نقطة التسجيل الوحيدة لأي دفعة فعلية تُحصَّل في النظام - لذلك هي المكان الصحيح لتفعيل
+    // نظام تقسيم إيرادات الأطباء تلقائياً (بدون أي تدخل يدوي من الطبيب الرئيسي)
     public void AddPayment(int sessionId, decimal amount, int receivedByUserId, string? notes = null)
     {
         const string sql = @"
             INSERT INTO Payments (SessionID, Amount, ReceivedByUserID, Notes)
             VALUES (@SessionID, @Amount, @ReceivedByUserID, @Notes)";
 
-        _db.ExecuteNonQuery(sql,
+        var paymentId = _db.ExecuteInsertAndGetId(sql,
             new SqlParameter("@SessionID", sessionId),
             new SqlParameter("@Amount", amount),
             new SqlParameter("@ReceivedByUserID", receivedByUserId),
             new SqlParameter("@Notes", (object?)notes ?? DBNull.Value));
+
+        // إن كان الطبيب صاحب هذه الجلسة ليس الطبيب الرئيسي، يُنشأ تلقائياً مصروف عمولة بنسبته
+        // (افتراضياً 50%) يُخصَم من صافي ربح العيادة - المبلغ الكامل يبقى محسوباً في الواردات كما هو.
+        try
+        {
+            _commissionService.RecordCommissionForPayment(sessionId, paymentId, amount);
+        }
+        catch
+        {
+            // لا نفشل عملية تحصيل الدفعة نفسها بسبب خطأ في حساب العمولة (مثلاً جلسة بدون طبيب صالح) -
+            // الدفعة أهم وقد سُجِّلت بالفعل؛ يمكن مراجعة العمولات لاحقاً من لوحة الفاينانس عند الحاجة.
+        }
     }
 
     // إصلاح: كان نفس هذا الاستعلام مكرراً حرفياً في 3 أماكن مختلفة عبر NurseApp

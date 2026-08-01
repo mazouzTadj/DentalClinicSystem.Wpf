@@ -39,6 +39,10 @@ public class UserAccount
     public DateTime CreatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
 
+    // نسبة عمولة مخصَّصة لهذا الطبيب تحديداً (0-100). إن كانت فارغة (null) يُستخدم بدلاً منها
+    // الإعداد العام الافتراضي (ClinicSettings: DoctorCommissionPercent). لا قيمة لها بالنسبة للطبيب الرئيسي.
+    public decimal? CommissionPercent { get; set; }
+
     // دالة الفحص الموحَّدة - تُستخدم في كل مكان بدل تكرار العمليات البتّية يدوياً
     public bool HasPermission(UserPermission permission) =>
         (Permissions & permission) == permission;

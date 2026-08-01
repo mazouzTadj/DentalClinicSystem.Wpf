@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:DentalClinic.UI.Controls;assembly=DentalClinic.UI"
-        Title="{DynamicResource File_Title}" Height="870" Width="800" MinWidth="640"
+        Title="ملف المريض" Height="870" Width="800" MinWidth="640"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         ShowInTaskbar="False">
@@ -20,23 +20,23 @@
 
             <!-- شريط علوي مخصّص -->
             <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
-                <TextBlock Text="{DynamicResource File_Title}" FontWeight="Bold" FontSize="14"
+                <TextBlock Text="ملف المريض" FontWeight="Bold" FontSize="14"
                            Foreground="{StaticResource AccentBrush}"
                            VerticalAlignment="Center" Margin="20,0,0,0"/>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
                     <!-- زر الوصفة الطبية -->
-                    <Button x:Name="PrescriptionButton" Content="{DynamicResource File_PrescriptionButton}" Height="30" Width="90"
+                    <Button x:Name="PrescriptionButton" Content="الوصفة الطبية" Height="30" Width="90"
                             Style="{StaticResource SecondaryButtonStyle}" FontSize="12"
                             Margin="0,0,8,0" Click="PrescriptionButton_Click"/>
 
                     <!-- زر التصدير إلى PDF -->
-                    <Button x:Name="ExportPdfButton" Content="{DynamicResource File_ExportPdfButton}" Height="30" Width="110"
+                    <Button x:Name="ExportPdfButton" Content="تصدير إلى PDF" Height="30" Width="110"
                             Style="{StaticResource SecondaryButtonStyle}" FontSize="12"
                             Margin="0,0,8,0" Click="ExportPdfButton_Click"/>
 
                     <!-- 📅 زر حجز موعد جديد -->
-                    <Button x:Name="ScheduleAppointmentButton" Content="{DynamicResource File_ScheduleButton}" Height="30" Padding="10,0"
+                    <Button x:Name="ScheduleAppointmentButton" Content="📅 حجز الزيارة القادمة" Height="30" Padding="10,0"
                             Style="{StaticResource SecondaryButtonStyle}" FontSize="12" FontWeight="SemiBold"
                             Margin="0,0,8,0" Click="ScheduleAppointmentButton_Click"/>
 
@@ -57,7 +57,7 @@
                                TextWrapping="Wrap" Margin="0,0,0,18"/>
 
                     <!-- السجل الطبي السابق -->
-                    <TextBlock Text="{DynamicResource File_HistorySectionTitle}" FontSize="14" FontWeight="SemiBold"
+                    <TextBlock Text="سجل الزيارات السابقة" FontSize="14" FontWeight="SemiBold"
                                Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,8"/>
                     <Border CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}"
                             BorderThickness="1" ClipToBounds="True" Height="170" Margin="0,0,0,22">
@@ -67,56 +67,56 @@
                                   RowStyle="{StaticResource ModernRowStyle}"
                                   CellStyle="{StaticResource ModernCellStyle}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="{DynamicResource Fin_ColDate}" Binding="{Binding DateText}" Width="140"/>
-                                <DataGridTextColumn Header="{DynamicResource AdvSearch_ColDiagnosis}" Binding="{Binding Diagnosis}" Width="*"/>
-                                <DataGridTextColumn Header="{DynamicResource AdvSearch_ColTreatment}" Binding="{Binding Treatment}" Width="*"/>
-                                <DataGridTextColumn Header="{DynamicResource AdvSearch_ColTotal}" Binding="{Binding TotalText}" Width="80"/>
-                                <DataGridTextColumn Header="{DynamicResource AdvSearch_ColPaid}" Binding="{Binding PaidText}" Width="80"/>
-                                <DataGridTextColumn Header="{DynamicResource AdvSearch_ColRemaining}" Binding="{Binding RemainingText}" Width="90"/>
+                                <DataGridTextColumn Header="التاريخ" Binding="{Binding DateText}" Width="140"/>
+                                <DataGridTextColumn Header="التشخيص" Binding="{Binding Diagnosis}" Width="*"/>
+                                <DataGridTextColumn Header="العلاج" Binding="{Binding Treatment}" Width="*"/>
+                                <DataGridTextColumn Header="الإجمالي" Binding="{Binding TotalText}" Width="80"/>
+                                <DataGridTextColumn Header="مدفوع" Binding="{Binding PaidText}" Width="80"/>
+                                <DataGridTextColumn Header="المتبقي" Binding="{Binding RemainingText}" Width="90"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Border>
 
                     <!-- جلسة اليوم -->
-                    <TextBlock Text="{DynamicResource File_TodaySession}" FontSize="16" FontWeight="Bold"
+                    <TextBlock Text="جلسة اليوم" FontSize="16" FontWeight="Bold"
                                Foreground="{StaticResource AccentBrush}" Margin="0,0,0,4"/>
                     <TextBlock x:Name="PrefillNoticeText" FontSize="11.5" FontStyle="Italic"
                                Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,14"
                                Visibility="Collapsed"
-                               Text="{DynamicResource File_PrefillNotice}"/>
+                               Text="معبّأ مسبقًا من آخر زيارة — يرجى المراجعة والتحديث قبل الحفظ."/>
 
-                    <TextBlock Text="{DynamicResource File_ChiefComplaint}" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBlock Text="سبب الزيارة" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
                         <TextBox x:Name="ChiefComplaintBox" Style="{StaticResource PlainTextBoxStyle}"/>
                     </Border>
 
-                    <TextBlock Text="{DynamicResource File_Diagnosis}" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBlock Text="التشخيص" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
                         <TextBox x:Name="DiagnosisBox" Style="{StaticResource PlainTextBoxStyle}"
                                  TextWrapping="Wrap" AcceptsReturn="True" Height="56" VerticalContentAlignment="Top"/>
                     </Border>
 
                     <!-- 🦷 خانة العلاج: ComboBox اختيار من القائمة أو كتابة علاج مخصص -->
-                    <TextBlock Text="{DynamicResource File_Treatment}" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBlock Text="العلاج" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14" Padding="5,2">
                         <ComboBox x:Name="CmbTreatment" BorderThickness="0" Background="Transparent" 
                                   FontSize="14" VerticalAlignment="Center" IsEditable="True"
                                   SelectionChanged="CmbTreatment_SelectionChanged"/>
                     </Border>
 
-                    <TextBlock Text="{DynamicResource File_AffectedTeeth}" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBlock Text="السن المصاب (اختياري)" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Padding="14,12" Margin="0,0,0,14">
                         <controls:OdontogramControl x:Name="Odontogram"/>
                     </Border>
 
-                    <TextBlock Text="{DynamicResource File_Medication}" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBlock Text="الدواء" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
                         <TextBox x:Name="MedicationBox" Style="{StaticResource PlainTextBoxStyle}"/>
                     </Border>
 
                     <!-- 💰 تحديد التكلفة الإجمالية فقط (تم إلغاء خانة الدفع) -->
                     <StackPanel Margin="0,0,0,10">
-                        <TextBlock Text="{DynamicResource File_TotalCost}" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBlock Text="التكلفة الإجمالية للعلاج (دج)" Style="{StaticResource FieldLabelStyle}"/>
                         <Border Style="{StaticResource InputContainerStyle}">
                             <TextBox x:Name="TotalPriceBox" Style="{StaticResource PlainTextBoxStyle}"/>
                         </Border>
@@ -124,10 +124,10 @@
 
                     <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}"/>
 
-                    <Button x:Name="SaveSessionButton" Content="{DynamicResource File_SaveButton}" Height="46" Margin="0,10,0,0"
+                    <Button x:Name="SaveSessionButton" Content="حفظ الجلسة وإتمام العلاج الطبي" Height="46" Margin="0,10,0,0"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Click="SaveSessionButton_Click"/>
-                    <Button Content="{DynamicResource Common_Close}" Height="38" Margin="0,10,0,0"
+                    <Button Content="إغلاق" Height="38" Margin="0,10,0,0"
                             Style="{StaticResource SecondaryButtonStyle}"
                             Click="CloseButton_Click"/>
                 </StackPanel>

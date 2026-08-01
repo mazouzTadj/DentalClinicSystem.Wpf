@@ -4,7 +4,6 @@ using System.Windows;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
 using DentalClinic.Features; // PatientFileWindow انتقلت إلى المشروع المشترك
-using DentalClinic.UI.Localization;
 
 namespace DentalClinic.DoctorApp;
 
@@ -24,7 +23,7 @@ public partial class AdvancedSearchWindow : Window
         var db = new DatabaseHelper(connectionString);
         _sessionRepo = new SessionRepository(db);
 
-        ResultCountText.Text = LocalizationManager.T("AdvSearch_InitialHint");
+        ResultCountText.Text = "Enter any combination of criteria above and click Search";
     }
 
     private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -49,11 +48,11 @@ public partial class AdvancedSearchWindow : Window
                 Results.Add(new AdvancedSearchRowViewModel(r));
             }
 
-            ResultCountText.Text = LocalizationManager.T("AdvSearch_ResultsCountFormat", matches.Count);
+            ResultCountText.Text = $"{matches.Count} result(s) found";
         }
         catch (Exception ex)
         {
-            ResultCountText.Text = LocalizationManager.T("AdvSearch_SearchErrorFormat", ex.Message);
+            ResultCountText.Text = "Search error: " + ex.Message;
         }
     }
 
@@ -66,7 +65,7 @@ public partial class AdvancedSearchWindow : Window
         ToDatePicker.SelectedDate = null;
         OutstandingOnlyCheck.IsChecked = false;
         Results.Clear();
-        ResultCountText.Text = LocalizationManager.T("AdvSearch_InitialHint");
+        ResultCountText.Text = "Enter any combination of criteria above and click Search";
     }
 
     private void ResultsGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -78,7 +77,7 @@ public partial class AdvancedSearchWindow : Window
     {
         if (ResultsGrid.SelectedItem is not AdvancedSearchRowViewModel selected)
         {
-            MessageBox.Show(LocalizationManager.T("AdvSearch_SelectResultFirst"), LocalizationManager.T("Common_Notice"),
+            MessageBox.Show("Please select a result from the list first", "Notice",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }

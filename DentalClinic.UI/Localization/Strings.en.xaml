@@ -19,7 +19,6 @@
     <sys:String x:Key="Common_AccessDenied">Access Denied</sys:String>
     <sys:String x:Key="Common_Confirm">Confirm</sys:String>
     <sys:String x:Key="Common_Close">Close</sys:String>
-    <sys:String x:Key="Common_Success">Success</sys:String>
 
     <!-- ===== شاشة تسجيل الدخول ===== -->
     <sys:String x:Key="Login_TitleDoctor">Doctor Login</sys:String>
@@ -214,6 +213,20 @@
     <sys:String x:Key="Fin_NoPatientActivity">No patient activity recorded in this period</sys:String>
     <sys:String x:Key="Fin_TopTreatments">Most Common Treatments</sys:String>
     <sys:String x:Key="Fin_NotEnoughData">Not enough data yet</sys:String>
+    <sys:String x:Key="Fin_DoctorStats">Doctor Statistics</sys:String>
+    <sys:String x:Key="Fin_CommissionSettingsButton">⚙ Commission Settings</sys:String>
+    <sys:String x:Key="Fin_PrimaryDoctorTooltip">Primary doctor - takes 100% of income, no commission applies</sys:String>
+    <sys:String x:Key="Commission_Title">Doctor Commission Settings</sys:String>
+    <sys:String x:Key="Commission_Header">Doctor Commissions</sys:String>
+    <sys:String x:Key="Commission_SubHeader">The primary doctor keeps 100% of every payment. Any other doctor automatically has their commission share deducted as a clinic expense whenever a payment is collected.</sys:String>
+    <sys:String x:Key="Commission_DefaultLabel">General default percentage</sys:String>
+    <sys:String x:Key="Commission_DefaultHint">Applied to any doctor without a custom percentage below.</sys:String>
+    <sys:String x:Key="Commission_PerDoctorLabel">Custom percentage per doctor (optional)</sys:String>
+    <sys:String x:Key="Commission_PrimaryPickerHint">Select ⚪ next to the doctor you want as the "Primary Doctor" (keeps 100% of every payment, no commission). If none is selected, the first doctor ever registered is used automatically.</sys:String>
+    <sys:String x:Key="Commission_SetPrimaryTooltip">Set this doctor as the primary doctor</sys:String>
+    <sys:String x:Key="Commission_InvalidPercent">Please enter a valid general percentage between 0 and 100.</sys:String>
+    <sys:String x:Key="Commission_InvalidDoctorPercentFormat">The percentage entered for "{0}" is invalid (must be between 0 and 100).</sys:String>
+    <sys:String x:Key="Commission_SaveErrorFormat">Could not save settings: {0}</sys:String>
     <sys:String x:Key="Fin_OutstandingBalances">Outstanding Balances</sys:String>
     <sys:String x:Key="Fin_ColPatient">Patient</sys:String>
     <sys:String x:Key="Fin_ColPhone">Phone</sys:String>
@@ -228,6 +241,7 @@
     <sys:String x:Key="Fin_ColCategory">Category</sys:String>
     <sys:String x:Key="Fin_ColDescription">Description</sys:String>
     <sys:String x:Key="Fin_ColAmount">Amount</sys:String>
+    <sys:String x:Key="Fin_ColActions">&#160;</sys:String>
     <sys:String x:Key="Fin_PeriodOverview">Period Overview</sys:String>
     <sys:String x:Key="Fin_TotalRevenue">Total Revenue:</sys:String>
     <sys:String x:Key="Fin_TotalExpenses">Total Expenses:</sys:String>
@@ -261,6 +275,7 @@
     <sys:String x:Key="Expense_Date">Date</sys:String>
     <sys:String x:Key="Expense_CatMedicalSupplies">Medical Supplies &amp; Anesthesia</sys:String>
     <sys:String x:Key="Expense_CatLabFees">Dental Lab Fees</sys:String>
+    <sys:String x:Key="Expense_CatDoctorCommission">Doctor Commission</sys:String>
     <sys:String x:Key="Expense_CatSalaries">Salaries &amp; Staff Wages</sys:String>
     <sys:String x:Key="Expense_CatUtilities">Bills &amp; Utilities</sys:String>
     <sys:String x:Key="Expense_CatMaintenance">Equipment Maintenance</sys:String>
@@ -270,6 +285,11 @@
     <sys:String x:Key="Expense_ValidationErrorTitle">Validation Error</sys:String>
     <sys:String x:Key="Expense_DescriptionRequired">Please enter a description.</sys:String>
     <sys:String x:Key="Expense_SaveErrorFormat">Error saving expense: {0}</sys:String>
+    <sys:String x:Key="Expense_DeleteTooltip">Delete this expense</sys:String>
+    <sys:String x:Key="Expense_DeleteConfirmTitle">Confirm Deletion</sys:String>
+    <sys:String x:Key="Expense_DeleteConfirmMessageFormat">Are you sure you want to delete this expense?&#10;"{0}" - {1}&#10;This action cannot be undone.</sys:String>
+    <sys:String x:Key="Expense_DeleteConfirmAutoMessageFormat">This is a doctor commission expense auto-generated from an actual payment:&#10;"{0}" - {1}&#10;Deleting it won't affect the payment itself, but it will increase the clinic's calculated net profit for this period. Continue?</sys:String>
+    <sys:String x:Key="Expense_DeleteErrorFormat">Could not delete expense: {0}</sys:String>
 
     <!-- ===== شاشة إدارة العلاجات والأسعار ===== -->
     <sys:String x:Key="Treat_Title">Manage Treatments</sys:String>
@@ -292,87 +312,6 @@
     <sys:String x:Key="Treat_ConfirmDeleteFormat">Are you sure you want to delete '{0}'?</sys:String>
     <sys:String x:Key="Treat_ConfirmDeleteTitle">Confirm Delete</sys:String>
     <sys:String x:Key="Treat_DeleteErrorFormat">Error deleting: {0}</sys:String>
-
-    <!-- ===== شاشة الوصفة الطبية ===== -->
-    <sys:String x:Key="Rx_Title">Prescription</sys:String>
-    <sys:String x:Key="Rx_PatientHeaderFormat">Prescription for: {0}</sys:String>
-    <sys:String x:Key="Rx_QuickAddLabel">Add from Quick List</sys:String>
-    <sys:String x:Key="Rx_AddButton">+ Add</sys:String>
-    <sys:String x:Key="Rx_LinesLabel">Prescription Items</sys:String>
-    <sys:String x:Key="Rx_AddCustomLine">+ Add Custom Line</sys:String>
-    <sys:String x:Key="Rx_NotesLabel">General Instructions / Notes (optional)</sys:String>
-    <sys:String x:Key="Rx_GenerateButton">Generate &amp; Print PDF</sys:String>
-    <sys:String x:Key="Rx_SelectMedicationFirst">Please select a medication from the list first</sys:String>
-    <sys:String x:Key="Rx_AddAtLeastOne">Add at least one medication before generating the prescription</sys:String>
-    <sys:String x:Key="Rx_SavedSuccessMessage">Prescription saved successfully. Do you want to open it now to print?</sys:String>
-    <sys:String x:Key="Rx_ExportCompleteTitle">Export Complete</sys:String>
-    <sys:String x:Key="Rx_GenerateErrorFormat">Failed to generate the prescription: {0}</sys:String>
-
-    <!-- ===== شاشة حجز موعد ===== -->
-    <sys:String x:Key="Sched_Title">Schedule Appointment</sys:String>
-    <sys:String x:Key="Sched_HeaderNewVisit">Book New Visit</sys:String>
-    <sys:String x:Key="Sched_DateLabel">Appointment Date *</sys:String>
-    <sys:String x:Key="Sched_TimeLabel">Appointment Time *</sys:String>
-    <sys:String x:Key="Sched_SaveButton">Save Appointment</sys:String>
-    <sys:String x:Key="Sched_SelectDateMsg">Please select an appointment date.</sys:String>
-    <sys:String x:Key="Sched_SuccessMsg">Appointment scheduled successfully!</sys:String>
-    <sys:String x:Key="Sched_SaveErrorMsg">An error occurred while saving the appointment.</sys:String>
-
-    <!-- ===== شاشة البحث المتقدم (تطبيق الطبيب) ===== -->
-    <sys:String x:Key="AdvSearch_Title">Advanced Search</sys:String>
-    <sys:String x:Key="AdvSearch_CriteriaLabel">Search Criteria (all fields optional)</sys:String>
-    <sys:String x:Key="AdvSearch_NameOrPhone">Patient Name or Phone</sys:String>
-    <sys:String x:Key="AdvSearch_DiagnosisContains">Diagnosis Contains</sys:String>
-    <sys:String x:Key="AdvSearch_ToothNumber">Tooth Number</sys:String>
-    <sys:String x:Key="AdvSearch_FromDate">From Date</sys:String>
-    <sys:String x:Key="AdvSearch_ToDate">To Date</sys:String>
-    <sys:String x:Key="AdvSearch_OutstandingOnly">Outstanding Balance Only</sys:String>
-    <sys:String x:Key="AdvSearch_ClearButton">Clear</sys:String>
-    <sys:String x:Key="AdvSearch_HintDoubleClick">  (double-click a row, or select it then click Open)</sys:String>
-    <sys:String x:Key="AdvSearch_ColDiagnosis">Diagnosis</sys:String>
-    <sys:String x:Key="AdvSearch_ColTreatment">Treatment</sys:String>
-    <sys:String x:Key="AdvSearch_ColTotal">Total</sys:String>
-    <sys:String x:Key="AdvSearch_ColPaid">Paid</sys:String>
-    <sys:String x:Key="AdvSearch_ColRemaining">Remaining</sys:String>
-    <sys:String x:Key="AdvSearch_InitialHint">Enter any combination of criteria above and click Search</sys:String>
-    <sys:String x:Key="AdvSearch_ResultsCountFormat">{0} result(s) found</sys:String>
-    <sys:String x:Key="AdvSearch_SearchErrorFormat">Search error: {0}</sys:String>
-    <sys:String x:Key="AdvSearch_SelectResultFirst">Please select a result from the list first</sys:String>
-
-    <!-- ===== مخطط الأسنان (Odontogram) ===== -->
-    <sys:String x:Key="Odonto_UpperArch">Upper</sys:String>
-    <sys:String x:Key="Odonto_LowerArch">Lower</sys:String>
-    <sys:String x:Key="Odonto_SelectedPrefix">Selected teeth: </sys:String>
-    <sys:String x:Key="Odonto_None">None</sys:String>
-
-    <!-- ===== شاشة ملف المريض الكامل ===== -->
-    <sys:String x:Key="File_Title">Patient File</sys:String>
-    <sys:String x:Key="File_PrescriptionButton">Prescription</sys:String>
-    <sys:String x:Key="File_ExportPdfButton">Export to PDF</sys:String>
-    <sys:String x:Key="File_ScheduleButton">📅 Book Next Visit</sys:String>
-    <sys:String x:Key="File_HistorySectionTitle">Previous Visit History</sys:String>
-    <sys:String x:Key="File_TodaySession">Today's Session</sys:String>
-    <sys:String x:Key="File_PrefillNotice">Pre-filled from the last visit — please review and update before saving.</sys:String>
-    <sys:String x:Key="File_ChiefComplaint">Chief Complaint</sys:String>
-    <sys:String x:Key="File_Diagnosis">Diagnosis</sys:String>
-    <sys:String x:Key="File_Treatment">Treatment</sys:String>
-    <sys:String x:Key="File_AffectedTeeth">Affected Teeth (optional, select one or more)</sys:String>
-    <sys:String x:Key="File_Medication">Medication</sys:String>
-    <sys:String x:Key="File_TotalCost">Total Treatment Cost (DA)</sys:String>
-    <sys:String x:Key="File_SaveButton">Save Session &amp; Complete Treatment</sys:String>
-    <sys:String x:Key="File_SaveButtonSimple">Save Session</sys:String>
-    <sys:String x:Key="File_PatientDataNotLoaded">Patient data is not loaded yet</sys:String>
-    <sys:String x:Key="File_PdfSavedMessage">PDF saved successfully. Do you want to open it now?</sys:String>
-    <sys:String x:Key="File_ExportPdfErrorFormat">Failed to export PDF: {0}</sys:String>
-    <sys:String x:Key="File_PatientNotFound">Could not find this patient's data</sys:String>
-    <sys:String x:Key="File_HeaderFormat">Patient File: {0}</sys:String>
-    <sys:String x:Key="File_InfoLineFormat">Age: {0}   |   Gender: {1}   |   Phone: {2}</sys:String>
-    <sys:String x:Key="File_BasicNotesFormat">{0}Basic notes from reception: {1}</sys:String>
-    <sys:String x:Key="File_InvalidTotalPrice">Invalid total price format</sys:String>
-    <sys:String x:Key="File_CompletedSavedMessage">Medical treatment completed and saved successfully. Patient can now proceed to payment at reception.</sys:String>
-    <sys:String x:Key="File_SessionSavedMessage">Session saved successfully</sys:String>
-    <sys:String x:Key="File_SavedTitle">Saved</sys:String>
-    <sys:String x:Key="File_SaveErrorFormat">An error occurred while saving: {0}</sys:String>
 
     <!-- ===== شاشة النسخ الاحتياطي ===== -->
     <sys:String x:Key="Backup_Title">Database Backup</sys:String>

@@ -147,24 +147,43 @@
                                     <DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="12" ShadowDepth="3"/>
                                 </Border.Effect>
                                 <DockPanel>
-                                    <TextBlock DockPanel.Dock="Top" Text="{DynamicResource Fin_TopTreatments}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,14"/>
-                                    <TextBlock x:Name="NoTreatmentsText" Text="{DynamicResource Fin_NotEnoughData}" Foreground="{StaticResource TextSecondaryBrush}" FontStyle="Italic" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
-                                    <ItemsControl x:Name="TreatmentBarItems">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid Margin="0,5">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="130"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="30"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Grid.Column="0" Text="{Binding Label}" FontSize="11.5" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                                    <Border Grid.Column="1" Background="{StaticResource AccentBrush}" Height="14" CornerRadius="4" HorizontalAlignment="Left" Width="{Binding BarWidth}"/>
-                                                    <TextBlock Grid.Column="2" Text="{Binding ValueText}" FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                    <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{DynamicResource Fin_DoctorStats}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                        <Button x:Name="BtnCommissionSettings" Grid.Column="1" Content="{DynamicResource Fin_CommissionSettingsButton}"
+                                                FontSize="10.5" Padding="8,3" Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource AccentBrush}"
+                                                Foreground="{StaticResource AccentBrush}" Cursor="Hand" Click="CommissionSettingsButton_Click" Visibility="Collapsed"/>
+                                    </Grid>
+                                    <TextBlock x:Name="NoDoctorStatsText" Text="{DynamicResource Fin_NotEnoughData}" Foreground="{StaticResource TextSecondaryBrush}" FontStyle="Italic" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl x:Name="DoctorStatsItems">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Margin="0,0,0,10" Padding="0,0,0,8" BorderThickness="0,0,0,1" BorderBrush="#F0F0F0">
+                                                        <StackPanel>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                                    <TextBlock Text="👑" FontSize="11" Margin="0,0,4,0" Visibility="{Binding CrownVisibility}" ToolTip="{DynamicResource Fin_PrimaryDoctorTooltip}"/>
+                                                                    <TextBlock Text="{Binding DoctorName}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                                </StackPanel>
+                                                                <TextBlock Grid.Column="1" Text="{Binding IncomeText}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                                            </Grid>
+                                                            <TextBlock Text="{Binding PatientsAndSessionsText}" FontSize="10.5" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,4"/>
+                                                            <Border Background="{StaticResource AccentBrush}" Height="8" CornerRadius="4" HorizontalAlignment="Left" Width="{Binding BarWidth}" Margin="0,0,0,4"/>
+                                                            <TextBlock Text="{Binding CommissionText}" FontSize="10" FontStyle="Italic" Foreground="#E67E22" Visibility="{Binding CommissionVisibility}"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
                                 </DockPanel>
                             </Border>
                         </Grid>
@@ -245,6 +264,15 @@
                                     <DataGridTextColumn Header="{DynamicResource Fin_ColCategory}" Binding="{Binding Category}" Width="220"/>
                                     <DataGridTextColumn Header="{DynamicResource Fin_ColDescription}" Binding="{Binding Description}" Width="*"/>
                                     <DataGridTextColumn Header="{DynamicResource Fin_ColAmount}" Binding="{Binding Amount, StringFormat={}{0:N2}}" Width="130"/>
+                                    <DataGridTemplateColumn Header="{DynamicResource Fin_ColActions}" Width="90">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="🗑" ToolTip="{DynamicResource Expense_DeleteTooltip}" Width="30" Height="26"
+                                                        Background="Transparent" BorderThickness="0" Cursor="Hand" FontSize="13"
+                                                        Foreground="{StaticResource ErrorBrush}" Tag="{Binding}" Click="DeleteExpenseButton_Click"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Border>

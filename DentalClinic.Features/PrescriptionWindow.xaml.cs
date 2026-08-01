@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
-using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -20,7 +19,7 @@ public partial class PrescriptionWindow : Window
         InitializeComponent();
 
         LinesItems.ItemsSource = Lines;
-        PatientHeaderText.Text = LocalizationManager.T("Rx_PatientHeaderFormat", patientName);
+        PatientHeaderText.Text = $"Prescription for: {patientName}";
         DateText.Text = DateTime.Now.ToString("yyyy-MM-dd");
 
         if (!string.IsNullOrWhiteSpace(initialMedicationText))
@@ -53,7 +52,7 @@ public partial class PrescriptionWindow : Window
     {
         if (PresetBox.SelectedItem is not MedicationPreset preset)
         {
-            ErrorText.Text = LocalizationManager.T("Rx_SelectMedicationFirst");
+            ErrorText.Text = "Please select a medication from the list first";
             return;
         }
 
@@ -86,7 +85,7 @@ public partial class PrescriptionWindow : Window
         var validLines = Lines.Where(l => !string.IsNullOrWhiteSpace(l.MedicationName)).ToList();
         if (validLines.Count == 0)
         {
-            ErrorText.Text = LocalizationManager.T("Rx_AddAtLeastOne");
+            ErrorText.Text = "Add at least one medication before generating the prescription";
             return;
         }
 
@@ -109,8 +108,8 @@ public partial class PrescriptionWindow : Window
             System.IO.File.WriteAllBytes(dialog.FileName, pdfBytes);
 
             var openIt = MessageBox.Show(
-                LocalizationManager.T("Rx_SavedSuccessMessage"),
-                LocalizationManager.T("Rx_ExportCompleteTitle"),
+                "Prescription saved successfully. Do you want to open it now to print?",
+                "Export Complete",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Information);
 
@@ -127,7 +126,7 @@ public partial class PrescriptionWindow : Window
         }
         catch (Exception ex)
         {
-            ErrorText.Text = LocalizationManager.T("Rx_GenerateErrorFormat", ex.Message);
+            ErrorText.Text = "Failed to generate the prescription: " + ex.Message;
         }
     }
 }

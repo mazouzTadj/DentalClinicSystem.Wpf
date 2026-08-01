@@ -12,13 +12,26 @@ public class UserRepository
     public UserRepository(DatabaseHelper db)
     {
         _db = db;
+        EnsureCommissionColumnExists();
+    }
+
+    // إضافة عمود نسبة العمولة المخصَّصة لكل طبيب - migration آمنة لقواعد البيانات القديمة
+    // (نفس نمط EnsureClinicExpensesTableExists المستخدَم في FinancialRepository)
+    private void EnsureCommissionColumnExists()
+    {
+        const string sql = @"
+            IF NOT EXISTS (SELECT * FROM sys.columns WHERE Name = N'CommissionPercent' AND Object_ID = Object_ID(N'Users'))
+            BEGIN
+                ALTER TABLE Users ADD CommissionPercent DECIMAL(5,2) NULL;
+            END";
+        _db.ExecuteNonQuery(sql);
     }
 
     // البحث عن مستخدم عبر اسم المستخدم (حسابات نشطة فقط) - تُستخدم لتسجيل الدخول
     public UserAccount? FindByUsername(string username)
     {
         const string sql = @"
-            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, PermissionsMask, CreatedAt, LastLoginAt
+            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, PermissionsMask, CommissionPercent, CreatedAt, LastLoginAt
             FROM Users
             WHERE Username = @Username AND IsActive = 1";
 
@@ -69,7 +82,7 @@ public class UserRepository
     public List<UserAccount> GetAllUsers()
     {
         const string sql = @"
-            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, PermissionsMask, CreatedAt, LastLoginAt
+            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, PermissionsMask, CommissionPercent, CreatedAt, LastLoginAt
             FROM Users
             ORDER BY FullName";
 
@@ -182,6 +195,46 @@ public class UserRepository
         PhoneNumber = row["PhoneNumber"] as string,
         IsActive = (bool)row["IsActive"],
         CreatedAt = (DateTime)row["CreatedAt"],
-        LastLoginAt = row["LastLoginAt"] as DateTime?
+        LastLoginAt = row["LastLoginAt"] as DateTime?,
+        CommissionPercent = row.Table.Columns.Contains("CommissionPercent") && row["CommissionPercent"] != DBNull.Value
+            ? Convert.ToDecimal(row["CommissionPercent"])
+            : (decimal?)null
     };
+
+    // ===================== نظام تقسيم إيرادات الأطباء (Doctor Commission) =====================
+
+    // "الطبيب الرئيسي" = أول طبيب سُجِّل في النظام (أصغر UserID بين من دورهم Doctor)، بغض النظر عمّن يملك صلاحيات إدارية اليوم
+    public int? GetPrimaryDoctorUserId()
+    {
+        const string sql = "SELECT TOP 1 UserID FROM Users WHERE RoleID = 1 ORDER BY UserID ASC";
+        var result = _db.ExecuteScalar(sql);
+        return result == null || result == DBNull.Value ? null : Convert.ToInt32(result);
+    }
+
+    // كل الأطباء النشطين - تُستخدم في شاشة إعدادات العمولات لعرض كل طبيب مع نسبته
+    public List<UserAccount> GetAllDoctors()
+    {
+        const string sql = @"
+            SELECT UserID, FullName, Username, PasswordHash, RoleID, PhoneNumber, IsActive, PermissionsMask, CommissionPercent, CreatedAt, LastLoginAt
+            FROM Users
+            WHERE RoleID = 1 AND IsActive = 1
+            ORDER BY UserID ASC";
+
+        var table = _db.ExecuteQuery(sql);
+        var result = new List<UserAccount>();
+        foreach (DataRow row in table.Rows)
+        {
+            result.Add(MapRow(row));
+        }
+        return result;
+    }
+
+    // تعيين/إزالة نسبة عمولة مخصَّصة لطبيب معيَّن (null = العودة لاستخدام النسبة العامة الافتراضية)
+    public void UpdateDoctorCommissionPercent(int userId, decimal? commissionPercent)
+    {
+        const string sql = "UPDATE Users SET CommissionPercent = @CommissionPercent WHERE UserID = @UserID";
+        _db.ExecuteNonQuery(sql,
+            new SqlParameter("@CommissionPercent", (object?)commissionPercent ?? DBNull.Value),
+            new SqlParameter("@UserID", userId));
+    }
 }

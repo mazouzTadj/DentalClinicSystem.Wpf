@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
-using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
@@ -54,7 +53,7 @@ public partial class PatientFileWindow : Window
 
         if (_visitId == null)
         {
-            SaveSessionButton.Content = LocalizationManager.T("File_SaveButtonSimple");
+            SaveSessionButton.Content = "Save Session";
         }
 
         Loaded += (s, e) =>
@@ -121,7 +120,7 @@ public partial class PatientFileWindow : Window
     {
         if (_currentPatient == null)
         {
-            MessageBox.Show(LocalizationManager.T("File_PatientDataNotLoaded"), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Patient data is not loaded yet", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
@@ -133,7 +132,7 @@ public partial class PatientFileWindow : Window
     {
         if (_currentPatient == null)
         {
-            MessageBox.Show(LocalizationManager.T("File_PatientDataNotLoaded"), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Patient data is not loaded yet", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
@@ -157,8 +156,8 @@ public partial class PatientFileWindow : Window
             System.IO.File.WriteAllBytes(dialog.FileName, pdfBytes);
 
             var openIt = MessageBox.Show(
-                LocalizationManager.T("File_PdfSavedMessage"),
-                LocalizationManager.T("Rx_ExportCompleteTitle"),
+                "PDF saved successfully. Do you want to open it now?",
+                "Export Complete",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Information);
 
@@ -172,7 +171,7 @@ public partial class PatientFileWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(LocalizationManager.T("File_ExportPdfErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Failed to export PDF: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -180,7 +179,7 @@ public partial class PatientFileWindow : Window
     {
         if (_currentPatient == null)
         {
-            MessageBox.Show(LocalizationManager.T("File_PatientDataNotLoaded"), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Patient data is not loaded yet", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
@@ -192,33 +191,23 @@ public partial class PatientFileWindow : Window
         dialog.ShowDialog();
     }
 
-    // القيمة المخزَّنة في قاعدة البيانات ثابتة دائماً (Male/Female بالإنجليزية، كما هو معمول به في AddPatientWindow)
-    // بينما هذه الدالة تترجمها فقط للعرض حسب لغة الواجهة الحالية. أي قيمة قديمة/حرة أخرى تُعرَض كما هي.
-    private static string LocalizeGender(string? rawGender) => rawGender switch
-    {
-        "Male" => LocalizationManager.T("AddPatient_GenderMale"),
-        "Female" => LocalizationManager.T("AddPatient_GenderFemale"),
-        null or "" => "-",
-        _ => rawGender
-    };
-
     private void LoadPatientInfo()
     {
         var patient = _patientRepo.GetById(_patientId);
         if (patient == null)
         {
-            MessageBox.Show(LocalizationManager.T("File_PatientNotFound"), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Could not find this patient's data", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             Close();
             return;
         }
 
-        PatientHeaderText.Text = LocalizationManager.T("File_HeaderFormat", patient.FullName);
+        PatientHeaderText.Text = $"Patient File: {patient.FullName}";
         _currentPatient = patient;
 
-        var info = LocalizationManager.T("File_InfoLineFormat", patient.Age?.ToString() ?? "-", LocalizeGender(patient.Gender), patient.PhoneNumber);
+        var info = $"Age: {(patient.Age?.ToString() ?? "-")}   |   Gender: {patient.Gender ?? "-"}   |   Phone: {patient.PhoneNumber}";
         if (!string.IsNullOrWhiteSpace(patient.BasicMedicalNotes))
         {
-            info += LocalizationManager.T("File_BasicNotesFormat", Environment.NewLine, patient.BasicMedicalNotes);
+            info += $"\nBasic notes from reception: {patient.BasicMedicalNotes}";
         }
         PatientInfoText.Text = info;
     }
@@ -244,11 +233,10 @@ public partial class PatientFileWindow : Window
             var lastToothNumbers = _sessionRepo.GetToothNumbersForSession(lastSession.SessionID);
             if (lastToothNumbers.Count > 0)
             {
-                // إصلاح: كانت تُعبَّأ فقط بأول سن مسجَّل في الزيارة السابقة، الآن تُعبَّأ كل الأسنان المسجَّلة
-                Odontogram.SetSelectedTeeth(lastToothNumbers);
+                Odontogram.SetSelectedTooth(lastToothNumbers[0]);
             }
 
-            PrefillNoticeText.Text = LocalizationManager.T("File_PrefillNotice");
+            PrefillNoticeText.Text = "Pre-filled from the last visit — please review and update before saving.";
             PrefillNoticeText.Visibility = Visibility.Visible;
         }
     }
@@ -263,7 +251,7 @@ public partial class PatientFileWindow : Window
         {
             if (!decimal.TryParse(TotalPriceBox.Text.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out totalPrice) || totalPrice < 0)
             {
-                ErrorText.Text = LocalizationManager.T("File_InvalidTotalPrice");
+                ErrorText.Text = "Invalid total price format";
                 return;
             }
         }
@@ -286,10 +274,9 @@ public partial class PatientFileWindow : Window
 
             var newSessionId = _sessionRepo.Add(session);
 
-            // كل الأسنان المحدَّدة (وليس أول واحد فقط) تُسجَّل كسجل منفصل مرتبط بنفس الجلسة
-            foreach (var toothNumber in Odontogram.SelectedTeeth)
+            if (!string.IsNullOrWhiteSpace(Odontogram.SelectedTooth))
             {
-                _sessionRepo.AddToothRecord(newSessionId, toothNumber, "Treated", null);
+                _sessionRepo.AddToothRecord(newSessionId, Odontogram.SelectedTooth, "Treated", null);
             }
 
             if (_visitId.HasValue)
@@ -298,16 +285,16 @@ public partial class PatientFileWindow : Window
             }
 
             var savedMessage = _visitId.HasValue
-                ? LocalizationManager.T("File_CompletedSavedMessage")
-                : LocalizationManager.T("File_SessionSavedMessage");
+                ? "Medical treatment completed and saved successfully. Patient can now proceed to payment at reception."
+                : "Session saved successfully";
 
-            MessageBox.Show(savedMessage, LocalizationManager.T("File_SavedTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(savedMessage, "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             DialogResult = true;
             Close();
         }
         catch (Exception ex)
         {
-            ErrorText.Text = LocalizationManager.T("File_SaveErrorFormat", ex.Message);
+            ErrorText.Text = "An error occurred while saving: " + ex.Message;
         }
     }
 }
