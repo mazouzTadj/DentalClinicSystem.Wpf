@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
+using DentalClinic.Data.Models;
 using Microsoft.Data.SqlClient;
 using DentalClinic.UI.Localization;
 
@@ -22,9 +23,12 @@ public class TreatmentGridRowModel
 public partial class TreatmentManagementWindow : Window
 {
     private readonly DatabaseHelper _db;
+    private readonly MedicationPresetRepository _medicationRepo;
     public ObservableCollection<TreatmentGridRowModel> TreatmentsList { get; } = new();
+    public ObservableCollection<MedicationPreset> MedicationsList { get; } = new();
 
     private int? _editingTreatmentId = null;
+    private int? _editingMedicationId = null;
 
     public TreatmentManagementWindow()
     {
@@ -32,13 +36,16 @@ public partial class TreatmentManagementWindow : Window
 
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
         _db = new DatabaseHelper(connectionString);
+        _medicationRepo = new MedicationPresetRepository(_db);
 
         TreatmentsGrid.ItemsSource = TreatmentsList;
+        MedicationsGrid.ItemsSource = MedicationsList;
 
         Loaded += (s, e) =>
         {
             EnsureTableExists();
             LoadTreatments();
+            LoadMedications();
         };
     }
 
@@ -48,6 +55,23 @@ public partial class TreatmentManagementWindow : Window
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+    // ===================== تبديل بين لوحتَي "العلاجات" و"الأدوية" - نفس نمط تبويبات لوحة الفاينانس =====================
+    private void TabTreatments_Click(object sender, RoutedEventArgs e)
+    {
+        TreatmentsPanelGrid.Visibility = Visibility.Visible;
+        MedicationsPanelGrid.Visibility = Visibility.Collapsed;
+        TabTreatmentsButton.Style = (Style)FindResource("PrimaryButtonStyle");
+        TabMedicationsButton.Style = (Style)FindResource("SecondaryButtonStyle");
+    }
+
+    private void TabMedications_Click(object sender, RoutedEventArgs e)
+    {
+        MedicationsPanelGrid.Visibility = Visibility.Visible;
+        TreatmentsPanelGrid.Visibility = Visibility.Collapsed;
+        TabMedicationsButton.Style = (Style)FindResource("PrimaryButtonStyle");
+        TabTreatmentsButton.Style = (Style)FindResource("SecondaryButtonStyle");
+    }
 
     private void EnsureTableExists()
     {
@@ -192,5 +216,110 @@ public partial class TreatmentManagementWindow : Window
         BtnSave.Content = LocalizationManager.T("Treat_AddButton");
         BtnCancelEdit.Visibility = Visibility.Collapsed;
         ErrorText.Text = string.Empty;
+    }
+
+    // ===================== لوحة الأدوية =====================
+
+    private void LoadMedications()
+    {
+        try
+        {
+            MedicationsList.Clear();
+            foreach (var med in _medicationRepo.GetActivePresets())
+            {
+                MedicationsList.Add(med);
+            }
+        }
+        catch (Exception ex)
+        {
+            MedErrorText.Text = LocalizationManager.T("Treat_LoadErrorFormat", ex.Message);
+        }
+    }
+
+    private void BtnSaveMed_Click(object sender, RoutedEventArgs e)
+    {
+        MedErrorText.Text = string.Empty;
+
+        var name = TxtMedicationName.Text.Trim();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            MedErrorText.Text = LocalizationManager.T("Med_NameRequired");
+            return;
+        }
+
+        var dosage = string.IsNullOrWhiteSpace(TxtMedicationDosage.Text) ? null : TxtMedicationDosage.Text.Trim();
+        var duration = string.IsNullOrWhiteSpace(TxtMedicationDuration.Text) ? null : TxtMedicationDuration.Text.Trim();
+
+        try
+        {
+            if (_editingMedicationId.HasValue)
+            {
+                _medicationRepo.UpdatePreset(_editingMedicationId.Value, name, dosage, duration);
+            }
+            else
+            {
+                _medicationRepo.AddPreset(name, dosage, duration);
+            }
+
+            ResetMedForm();
+            LoadMedications();
+        }
+        catch (Exception ex)
+        {
+            MedErrorText.Text = LocalizationManager.T("Treat_SaveErrorFormat", ex.Message);
+        }
+    }
+
+    private void BtnEditMed_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is MedicationPreset item)
+        {
+            _editingMedicationId = item.MedicationID;
+            TxtMedicationName.Text = item.MedicationName;
+            TxtMedicationDosage.Text = item.DefaultDosage ?? string.Empty;
+            TxtMedicationDuration.Text = item.DefaultDuration ?? string.Empty;
+
+            BtnSaveMed.Content = LocalizationManager.T("Treat_UpdateButton");
+            BtnCancelEditMed.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void BtnDeleteMed_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is MedicationPreset item)
+        {
+            var result = MessageBox.Show(LocalizationManager.T("Treat_ConfirmDeleteFormat", item.MedicationName), LocalizationManager.T("Treat_ConfirmDeleteTitle"), MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    _medicationRepo.DeactivatePreset(item.MedicationID);
+
+                    if (_editingMedicationId == item.MedicationID) ResetMedForm();
+
+                    LoadMedications();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(LocalizationManager.T("Treat_DeleteErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+    }
+
+    private void BtnCancelEditMed_Click(object sender, RoutedEventArgs e)
+    {
+        ResetMedForm();
+    }
+
+    private void ResetMedForm()
+    {
+        _editingMedicationId = null;
+        TxtMedicationName.Text = string.Empty;
+        TxtMedicationDosage.Text = string.Empty;
+        TxtMedicationDuration.Text = string.Empty;
+        BtnSaveMed.Content = LocalizationManager.T("Med_AddButton");
+        BtnCancelEditMed.Visibility = Visibility.Collapsed;
+        MedErrorText.Text = string.Empty;
     }
 }

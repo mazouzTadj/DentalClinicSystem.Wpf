@@ -40,7 +40,22 @@
 
                     <TextBlock x:Name="PasswordLabel" Text="{DynamicResource UserEdit_PasswordNew}" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
-                        <PasswordBox x:Name="PasswordBox" Style="{StaticResource PlainPasswordBoxStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <PasswordBox x:Name="PasswordBox" Style="{StaticResource PlainPasswordBoxStyle}"
+                                             PasswordChanged="PasswordBox_PasswordChanged"/>
+                                <TextBox x:Name="PasswordVisibleBox" Style="{StaticResource PlainTextBoxStyle}"
+                                         Visibility="Collapsed" TextChanged="PasswordVisibleBox_TextChanged"/>
+                            </Grid>
+                            <ToggleButton x:Name="ShowPasswordToggle" Grid.Column="1" Content="👁" Width="34" Height="34"
+                                          Style="{StaticResource IconToggleButtonStyle}" FontSize="13"
+                                          VerticalAlignment="Center" Margin="0,0,4,0" ToolTip="{DynamicResource Login_ShowPassword}"
+                                          Checked="ShowPasswordToggle_Checked" Unchecked="ShowPasswordToggle_Unchecked"/>
+                        </Grid>
                     </Border>
 
                     <Grid Margin="0,0,0,14">

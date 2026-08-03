@@ -1,5 +1,6 @@
 using System.Configuration;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
@@ -36,6 +37,43 @@ public partial class LoginWindow : Window
         {
             LoginButton_Click(sender, e);
         }
+    }
+
+    // مزامنة مستمرة بين PasswordBox (المخفي) و TextBox (الظاهر) بغضّ النظر عن أيهما مرئي حالياً،
+    // حتى تبقى PasswordBox.Password دائماً المصدر الصحيح المستخدَم عند تسجيل الدخول دون أي تعديل آخر
+    private bool _syncingPassword;
+
+    private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+    {
+        if (_syncingPassword) return;
+        _syncingPassword = true;
+        PasswordVisibleBox.Text = PasswordBox.Password;
+        _syncingPassword = false;
+    }
+
+    private void PasswordVisibleBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_syncingPassword) return;
+        _syncingPassword = true;
+        PasswordBox.Password = PasswordVisibleBox.Text;
+        _syncingPassword = false;
+    }
+
+    private void ShowPasswordToggle_Checked(object sender, RoutedEventArgs e)
+    {
+        PasswordVisibleBox.Visibility = Visibility.Visible;
+        PasswordBox.Visibility = Visibility.Collapsed;
+        ShowPasswordToggle.Content = "🙈";
+        PasswordVisibleBox.Focus();
+        PasswordVisibleBox.CaretIndex = PasswordVisibleBox.Text.Length;
+    }
+
+    private void ShowPasswordToggle_Unchecked(object sender, RoutedEventArgs e)
+    {
+        PasswordBox.Visibility = Visibility.Visible;
+        PasswordVisibleBox.Visibility = Visibility.Collapsed;
+        ShowPasswordToggle.Content = "👁";
+        PasswordBox.Focus();
     }
 
     private void EnglishLangButton_Click(object sender, RoutedEventArgs e) => TrySwitchLanguage(AppLanguage.English);

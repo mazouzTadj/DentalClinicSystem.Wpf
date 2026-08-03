@@ -78,6 +78,43 @@ public partial class UserEditWindow : Window
         Close();
     }
 
+    // مزامنة مستمرة بين PasswordBox (المخفي) و TextBox (الظاهر) بغضّ النظر عن أيهما مرئي حالياً،
+    // حتى تبقى PasswordBox.Password دائماً المصدر الصحيح المستخدَم عند الحفظ دون أي تعديل آخر
+    private bool _syncingPassword;
+
+    private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+    {
+        if (_syncingPassword) return;
+        _syncingPassword = true;
+        PasswordVisibleBox.Text = PasswordBox.Password;
+        _syncingPassword = false;
+    }
+
+    private void PasswordVisibleBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_syncingPassword) return;
+        _syncingPassword = true;
+        PasswordBox.Password = PasswordVisibleBox.Text;
+        _syncingPassword = false;
+    }
+
+    private void ShowPasswordToggle_Checked(object sender, RoutedEventArgs e)
+    {
+        PasswordVisibleBox.Visibility = Visibility.Visible;
+        PasswordBox.Visibility = Visibility.Collapsed;
+        ShowPasswordToggle.Content = "🙈";
+        PasswordVisibleBox.Focus();
+        PasswordVisibleBox.CaretIndex = PasswordVisibleBox.Text.Length;
+    }
+
+    private void ShowPasswordToggle_Unchecked(object sender, RoutedEventArgs e)
+    {
+        PasswordBox.Visibility = Visibility.Visible;
+        PasswordVisibleBox.Visibility = Visibility.Collapsed;
+        ShowPasswordToggle.Content = "👁";
+        PasswordBox.Focus();
+    }
+
     // تجميع كل الصلاحيات المختارة في الواجهة إلى قيمة واحدة من النوع UserPermission
     private UserPermission CollectSelectedPermissions()
     {

@@ -5,39 +5,54 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
 
 public partial class PrescriptionWindow : Window
 {
     private readonly string _patientName;
+    private readonly int? _patientAge;
     public ObservableCollection<PrescriptionLineViewModel> Lines { get; } = new();
 
-    public PrescriptionWindow(string patientName, string? initialMedicationText)
+    public PrescriptionWindow(string patientName, List<string>? initialMedicationNames = null, int? patientAge = null)
     {
         _patientName = patientName;
+        _patientAge = patientAge;
         InitializeComponent();
 
         LinesItems.ItemsSource = Lines;
-        PatientHeaderText.Text = $"Prescription for: {patientName}";
+        PatientHeaderText.Text = LocalizationManager.T("Rx_PatientHeaderFormat", patientName);
         DateText.Text = DateTime.Now.ToString("yyyy-MM-dd");
 
-        if (!string.IsNullOrWhiteSpace(initialMedicationText))
-        {
-            Lines.Add(new PrescriptionLineViewModel { MedicationName = initialMedicationText.Trim() });
-        }
-
+        List<MedicationPreset> presets = new();
         try
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
             var db = new DatabaseHelper(connectionString);
             var presetRepo = new MedicationPresetRepository(db);
-            var presets = presetRepo.GetActivePresets();
+            presets = presetRepo.GetActivePresets();
             PresetBox.ItemsSource = presets;
         }
         catch
         {
             // القائمة السريعة اختيارية بحتة - عدم توفرها لا يمنع كتابة وصفة يدوياً بالكامل
+        }
+
+        // كل دواء تم اختياره في ملف المريض يظهر مباشرة كسطر جاهز هنا - مع تعبئة الجرعة/المدة
+        // تلقائياً إن وُجد دواء بنفس الاسم في القائمة السريعة، وإلا يبقى السطر بلا جرعة/مدة لتُكتب يدوياً
+        if (initialMedicationNames != null)
+        {
+            foreach (var name in initialMedicationNames.Where(n => !string.IsNullOrWhiteSpace(n)))
+            {
+                var matchedPreset = presets.FirstOrDefault(p => p.MedicationName == name);
+                Lines.Add(new PrescriptionLineViewModel
+                {
+                    MedicationName = name.Trim(),
+                    Dosage = matchedPreset?.DefaultDosage ?? string.Empty,
+                    Duration = matchedPreset?.DefaultDuration ?? string.Empty
+                });
+            }
         }
     }
 
@@ -52,7 +67,7 @@ public partial class PrescriptionWindow : Window
     {
         if (PresetBox.SelectedItem is not MedicationPreset preset)
         {
-            ErrorText.Text = "Please select a medication from the list first";
+            ErrorText.Text = LocalizationManager.T("Rx_SelectMedicationFirst");
             return;
         }
 
@@ -85,18 +100,18 @@ public partial class PrescriptionWindow : Window
         var validLines = Lines.Where(l => !string.IsNullOrWhiteSpace(l.MedicationName)).ToList();
         if (validLines.Count == 0)
         {
-            ErrorText.Text = "Add at least one medication before generating the prescription";
+            ErrorText.Text = LocalizationManager.T("Rx_AddAtLeastOneMedication");
             return;
         }
 
         try
         {
-            var pdfBytes = PrescriptionPdfExporter.Generate(_patientName, DateTime.Now, validLines, NotesBox.Text);
+            var pdfBytes = PrescriptionPdfExporter.Generate(_patientName, DateTime.Now, validLines, NotesBox.Text, _patientAge);
 
             var dialog = new Microsoft.Win32.SaveFileDialog
             {
                 FileName = $"Prescription_{_patientName.Replace(' ', '_')}_{DateTime.Now:yyyy-MM-dd}.pdf",
-                Filter = "PDF Files (*.pdf)|*.pdf",
+                Filter = LocalizationManager.T("PF_PdfFilter"),
                 DefaultExt = ".pdf"
             };
 
@@ -108,8 +123,8 @@ public partial class PrescriptionWindow : Window
             System.IO.File.WriteAllBytes(dialog.FileName, pdfBytes);
 
             var openIt = MessageBox.Show(
-                "Prescription saved successfully. Do you want to open it now to print?",
-                "Export Complete",
+                LocalizationManager.T("Rx_SavedMessage"),
+                LocalizationManager.T("PF_ExportCompleteTitle"),
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Information);
 
@@ -126,7 +141,7 @@ public partial class PrescriptionWindow : Window
         }
         catch (Exception ex)
         {
-            ErrorText.Text = "Failed to generate the prescription: " + ex.Message;
+            ErrorText.Text = LocalizationManager.T("Rx_GenerateFailedFormat", ex.Message);
         }
     }
 }

@@ -13,8 +13,111 @@
     <sys:String x:Key="Common_Welcome">مرحباً</sys:String>
     <sys:String x:Key="Common_Save">حفظ</sys:String>
     <sys:String x:Key="Common_Cancel">إلغاء</sys:String>
+    <sys:String x:Key="Picker_Total">الإجمالي</sys:String>
+    <sys:String x:Key="Picker_Confirm">تأكيد الاختيار</sys:String>
     <sys:String x:Key="Common_OK">حسناً</sys:String>
     <sys:String x:Key="Common_Notice">ملاحظة</sys:String>
+
+    <!-- ===== ملف المريض (PatientFileWindow) ===== -->
+    <sys:String x:Key="PF_Title">ملف المريض</sys:String>
+    <sys:String x:Key="PF_PrescriptionButton">الوصفة الطبية</sys:String>
+    <sys:String x:Key="PF_ExportPdfButton">تصدير إلى PDF</sys:String>
+    <sys:String x:Key="PF_ScheduleButton">📅 حجز الزيارة القادمة</sys:String>
+    <sys:String x:Key="PF_HistoryHeader">سجل الزيارات السابقة</sys:String>
+    <sys:String x:Key="PF_ColDate">التاريخ</sys:String>
+    <sys:String x:Key="PF_ColDiagnosis">التشخيص</sys:String>
+    <sys:String x:Key="PF_ColTreatment">العلاج</sys:String>
+    <sys:String x:Key="PF_ColTotal">الإجمالي</sys:String>
+    <sys:String x:Key="PF_ColPaid">مدفوع</sys:String>
+    <sys:String x:Key="PF_ColRemaining">المتبقي</sys:String>
+    <sys:String x:Key="PF_TodaySession">جلسة اليوم</sys:String>
+    <sys:String x:Key="PF_PrefillNotice">معبّأ مسبقًا من آخر زيارة — يرجى المراجعة والتحديث قبل الحفظ.</sys:String>
+    <sys:String x:Key="PF_ChiefComplaint">سبب الزيارة</sys:String>
+    <sys:String x:Key="PF_Treatments">العلاجات</sys:String>
+    <sys:String x:Key="PF_PickTreatmentsButton">+ اختر العلاجات</sys:String>
+    <sys:String x:Key="PF_NoTreatmentsSelected">لم يتم اختيار أي علاج بعد</sys:String>
+    <sys:String x:Key="PF_AffectedTooth">السن المصاب (اختياري)</sys:String>
+    <sys:String x:Key="PF_Medications">الأدوية</sys:String>
+    <sys:String x:Key="PF_PickMedicationsButton">+ اختر الأدوية</sys:String>
+    <sys:String x:Key="PF_NoMedicationsSelected">لم يتم اختيار أي دواء بعد</sys:String>
+    <sys:String x:Key="PF_TotalPriceLabel">التكلفة الإجمالية للعلاج (دج)</sys:String>
+    <sys:String x:Key="PF_SaveSessionButton">حفظ الجلسة وإتمام العلاج الطبي</sys:String>
+    <sys:String x:Key="PF_CloseButton">إغلاق</sys:String>
+    <sys:String x:Key="PF_SaveSessionButtonReviewMode">حفظ الجلسة</sys:String>
+    <sys:String x:Key="PF_PickerTreatmentsTitle">اختر العلاجات</sys:String>
+    <sys:String x:Key="PF_PickerMedicationsTitle">اختر الأدوية</sys:String>
+    <sys:String x:Key="PF_PatientDataNotLoaded">لم يتم تحميل بيانات المريض بعد</sys:String>
+    <sys:String x:Key="PF_PdfFilter">ملفات PDF (*.pdf)|*.pdf</sys:String>
+    <sys:String x:Key="PF_ExportSuccessMessage">تم حفظ ملف PDF بنجاح. هل تريد فتحه الآن؟</sys:String>
+    <sys:String x:Key="PF_ExportCompleteTitle">اكتمل التصدير</sys:String>
+    <sys:String x:Key="PF_ExportFailedFormat">فشل تصدير PDF: {0}</sys:String>
+    <sys:String x:Key="PF_PatientNotFound">تعذّر العثور على بيانات هذا المريض</sys:String>
+    <sys:String x:Key="PF_HeaderFormat">ملف المريض: {0}</sys:String>
+    <sys:String x:Key="PF_InfoLineFormat">العمر: {0}   |   الجنس: {1}   |   الهاتف: {2}</sys:String>
+    <sys:String x:Key="PF_BasicNotesFormat">&#10;ملاحظات أولية من الاستقبال: {0}</sys:String>
+    <sys:String x:Key="PF_InvalidTotalPrice">صيغة السعر الإجمالي غير صحيحة</sys:String>
+    <sys:String x:Key="PF_SavedMessageVisit">تم إكمال وحفظ العلاج الطبي بنجاح. يمكن للمريض التوجه الآن للدفع في الاستقبال.</sys:String>
+    <sys:String x:Key="PF_SavedMessageNoVisit">تم حفظ الجلسة بنجاح</sys:String>
+    <sys:String x:Key="PF_SavedTitle">تم الحفظ</sys:String>
+    <sys:String x:Key="PF_SaveErrorFormat">حدث خطأ أثناء الحفظ: {0}</sys:String>
+
+    <!-- ===== الوصفة الطبية (PrescriptionWindow) ===== -->
+    <sys:String x:Key="Rx_Title">الوصفة الطبية</sys:String>
+    <sys:String x:Key="Rx_QuickAddLabel">إضافة من القائمة السريعة</sys:String>
+    <sys:String x:Key="Rx_AddButton">+ إضافة</sys:String>
+    <sys:String x:Key="Rx_LinesHeader">بنود الوصفة الطبية</sys:String>
+    <sys:String x:Key="Rx_AddCustomLineButton">+ إضافة سطر مخصص</sys:String>
+    <sys:String x:Key="Rx_NotesLabel">تعليمات عامة / ملاحظات (اختياري)</sys:String>
+    <sys:String x:Key="Rx_GenerateButton">إنشاء وطباعة PDF</sys:String>
+    <sys:String x:Key="Rx_CloseButton">إغلاق</sys:String>
+    <sys:String x:Key="Rx_PatientHeaderFormat">وصفة طبية للمريض: {0}</sys:String>
+    <sys:String x:Key="Rx_SelectMedicationFirst">الرجاء اختيار دواء من القائمة أولاً</sys:String>
+    <sys:String x:Key="Rx_AddAtLeastOneMedication">أضِف دواءً واحداً على الأقل قبل إنشاء الوصفة</sys:String>
+    <sys:String x:Key="Rx_SavedMessage">تم حفظ الوصفة الطبية بنجاح. هل تريد فتحها الآن للطباعة؟</sys:String>
+    <sys:String x:Key="Rx_GenerateFailedFormat">فشل إنشاء الوصفة الطبية: {0}</sys:String>
+
+    <!-- ===== حجز موعد (ScheduleAppointmentDialog) ===== -->
+    <sys:String x:Key="Sched_Title">حجز موعد</sys:String>
+    <sys:String x:Key="Sched_Header">حجز زيارة جديدة</sys:String>
+    <sys:String x:Key="Sched_DateLabel">تاريخ الموعد *</sys:String>
+    <sys:String x:Key="Sched_TimeLabel">وقت الموعد *</sys:String>
+    <sys:String x:Key="Sched_SaveButton">حفظ الموعد</sys:String>
+    <sys:String x:Key="Sched_SelectDateFirst">الرجاء اختيار تاريخ الموعد.</sys:String>
+    <sys:String x:Key="Sched_SuccessMessage">تم حجز الموعد بنجاح!</sys:String>
+    <sys:String x:Key="Sched_SuccessTitle">تم بنجاح</sys:String>
+    <sys:String x:Key="Sched_ErrorMessage">حدث خطأ أثناء حفظ الموعد.</sys:String>
+
+    <!-- ===== مخطط الأسنان (OdontogramControl) ===== -->
+    <sys:String x:Key="Odont_UpperArch">علوي</sys:String>
+    <sys:String x:Key="Odont_LowerArch">سفلي</sys:String>
+    <sys:String x:Key="Odont_SelectedToothLabel">السن المحدَّد: </sys:String>
+    <sys:String x:Key="Odont_None">لا شيء</sys:String>
+
+    <!-- ===== نافذة البحث المتقدم (Doctor App) ===== -->
+    <sys:String x:Key="AdvSearch_Title">بحث متقدم</sys:String>
+    <sys:String x:Key="AdvSearch_CriteriaHeader">معايير البحث (كل الحقول اختيارية)</sys:String>
+    <sys:String x:Key="AdvSearch_NameOrPhone">اسم المريض أو الهاتف</sys:String>
+    <sys:String x:Key="AdvSearch_DiagnosisContains">التشخيص يحتوي على</sys:String>
+    <sys:String x:Key="AdvSearch_ToothNumber">رقم السن</sys:String>
+    <sys:String x:Key="AdvSearch_FromDate">من تاريخ</sys:String>
+    <sys:String x:Key="AdvSearch_ToDate">إلى تاريخ</sys:String>
+    <sys:String x:Key="AdvSearch_OutstandingOnly">الرصيد المستحق فقط</sys:String>
+    <sys:String x:Key="AdvSearch_SearchButton">بحث</sys:String>
+    <sys:String x:Key="AdvSearch_ClearButton">مسح</sys:String>
+    <sys:String x:Key="AdvSearch_DoubleClickHint">  (انقر مرتين على الصف، أو حدده ثم اضغط فتح)</sys:String>
+    <sys:String x:Key="AdvSearch_OpenFileButton">فتح ملف المريض</sys:String>
+    <sys:String x:Key="AdvSearch_ColPatient">المريض</sys:String>
+    <sys:String x:Key="AdvSearch_ColPhone">الهاتف</sys:String>
+    <sys:String x:Key="AdvSearch_ColDate">التاريخ</sys:String>
+    <sys:String x:Key="AdvSearch_ColDiagnosis">التشخيص</sys:String>
+    <sys:String x:Key="AdvSearch_ColTreatment">العلاج</sys:String>
+    <sys:String x:Key="AdvSearch_ColTotal">الإجمالي</sys:String>
+    <sys:String x:Key="AdvSearch_ColPaid">مدفوع</sys:String>
+    <sys:String x:Key="AdvSearch_ColRemaining">المتبقي</sys:String>
+    <sys:String x:Key="AdvSearch_InitialHint">أدخل أي مجموعة من المعايير أعلاه ثم اضغط بحث</sys:String>
+    <sys:String x:Key="AdvSearch_ResultsFoundFormat">تم العثور على {0} نتيجة</sys:String>
+    <sys:String x:Key="AdvSearch_SearchErrorFormat">خطأ في البحث: {0}</sys:String>
+    <sys:String x:Key="AdvSearch_SelectResultFirst">الرجاء اختيار نتيجة من القائمة أولاً</sys:String>
     <sys:String x:Key="Common_Error">خطأ</sys:String>
     <sys:String x:Key="Common_AccessDenied">صلاحية مرفوضة</sys:String>
     <sys:String x:Key="Common_Confirm">تأكيد</sys:String>
@@ -25,6 +128,7 @@
     <sys:String x:Key="Login_TitleNurse">تسجيل دخول الاستقبال</sys:String>
     <sys:String x:Key="Login_Username">اسم المستخدم</sys:String>
     <sys:String x:Key="Login_Password">كلمة المرور</sys:String>
+    <sys:String x:Key="Login_ShowPassword">إظهار/إخفاء كلمة المرور</sys:String>
     <sys:String x:Key="Login_LoginButton">تسجيل الدخول</sys:String>
     <sys:String x:Key="Login_EnterCredentials">الرجاء إدخال اسم المستخدم وكلمة المرور</sys:String>
     <sys:String x:Key="Login_ConnectionErrorFormat">تعذّر الاتصال بقاعدة البيانات: {0}</sys:String>
@@ -292,8 +396,10 @@
     <sys:String x:Key="Expense_DeleteErrorFormat">تعذّر حذف المصروف: {0}</sys:String>
 
     <!-- ===== شاشة إدارة العلاجات والأسعار ===== -->
-    <sys:String x:Key="Treat_Title">إدارة العلاجات</sys:String>
-    <sys:String x:Key="Treat_Header">إدارة العلاجات والأسعار</sys:String>
+    <sys:String x:Key="Treat_Title">إدارة الأدوية والعلاجات</sys:String>
+    <sys:String x:Key="Treat_Header">إدارة الأدوية والعلاجات</sys:String>
+    <sys:String x:Key="Treat_TabTreatments">🦷 العلاجات</sys:String>
+    <sys:String x:Key="Treat_TabMedications">💊 الأدوية</sys:String>
     <sys:String x:Key="Treat_Name">اسم العلاج *</sys:String>
     <sys:String x:Key="Treat_Price">السعر (دج / دولار) *</sys:String>
     <sys:String x:Key="Treat_CancelEdit">إلغاء التعديل</sys:String>
@@ -305,13 +411,21 @@
     <sys:String x:Key="Treat_EditButton">تعديل</sys:String>
     <sys:String x:Key="Treat_DeleteButton">حذف</sys:String>
     <sys:String x:Key="Treat_InitErrorFormat">خطأ في تهيئة جدول العلاجات: {0}</sys:String>
-    <sys:String x:Key="Treat_LoadErrorFormat">تعذّر تحميل العلاجات: {0}</sys:String>
+    <sys:String x:Key="Treat_LoadErrorFormat">تعذّر تحميل القائمة: {0}</sys:String>
     <sys:String x:Key="Treat_NameRequired">الرجاء إدخال اسم العلاج</sys:String>
     <sys:String x:Key="Treat_InvalidPrice">صيغة السعر غير صحيحة</sys:String>
-    <sys:String x:Key="Treat_SaveErrorFormat">خطأ أثناء حفظ العلاج: {0}</sys:String>
+    <sys:String x:Key="Treat_SaveErrorFormat">خطأ أثناء الحفظ: {0}</sys:String>
     <sys:String x:Key="Treat_ConfirmDeleteFormat">هل أنت متأكد من حذف '{0}'؟</sys:String>
     <sys:String x:Key="Treat_ConfirmDeleteTitle">تأكيد الحذف</sys:String>
     <sys:String x:Key="Treat_DeleteErrorFormat">خطأ أثناء الحذف: {0}</sys:String>
+    <sys:String x:Key="Med_Name">اسم الدواء *</sys:String>
+    <sys:String x:Key="Med_Dosage">الجرعة الافتراضية</sys:String>
+    <sys:String x:Key="Med_Duration">المدة الافتراضية</sys:String>
+    <sys:String x:Key="Med_AddButton">+ إضافة دواء</sys:String>
+    <sys:String x:Key="Med_NameRequired">الرجاء إدخال اسم الدواء</sys:String>
+    <sys:String x:Key="Med_ColName">اسم الدواء</sys:String>
+    <sys:String x:Key="Med_ColDosage">الجرعة الافتراضية</sys:String>
+    <sys:String x:Key="Med_ColDuration">المدة الافتراضية</sys:String>
 
     <!-- ===== شاشة النسخ الاحتياطي ===== -->
     <sys:String x:Key="Backup_Title">نسخ احتياطي لقاعدة البيانات</sys:String>

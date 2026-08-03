@@ -13,8 +13,111 @@
     <sys:String x:Key="Common_Welcome">Welcome</sys:String>
     <sys:String x:Key="Common_Save">Save</sys:String>
     <sys:String x:Key="Common_Cancel">Cancel</sys:String>
+    <sys:String x:Key="Picker_Total">Total</sys:String>
+    <sys:String x:Key="Picker_Confirm">Confirm Selection</sys:String>
     <sys:String x:Key="Common_OK">OK</sys:String>
     <sys:String x:Key="Common_Notice">Notice</sys:String>
+
+    <!-- ===== Patient File window (PatientFileWindow) ===== -->
+    <sys:String x:Key="PF_Title">Patient File</sys:String>
+    <sys:String x:Key="PF_PrescriptionButton">Prescription</sys:String>
+    <sys:String x:Key="PF_ExportPdfButton">Export to PDF</sys:String>
+    <sys:String x:Key="PF_ScheduleButton">📅 Schedule Next Visit</sys:String>
+    <sys:String x:Key="PF_HistoryHeader">Previous Visits History</sys:String>
+    <sys:String x:Key="PF_ColDate">Date</sys:String>
+    <sys:String x:Key="PF_ColDiagnosis">Diagnosis</sys:String>
+    <sys:String x:Key="PF_ColTreatment">Treatment</sys:String>
+    <sys:String x:Key="PF_ColTotal">Total</sys:String>
+    <sys:String x:Key="PF_ColPaid">Paid</sys:String>
+    <sys:String x:Key="PF_ColRemaining">Remaining</sys:String>
+    <sys:String x:Key="PF_TodaySession">Today's Session</sys:String>
+    <sys:String x:Key="PF_PrefillNotice">Pre-filled from the last visit — please review and update before saving.</sys:String>
+    <sys:String x:Key="PF_ChiefComplaint">Chief Complaint</sys:String>
+    <sys:String x:Key="PF_Treatments">Treatments</sys:String>
+    <sys:String x:Key="PF_PickTreatmentsButton">+ Choose Treatments</sys:String>
+    <sys:String x:Key="PF_NoTreatmentsSelected">No treatment selected yet</sys:String>
+    <sys:String x:Key="PF_AffectedTooth">Affected Tooth (optional)</sys:String>
+    <sys:String x:Key="PF_Medications">Medications</sys:String>
+    <sys:String x:Key="PF_PickMedicationsButton">+ Choose Medications</sys:String>
+    <sys:String x:Key="PF_NoMedicationsSelected">No medication selected yet</sys:String>
+    <sys:String x:Key="PF_TotalPriceLabel">Total Treatment Cost</sys:String>
+    <sys:String x:Key="PF_SaveSessionButton">Save Session &amp; Complete Treatment</sys:String>
+    <sys:String x:Key="PF_CloseButton">Close</sys:String>
+    <sys:String x:Key="PF_SaveSessionButtonReviewMode">Save Session</sys:String>
+    <sys:String x:Key="PF_PickerTreatmentsTitle">Choose Treatments</sys:String>
+    <sys:String x:Key="PF_PickerMedicationsTitle">Choose Medications</sys:String>
+    <sys:String x:Key="PF_PatientDataNotLoaded">Patient data is not loaded yet</sys:String>
+    <sys:String x:Key="PF_PdfFilter">PDF Files (*.pdf)|*.pdf</sys:String>
+    <sys:String x:Key="PF_ExportSuccessMessage">PDF saved successfully. Do you want to open it now?</sys:String>
+    <sys:String x:Key="PF_ExportCompleteTitle">Export Complete</sys:String>
+    <sys:String x:Key="PF_ExportFailedFormat">Failed to export PDF: {0}</sys:String>
+    <sys:String x:Key="PF_PatientNotFound">Could not find this patient's data</sys:String>
+    <sys:String x:Key="PF_HeaderFormat">Patient File: {0}</sys:String>
+    <sys:String x:Key="PF_InfoLineFormat">Age: {0}   |   Gender: {1}   |   Phone: {2}</sys:String>
+    <sys:String x:Key="PF_BasicNotesFormat">&#10;Basic notes from reception: {0}</sys:String>
+    <sys:String x:Key="PF_InvalidTotalPrice">Invalid total price format</sys:String>
+    <sys:String x:Key="PF_SavedMessageVisit">Medical treatment completed and saved successfully. Patient can now proceed to payment at reception.</sys:String>
+    <sys:String x:Key="PF_SavedMessageNoVisit">Session saved successfully</sys:String>
+    <sys:String x:Key="PF_SavedTitle">Saved</sys:String>
+    <sys:String x:Key="PF_SaveErrorFormat">An error occurred while saving: {0}</sys:String>
+
+    <!-- ===== Prescription window (PrescriptionWindow) ===== -->
+    <sys:String x:Key="Rx_Title">Prescription</sys:String>
+    <sys:String x:Key="Rx_QuickAddLabel">Add from Quick List</sys:String>
+    <sys:String x:Key="Rx_AddButton">+ Add</sys:String>
+    <sys:String x:Key="Rx_LinesHeader">Prescription Items</sys:String>
+    <sys:String x:Key="Rx_AddCustomLineButton">+ Add Custom Line</sys:String>
+    <sys:String x:Key="Rx_NotesLabel">General Instructions / Notes (optional)</sys:String>
+    <sys:String x:Key="Rx_GenerateButton">Generate &amp; Print PDF</sys:String>
+    <sys:String x:Key="Rx_CloseButton">Close</sys:String>
+    <sys:String x:Key="Rx_PatientHeaderFormat">Prescription for: {0}</sys:String>
+    <sys:String x:Key="Rx_SelectMedicationFirst">Please select a medication from the list first</sys:String>
+    <sys:String x:Key="Rx_AddAtLeastOneMedication">Add at least one medication before generating the prescription</sys:String>
+    <sys:String x:Key="Rx_SavedMessage">Prescription saved successfully. Do you want to open it now to print?</sys:String>
+    <sys:String x:Key="Rx_GenerateFailedFormat">Failed to generate the prescription: {0}</sys:String>
+
+    <!-- ===== Schedule Appointment dialog (ScheduleAppointmentDialog) ===== -->
+    <sys:String x:Key="Sched_Title">Schedule Appointment</sys:String>
+    <sys:String x:Key="Sched_Header">Schedule a New Visit</sys:String>
+    <sys:String x:Key="Sched_DateLabel">Appointment Date *</sys:String>
+    <sys:String x:Key="Sched_TimeLabel">Appointment Time *</sys:String>
+    <sys:String x:Key="Sched_SaveButton">Save Appointment</sys:String>
+    <sys:String x:Key="Sched_SelectDateFirst">Please select an appointment date.</sys:String>
+    <sys:String x:Key="Sched_SuccessMessage">Appointment scheduled successfully!</sys:String>
+    <sys:String x:Key="Sched_SuccessTitle">Success</sys:String>
+    <sys:String x:Key="Sched_ErrorMessage">An error occurred while saving the appointment.</sys:String>
+
+    <!-- ===== Odontogram control (OdontogramControl) ===== -->
+    <sys:String x:Key="Odont_UpperArch">Upper</sys:String>
+    <sys:String x:Key="Odont_LowerArch">Lower</sys:String>
+    <sys:String x:Key="Odont_SelectedToothLabel">Selected Tooth: </sys:String>
+    <sys:String x:Key="Odont_None">None</sys:String>
+
+    <!-- ===== Advanced Search window (Doctor App) ===== -->
+    <sys:String x:Key="AdvSearch_Title">Advanced Search</sys:String>
+    <sys:String x:Key="AdvSearch_CriteriaHeader">Search Criteria (all fields optional)</sys:String>
+    <sys:String x:Key="AdvSearch_NameOrPhone">Patient Name or Phone</sys:String>
+    <sys:String x:Key="AdvSearch_DiagnosisContains">Diagnosis Contains</sys:String>
+    <sys:String x:Key="AdvSearch_ToothNumber">Tooth Number</sys:String>
+    <sys:String x:Key="AdvSearch_FromDate">From Date</sys:String>
+    <sys:String x:Key="AdvSearch_ToDate">To Date</sys:String>
+    <sys:String x:Key="AdvSearch_OutstandingOnly">Outstanding balance only</sys:String>
+    <sys:String x:Key="AdvSearch_SearchButton">Search</sys:String>
+    <sys:String x:Key="AdvSearch_ClearButton">Clear</sys:String>
+    <sys:String x:Key="AdvSearch_DoubleClickHint">  (double-click a row, or select it then click Open)</sys:String>
+    <sys:String x:Key="AdvSearch_OpenFileButton">Open Patient File</sys:String>
+    <sys:String x:Key="AdvSearch_ColPatient">Patient</sys:String>
+    <sys:String x:Key="AdvSearch_ColPhone">Phone</sys:String>
+    <sys:String x:Key="AdvSearch_ColDate">Date</sys:String>
+    <sys:String x:Key="AdvSearch_ColDiagnosis">Diagnosis</sys:String>
+    <sys:String x:Key="AdvSearch_ColTreatment">Treatment</sys:String>
+    <sys:String x:Key="AdvSearch_ColTotal">Total</sys:String>
+    <sys:String x:Key="AdvSearch_ColPaid">Paid</sys:String>
+    <sys:String x:Key="AdvSearch_ColRemaining">Remaining</sys:String>
+    <sys:String x:Key="AdvSearch_InitialHint">Enter any combination of criteria above and click Search</sys:String>
+    <sys:String x:Key="AdvSearch_ResultsFoundFormat">{0} result(s) found</sys:String>
+    <sys:String x:Key="AdvSearch_SearchErrorFormat">Search error: {0}</sys:String>
+    <sys:String x:Key="AdvSearch_SelectResultFirst">Please select a result from the list first</sys:String>
     <sys:String x:Key="Common_Error">Error</sys:String>
     <sys:String x:Key="Common_AccessDenied">Access Denied</sys:String>
     <sys:String x:Key="Common_Confirm">Confirm</sys:String>
@@ -25,6 +128,7 @@
     <sys:String x:Key="Login_TitleNurse">Reception Login</sys:String>
     <sys:String x:Key="Login_Username">Username</sys:String>
     <sys:String x:Key="Login_Password">Password</sys:String>
+    <sys:String x:Key="Login_ShowPassword">Show/hide password</sys:String>
     <sys:String x:Key="Login_LoginButton">Login</sys:String>
     <sys:String x:Key="Login_EnterCredentials">Please enter username and password</sys:String>
     <sys:String x:Key="Login_ConnectionErrorFormat">Could not connect to the database: {0}</sys:String>
@@ -292,8 +396,10 @@
     <sys:String x:Key="Expense_DeleteErrorFormat">Could not delete expense: {0}</sys:String>
 
     <!-- ===== شاشة إدارة العلاجات والأسعار ===== -->
-    <sys:String x:Key="Treat_Title">Manage Treatments</sys:String>
-    <sys:String x:Key="Treat_Header">Manage Treatments &amp; Prices</sys:String>
+    <sys:String x:Key="Treat_Title">Medications &amp; Treatments Management</sys:String>
+    <sys:String x:Key="Treat_Header">Medications &amp; Treatments Management</sys:String>
+    <sys:String x:Key="Treat_TabTreatments">🦷 Treatments</sys:String>
+    <sys:String x:Key="Treat_TabMedications">💊 Medications</sys:String>
     <sys:String x:Key="Treat_Name">Treatment Name *</sys:String>
     <sys:String x:Key="Treat_Price">Price (DA / $) *</sys:String>
     <sys:String x:Key="Treat_CancelEdit">Cancel Edit</sys:String>
@@ -305,13 +411,21 @@
     <sys:String x:Key="Treat_EditButton">Edit</sys:String>
     <sys:String x:Key="Treat_DeleteButton">Delete</sys:String>
     <sys:String x:Key="Treat_InitErrorFormat">Error initializing treatments table: {0}</sys:String>
-    <sys:String x:Key="Treat_LoadErrorFormat">Failed to load treatments: {0}</sys:String>
+    <sys:String x:Key="Treat_LoadErrorFormat">Failed to load list: {0}</sys:String>
     <sys:String x:Key="Treat_NameRequired">Please enter treatment name</sys:String>
     <sys:String x:Key="Treat_InvalidPrice">Invalid price format</sys:String>
-    <sys:String x:Key="Treat_SaveErrorFormat">Error saving treatment: {0}</sys:String>
+    <sys:String x:Key="Treat_SaveErrorFormat">Error saving: {0}</sys:String>
     <sys:String x:Key="Treat_ConfirmDeleteFormat">Are you sure you want to delete '{0}'?</sys:String>
     <sys:String x:Key="Treat_ConfirmDeleteTitle">Confirm Delete</sys:String>
     <sys:String x:Key="Treat_DeleteErrorFormat">Error deleting: {0}</sys:String>
+    <sys:String x:Key="Med_Name">Medication Name *</sys:String>
+    <sys:String x:Key="Med_Dosage">Default Dosage</sys:String>
+    <sys:String x:Key="Med_Duration">Default Duration</sys:String>
+    <sys:String x:Key="Med_AddButton">+ Add Medication</sys:String>
+    <sys:String x:Key="Med_NameRequired">Please enter medication name</sys:String>
+    <sys:String x:Key="Med_ColName">Medication Name</sys:String>
+    <sys:String x:Key="Med_ColDosage">Default Dosage</sys:String>
+    <sys:String x:Key="Med_ColDuration">Default Duration</sys:String>
 
     <!-- ===== شاشة النسخ الاحتياطي ===== -->
     <sys:String x:Key="Backup_Title">Database Backup</sys:String>

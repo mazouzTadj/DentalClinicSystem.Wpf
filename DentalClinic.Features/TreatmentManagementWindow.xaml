@@ -32,78 +32,184 @@
             <Grid Grid.Row="1" Margin="24,10,24,20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- نموذج الإضافة والتعديل -->
-                <Border Grid.Row="0" Background="{StaticResource WindowBackgroundBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
-                    <StackPanel>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="12"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
+                <!-- زر تبديل بين العلاجات والأدوية -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+                    <Button x:Name="TabTreatmentsButton" Content="{DynamicResource Treat_TabTreatments}" Height="34" Padding="18,0"
+                            Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0" Click="TabTreatments_Click"/>
+                    <Button x:Name="TabMedicationsButton" Content="{DynamicResource Treat_TabMedications}" Height="34" Padding="18,0"
+                            Style="{StaticResource SecondaryButtonStyle}" Click="TabMedications_Click"/>
+                </StackPanel>
 
-                            <!-- اسم العلاج -->
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="{DynamicResource Treat_Name}" Style="{StaticResource FieldLabelStyle}"/>
-                                <Border Style="{StaticResource InputContainerStyle}">
-                                    <TextBox x:Name="TxtTreatmentName" Style="{StaticResource PlainTextBoxStyle}"/>
-                                </Border>
+                <!-- ===================== لوحة العلاجات ===================== -->
+                <Grid x:Name="TreatmentsPanelGrid" Grid.Row="1" Grid.RowSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- نموذج الإضافة والتعديل -->
+                    <Border Grid.Row="0" Background="{StaticResource WindowBackgroundBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- اسم العلاج -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{DynamicResource Treat_Name}" Style="{StaticResource FieldLabelStyle}"/>
+                                    <Border Style="{StaticResource InputContainerStyle}">
+                                        <TextBox x:Name="TxtTreatmentName" Style="{StaticResource PlainTextBoxStyle}"/>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- السعر -->
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="{DynamicResource Treat_Price}" Style="{StaticResource FieldLabelStyle}"/>
+                                    <Border Style="{StaticResource InputContainerStyle}">
+                                        <TextBox x:Name="TxtPrice" Style="{StaticResource PlainTextBoxStyle}"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}" Margin="0,6,0,0"/>
+
+                            <!-- أزرار الحفظ والإلغاء -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                                <Button x:Name="BtnCancelEdit" Content="{DynamicResource Treat_CancelEdit}" Width="100" Height="36" Margin="0,0,8,0"
+                                        Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                                        Click="BtnCancelEdit_Click"/>
+                                <Button x:Name="BtnSave" Content="{DynamicResource Treat_AddButton}" Width="140" Height="36"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        Click="BtnSave_Click"/>
                             </StackPanel>
-
-                            <!-- السعر -->
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="{DynamicResource Treat_Price}" Style="{StaticResource FieldLabelStyle}"/>
-                                <Border Style="{StaticResource InputContainerStyle}">
-                                    <TextBox x:Name="TxtPrice" Style="{StaticResource PlainTextBoxStyle}"/>
-                                </Border>
-                            </StackPanel>
-                        </Grid>
-
-                        <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}" Margin="0,6,0,0"/>
-
-                        <!-- أزرار الحفظ والإلغاء -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-                            <Button x:Name="BtnCancelEdit" Content="{DynamicResource Treat_CancelEdit}" Width="100" Height="36" Margin="0,0,8,0"
-                                    Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
-                                    Click="BtnCancelEdit_Click"/>
-                            <Button x:Name="BtnSave" Content="{DynamicResource Treat_AddButton}" Width="140" Height="36"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    Click="BtnSave_Click"/>
                         </StackPanel>
-                    </StackPanel>
-                </Border>
+                    </Border>
 
-                <!-- جدول عرض العلاجات -->
-                <Border Grid.Row="1" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" ClipToBounds="True">
-                    <DataGrid x:Name="TreatmentsGrid"
-                              Style="{StaticResource ModernDataGridStyle}"
-                              ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
-                              RowStyle="{StaticResource ModernRowStyle}"
-                              CellStyle="{StaticResource ModernCellStyle}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="{DynamicResource Treat_ColName}" Binding="{Binding TreatmentName}" Width="*"/>
-                            <DataGridTextColumn Header="{DynamicResource Treat_ColPrice}" Binding="{Binding PriceText}" Width="120"/>
+                    <!-- جدول عرض العلاجات -->
+                    <Border Grid.Row="1" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" ClipToBounds="True">
+                        <DataGrid x:Name="TreatmentsGrid"
+                                  Style="{StaticResource ModernDataGridStyle}"
+                                  ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                                  RowStyle="{StaticResource ModernRowStyle}"
+                                  CellStyle="{StaticResource ModernCellStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource Treat_ColName}" Binding="{Binding TreatmentName}" Width="*"/>
+                                <DataGridTextColumn Header="{DynamicResource Treat_ColPrice}" Binding="{Binding PriceText}" Width="120"/>
 
-                            <DataGridTemplateColumn Header="{DynamicResource Treat_ColActions}" Width="140">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Content="{DynamicResource Treat_EditButton}" Height="26" Width="55" FontSize="11" Margin="0,0,6,0"
-                                                    Style="{StaticResource SecondaryButtonStyle}"
-                                                    Tag="{Binding}" Click="BtnEdit_Click"/>
-                                            <Button Content="{DynamicResource Treat_DeleteButton}" Height="26" Width="55" FontSize="11"
-                                                    Style="{StaticResource DangerButtonStyle}"
-                                                    Tag="{Binding}" Click="BtnDelete_Click"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Border>
+                                <DataGridTemplateColumn Header="{DynamicResource Treat_ColActions}" Width="140">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="{DynamicResource Treat_EditButton}" Height="26" Width="55" FontSize="11" Margin="0,0,6,0"
+                                                        Style="{StaticResource SecondaryButtonStyle}"
+                                                        Tag="{Binding}" Click="BtnEdit_Click"/>
+                                                <Button Content="{DynamicResource Treat_DeleteButton}" Height="26" Width="55" FontSize="11"
+                                                        Style="{StaticResource DangerButtonStyle}"
+                                                        Tag="{Binding}" Click="BtnDelete_Click"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+
+                <!-- ===================== لوحة الأدوية ===================== -->
+                <Grid x:Name="MedicationsPanelGrid" Grid.Row="1" Grid.RowSpan="2" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- نموذج الإضافة والتعديل -->
+                    <Border Grid.Row="0" Background="{StaticResource WindowBackgroundBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.4*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- اسم الدواء -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{DynamicResource Med_Name}" Style="{StaticResource FieldLabelStyle}"/>
+                                    <Border Style="{StaticResource InputContainerStyle}">
+                                        <TextBox x:Name="TxtMedicationName" Style="{StaticResource PlainTextBoxStyle}"/>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- الجرعة الافتراضية -->
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="{DynamicResource Med_Dosage}" Style="{StaticResource FieldLabelStyle}"/>
+                                    <Border Style="{StaticResource InputContainerStyle}">
+                                        <TextBox x:Name="TxtMedicationDosage" Style="{StaticResource PlainTextBoxStyle}"/>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- المدة الافتراضية -->
+                                <StackPanel Grid.Column="4">
+                                    <TextBlock Text="{DynamicResource Med_Duration}" Style="{StaticResource FieldLabelStyle}"/>
+                                    <Border Style="{StaticResource InputContainerStyle}">
+                                        <TextBox x:Name="TxtMedicationDuration" Style="{StaticResource PlainTextBoxStyle}"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock x:Name="MedErrorText" Style="{StaticResource ErrorTextStyle}" Margin="0,6,0,0"/>
+
+                            <!-- أزرار الحفظ والإلغاء -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                                <Button x:Name="BtnCancelEditMed" Content="{DynamicResource Treat_CancelEdit}" Width="100" Height="36" Margin="0,0,8,0"
+                                        Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                                        Click="BtnCancelEditMed_Click"/>
+                                <Button x:Name="BtnSaveMed" Content="{DynamicResource Med_AddButton}" Width="140" Height="36"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        Click="BtnSaveMed_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- جدول عرض الأدوية -->
+                    <Border Grid.Row="1" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" ClipToBounds="True">
+                        <DataGrid x:Name="MedicationsGrid"
+                                  Style="{StaticResource ModernDataGridStyle}"
+                                  ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                                  RowStyle="{StaticResource ModernRowStyle}"
+                                  CellStyle="{StaticResource ModernCellStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource Med_ColName}" Binding="{Binding MedicationName}" Width="*"/>
+                                <DataGridTextColumn Header="{DynamicResource Med_ColDosage}" Binding="{Binding DefaultDosage}" Width="140"/>
+                                <DataGridTextColumn Header="{DynamicResource Med_ColDuration}" Binding="{Binding DefaultDuration}" Width="120"/>
+
+                                <DataGridTemplateColumn Header="{DynamicResource Treat_ColActions}" Width="140">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="{DynamicResource Treat_EditButton}" Height="26" Width="55" FontSize="11" Margin="0,0,6,0"
+                                                        Style="{StaticResource SecondaryButtonStyle}"
+                                                        Tag="{Binding}" Click="BtnEditMed_Click"/>
+                                                <Button Content="{DynamicResource Treat_DeleteButton}" Height="26" Width="55" FontSize="11"
+                                                        Style="{StaticResource DangerButtonStyle}"
+                                                        Tag="{Binding}" Click="BtnDeleteMed_Click"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </Border>

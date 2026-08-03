@@ -45,7 +45,7 @@
 
         <!-- الصف العلوي (Upper Arch): 18..11 | 21..28 -->
         <StackPanel x:Name="UpperPanel" Orientation="Horizontal" Margin="0,0,0,6">
-            <TextBlock Text="علوي" Style="{StaticResource ArchLabelStyle}"/>
+            <TextBlock Text="{DynamicResource Odont_UpperArch}" Style="{StaticResource ArchLabelStyle}"/>
 
             <RadioButton x:Name="Tooth18" Content="18" Tag="18" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
             <RadioButton x:Name="Tooth17" Content="17" Tag="17" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
@@ -73,7 +73,7 @@
 
         <!-- الصف السفلي (Lower Arch): 48..41 | 31..38 -->
         <StackPanel x:Name="LowerPanel" Orientation="Horizontal">
-            <TextBlock Text="سفلي" Style="{StaticResource ArchLabelStyle}"/>
+            <TextBlock Text="{DynamicResource Odont_LowerArch}" Style="{StaticResource ArchLabelStyle}"/>
 
             <RadioButton x:Name="Tooth48" Content="48" Tag="48" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
             <RadioButton x:Name="Tooth47" Content="47" Tag="47" Style="{StaticResource ToothButtonStyle}" Checked="Tooth_Checked"/>
@@ -102,8 +102,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="السن المحدَّد: " FontSize="12" Foreground="#6B7280"/>
-            <TextBlock x:Name="SelectedToothLabel" Grid.Column="1" Text="لا شيء" FontSize="12" FontWeight="SemiBold"
+            <TextBlock Grid.Column="0" Text="{DynamicResource Odont_SelectedToothLabel}" FontSize="12" Foreground="#6B7280"/>
+            <TextBlock x:Name="SelectedToothLabel" Grid.Column="1" Text="{DynamicResource Odont_None}" FontSize="12" FontWeight="SemiBold"
                        Foreground="{DynamicResource AccentBrush}"/>
         </Grid>
 

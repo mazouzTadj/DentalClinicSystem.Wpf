@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using DentalClinic.UI.Localization;
 
 namespace DentalClinic.UI.Controls;
 
@@ -40,7 +41,7 @@ public partial class OdontogramControl : UserControl
     public void ClearSelection()
     {
         SelectedTooth = null;
-        SelectedToothLabel.Text = "لا شيء";
+        SelectedToothLabel.Text = LocalizationManager.T("Odont_None");
         foreach (var rb in _allTeeth)
         {
             rb.IsChecked = false;

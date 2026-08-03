@@ -137,6 +137,28 @@
         </Setter>
     </Style>
 
+    <!-- زر أيقونة صغير بدون إطار (تبديل حالة) - يُستخدم لإظهار/إخفاء كلمة المرور -->
+    <Style x:Key="IconToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="Bg" CornerRadius="16" Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="#EEF2F6"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- زر تحذيري (أحمر) لإجراءات حساسة مثل تسجيل الخروج -->
     <Style x:Key="DangerButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="White"/>
