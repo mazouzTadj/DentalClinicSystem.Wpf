@@ -138,6 +138,18 @@
     <sys:String x:Key="Login_RestartTitle">Change Language</sys:String>
     <sys:String x:Key="Login_RestartMessage">The application needs to restart to apply the new language. Restart now?</sys:String>
 
+    <!-- ===== First-Run Setup window (FirstRunSetupWindow) ===== -->
+    <sys:String x:Key="FirstRun_Title">Welcome - First Time Setup</sys:String>
+    <sys:String x:Key="FirstRun_Subtitle">No account exists yet on this database. Create the clinic owner's Super Admin account to get started.</sys:String>
+    <sys:String x:Key="FirstRun_FullName">Full Name</sys:String>
+    <sys:String x:Key="FirstRun_Username">Username</sys:String>
+    <sys:String x:Key="FirstRun_Password">Password</sys:String>
+    <sys:String x:Key="FirstRun_ConfirmPassword">Confirm Password</sys:String>
+    <sys:String x:Key="FirstRun_CreateButton">Create Account</sys:String>
+    <sys:String x:Key="FirstRun_FullNameUsernameRequired">Please enter full name and username</sys:String>
+    <sys:String x:Key="FirstRun_PasswordTooShort">Password must be at least 4 characters</sys:String>
+    <sys:String x:Key="FirstRun_PasswordMismatch">Passwords do not match</sys:String>
+
     <!-- ===== النافذة الرئيسية (مشتركة بين تطبيقي الطبيب والاستقبال) ===== -->
     <sys:String x:Key="Main_RegisterPatient">+ Register New Patient</sys:String>
     <sys:String x:Key="Main_OpenPatientFile">Open Patient File</sys:String>

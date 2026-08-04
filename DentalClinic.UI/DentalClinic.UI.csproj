@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <Resource Include="Assets\logo_icon.png" />
+    <Resource Include="Assets\logo_icon.ico" />
+    <Resource Include="Assets\logo_icon1.png" />
     <Resource Include="Assets\logo_full.png" />
   </ItemGroup>
 

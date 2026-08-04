@@ -76,6 +76,17 @@ public class UserRepository
         _db.ExecuteNonQuery(sql, new SqlParameter("@UserID", userId));
     }
 
+    // هل يوجد أي مستخدم مسجَّل في القاعدة إطلاقاً (نشط أو غير نشط)؟
+    // تُستخدم فقط عند بدء تشغيل DoctorApp لتحديد: نعرض شاشة تسجيل الدخول العادية،
+    // أم شاشة "الإعداد الأول" لإنشاء أول حساب Super Admin (قاعدة بيانات جديدة فارغة تماماً
+    // عند عميل جديد - راجع FirstRunSetupWindow).
+    public bool AnyUsersExist()
+    {
+        const string sql = "SELECT COUNT(*) FROM Users";
+        var result = _db.ExecuteScalar(sql);
+        return result != null && Convert.ToInt32(result) > 0;
+    }
+
     // ===================== إدارة المستخدمين (يتطلب صلاحية ManageUsers) =====================
 
     // كل المستخدمين بما فيهم غير النشطين - تُستخدم في شاشة إدارة المستخدمين فقط (بعكس FindByUsername)

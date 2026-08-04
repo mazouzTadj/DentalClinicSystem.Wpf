@@ -59,6 +59,14 @@ public partial class MainWindow : Window
     private static Visibility ToVisibility(bool hasPermission) =>
         hasPermission ? Visibility.Visible : Visibility.Collapsed;
 
+    // Button.Click مُعلَّق (attached event) من StackPanel القائمة الجانبية في XAML - يلتقط نقر أي زر
+    // بداخلها بعد أن ينفّذ ذلك الزر دالته الخاصة أولاً (RegisterPatientButton_Click، إلخ)، ثم يغلق
+    // القائمة تلقائياً. لا علاقة له بمنطق أي زر - فقط سلوك واجهة إضافي.
+    private void HamburgerMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        HamburgerToggle.IsChecked = false;
+    }
+
     private void LoadQueue()
     {
         try

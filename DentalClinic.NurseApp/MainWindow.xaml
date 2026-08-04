@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:DentalClinic.UI.Converters;assembly=DentalClinic.UI"
         Title="{DynamicResource App_NurseTitle}" Height="680" Width="1300" MinWidth="1040" MinHeight="500"
-        Icon="pack://application:,,,/DentalClinic.UI;component/Assets/logo_icon.png"
+        Icon="pack://application:,,,/DentalClinic.UI;component/Assets/logo_icon.ico"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource WindowBackgroundBrush}">
 

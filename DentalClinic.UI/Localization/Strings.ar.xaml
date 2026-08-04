@@ -138,6 +138,18 @@
     <sys:String x:Key="Login_RestartTitle">تغيير اللغة</sys:String>
     <sys:String x:Key="Login_RestartMessage">يحتاج التطبيق لإعادة التشغيل لتطبيق اللغة الجديدة. هل تريد إعادة التشغيل الآن؟</sys:String>
 
+    <!-- ===== شاشة الإعداد الأول (FirstRunSetupWindow) ===== -->
+    <sys:String x:Key="FirstRun_Title">مرحباً - الإعداد الأول</sys:String>
+    <sys:String x:Key="FirstRun_Subtitle">لا يوجد أي حساب بعد على هذه القاعدة. أنشئ حساب المدير العام (صاحب العيادة) للبدء.</sys:String>
+    <sys:String x:Key="FirstRun_FullName">الاسم الكامل</sys:String>
+    <sys:String x:Key="FirstRun_Username">اسم المستخدم</sys:String>
+    <sys:String x:Key="FirstRun_Password">كلمة المرور</sys:String>
+    <sys:String x:Key="FirstRun_ConfirmPassword">تأكيد كلمة المرور</sys:String>
+    <sys:String x:Key="FirstRun_CreateButton">إنشاء الحساب</sys:String>
+    <sys:String x:Key="FirstRun_FullNameUsernameRequired">الرجاء إدخال الاسم الكامل واسم المستخدم</sys:String>
+    <sys:String x:Key="FirstRun_PasswordTooShort">يجب أن تتكوّن كلمة المرور من 4 أحرف على الأقل</sys:String>
+    <sys:String x:Key="FirstRun_PasswordMismatch">كلمتا المرور غير متطابقتين</sys:String>
+
     <!-- ===== النافذة الرئيسية (مشتركة بين تطبيقي الطبيب والاستقبال) ===== -->
     <sys:String x:Key="Main_RegisterPatient">+ تسجيل مريض جديد</sys:String>
     <sys:String x:Key="Main_OpenPatientFile">فتح ملف المريض</sys:String>
