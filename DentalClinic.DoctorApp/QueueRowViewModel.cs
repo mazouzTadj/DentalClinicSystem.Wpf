@@ -10,8 +10,43 @@ public class QueueRowViewModel : INotifyPropertyChanged
 {
     public int VisitID { get; }
     public int PatientID { get; }
-    public string PatientFullName { get; }
     public string CheckInTimeText { get; }
+
+    private string _patientFullName;
+    // قابلة للتحديث في مكانها (وليست get فقط كما كانت) حتى يظهر الاسم الجديد فوراً في القائمة
+    // بعد تعديل بيانات المريض (شاشة تعديل المريض)، دون انتظار إعادة بناء الصف بالكامل
+    public string PatientFullName
+    {
+        get => _patientFullName;
+        private set
+        {
+            if (_patientFullName == value) return;
+            _patientFullName = value;
+            OnPropertyChanged(nameof(PatientFullName));
+        }
+    }
+
+    private DateTime? _scheduledDate;
+    public DateTime? ScheduledDate
+    {
+        get => _scheduledDate;
+        private set
+        {
+            if (_scheduledDate == value) return;
+            _scheduledDate = value;
+            OnPropertyChanged(nameof(ScheduledDate));
+            OnPropertyChanged(nameof(HasNextAppointment));
+            OnPropertyChanged(nameof(NextAppointmentText));
+            OnPropertyChanged(nameof(CanEditAppointment));
+            OnPropertyChanged(nameof(CanDeleteAppointment));
+        }
+    }
+
+    public int? FutureVisitID { get; private set; }
+    public bool HasNextAppointment => FutureVisitID.HasValue && ScheduledDate.HasValue;
+    public bool CanEditAppointment => HasNextAppointment;
+    public bool CanDeleteAppointment => HasNextAppointment;
+    public string NextAppointmentText => ScheduledDate.HasValue ? ScheduledDate.Value.ToString("dd/MM/yyyy") : "-";
 
     private VisitStatus _status;
     public VisitStatus Status
@@ -25,6 +60,8 @@ public class QueueRowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(CanCancel));
             OnPropertyChanged(nameof(CanCheckIn));
+            OnPropertyChanged(nameof(CanEditAppointment));
+            OnPropertyChanged(nameof(CanDeleteAppointment));
         }
     }
 
@@ -48,15 +85,23 @@ public class QueueRowViewModel : INotifyPropertyChanged
     {
         VisitID = item.VisitID;
         PatientID = item.PatientID;
-        PatientFullName = item.PatientFullName;
+        _patientFullName = item.PatientFullName;
         CheckInTimeText = item.CheckInTime.ToString("hh:mm tt");
         _status = item.Status;
+        _scheduledDate = item.ScheduledDate;
+        FutureVisitID = item.FutureVisitID;
     }
 
-    // يُستدعى عند كل تحديث تلقائي بدل إنشاء عنصر جديد - يحدّث الحالة فقط إن تغيّرت
+    // يُستدعى عند كل تحديث تلقائي بدل إنشاء عنصر جديد - يحدّث الحالة والاسم فقط إن تغيّرا
     public void UpdateFrom(VisitQueueItem item)
     {
+        PatientFullName = item.PatientFullName;
         Status = item.Status;
+        ScheduledDate = item.ScheduledDate;
+        FutureVisitID = item.FutureVisitID;
+        OnPropertyChanged(nameof(HasNextAppointment));
+        OnPropertyChanged(nameof(CanEditAppointment));
+        OnPropertyChanged(nameof(CanDeleteAppointment));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

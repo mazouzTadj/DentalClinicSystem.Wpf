@@ -5,6 +5,7 @@ namespace DentalClinic.Features;
 
 public class SessionHistoryRowViewModel
 {
+    public int SessionID { get; }
     public string DateText { get; }
     public string Diagnosis { get; }
     public string Treatment { get; }
@@ -14,6 +15,7 @@ public class SessionHistoryRowViewModel
 
     public SessionHistoryRowViewModel(MedicalSession s)
     {
+        SessionID = s.SessionID;
         DateText = s.SessionDateTime.ToString("yyyy-MM-dd HH:mm");
         Diagnosis = string.IsNullOrWhiteSpace(s.Diagnosis) ? "-" : s.Diagnosis;
         Treatment = string.IsNullOrWhiteSpace(s.TreatmentPerformed) ? "-" : s.TreatmentPerformed;

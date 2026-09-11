@@ -10,6 +10,8 @@
     <sys:String x:Key="App_NurseTitle">تطبيق الاستقبال - عيادة الأسنان</sys:String>
     <sys:String x:Key="App_DoctorTitleWithNameFormat">تطبيق الطبيب - عيادة الأسنان | د. {0}</sys:String>
     <sys:String x:Key="App_NurseTitleWithNameFormat">تطبيق الاستقبال - عيادة الأسنان | مرحباً {0}</sys:String>
+    <sys:String x:Key="App_ProsthetistTitle">تطبيق المرمم - عيادة الأسنان</sys:String>
+    <sys:String x:Key="App_ProsthetistTitleWithNameFormat">تطبيق المرمم - عيادة الأسنان | مرحباً {0}</sys:String>
     <sys:String x:Key="Common_Welcome">مرحباً</sys:String>
     <sys:String x:Key="Common_Save">حفظ</sys:String>
     <sys:String x:Key="Common_Cancel">إلغاء</sys:String>
@@ -22,7 +24,8 @@
     <sys:String x:Key="PF_Title">ملف المريض</sys:String>
     <sys:String x:Key="PF_PrescriptionButton">الوصفة الطبية</sys:String>
     <sys:String x:Key="PF_ExportPdfButton">تصدير إلى PDF</sys:String>
-    <sys:String x:Key="PF_ScheduleButton">📅 حجز الزيارة القادمة</sys:String>
+    <sys:String x:Key="PF_ScheduleButton">حجز الزيارة القادمة</sys:String>
+    <sys:String x:Key="PF_ProstheticCasesButton">حالات الترميم</sys:String>
     <sys:String x:Key="PF_HistoryHeader">سجل الزيارات السابقة</sys:String>
     <sys:String x:Key="PF_ColDate">التاريخ</sys:String>
     <sys:String x:Key="PF_ColDiagnosis">التشخيص</sys:String>
@@ -40,12 +43,19 @@
     <sys:String x:Key="PF_Medications">الأدوية</sys:String>
     <sys:String x:Key="PF_PickMedicationsButton">+ اختر الأدوية</sys:String>
     <sys:String x:Key="PF_NoMedicationsSelected">لم يتم اختيار أي دواء بعد</sys:String>
+    <sys:String x:Key="PF_PickDiagnosesButton">+ اختر التشخيص</sys:String>
+    <sys:String x:Key="PF_NoDiagnosesSelected">لم يتم اختيار أي تشخيص بعد</sys:String>
+    <sys:String x:Key="PF_Certificates">الشهادات الطبية / العطل المرضية</sys:String>
+    <sys:String x:Key="PF_PickCertificatesButton">+ اختر شهادة/عطلة</sys:String>
+    <sys:String x:Key="PF_NoCertificatesSelected">لم يتم اختيار أي شهادة/عطلة بعد</sys:String>
+    <sys:String x:Key="PF_PickerCertificatesTitle">اختر شهادة طبية / عطلة مرضية</sys:String>
     <sys:String x:Key="PF_TotalPriceLabel">التكلفة الإجمالية للعلاج (دج)</sys:String>
     <sys:String x:Key="PF_SaveSessionButton">حفظ الجلسة وإتمام العلاج الطبي</sys:String>
     <sys:String x:Key="PF_CloseButton">إغلاق</sys:String>
     <sys:String x:Key="PF_SaveSessionButtonReviewMode">حفظ الجلسة</sys:String>
     <sys:String x:Key="PF_PickerTreatmentsTitle">اختر العلاجات</sys:String>
     <sys:String x:Key="PF_PickerMedicationsTitle">اختر الأدوية</sys:String>
+    <sys:String x:Key="PF_PickerDiagnosesTitle">اختر التشخيص</sys:String>
     <sys:String x:Key="PF_PatientDataNotLoaded">لم يتم تحميل بيانات المريض بعد</sys:String>
     <sys:String x:Key="PF_PdfFilter">ملفات PDF (*.pdf)|*.pdf</sys:String>
     <sys:String x:Key="PF_ExportSuccessMessage">تم حفظ ملف PDF بنجاح. هل تريد فتحه الآن؟</sys:String>
@@ -75,12 +85,59 @@
     <sys:String x:Key="Rx_AddAtLeastOneMedication">أضِف دواءً واحداً على الأقل قبل إنشاء الوصفة</sys:String>
     <sys:String x:Key="Rx_SavedMessage">تم حفظ الوصفة الطبية بنجاح. هل تريد فتحها الآن للطباعة؟</sys:String>
     <sys:String x:Key="Rx_GenerateFailedFormat">فشل إنشاء الوصفة الطبية: {0}</sys:String>
+    <sys:String x:Key="Rx_BoxCountLabel">عدد العلب:</sys:String>
+    <sys:String x:Key="Rx_PrintSuccess">تم إرسال الوصفة الطبية إلى الطابعة بنجاح.</sys:String>
+    <sys:String x:Key="Rx_CertificateSectionLabel">شهادة طبية / عطلة مرضية (اختياري)</sys:String>
+    <sys:String x:Key="Rx_CertificateLineLabel">نص الشهادة الطبية / العطلة المرضية</sys:String>
+    <sys:String x:Key="Rx_AddCustomCertificateButton">+ إضافة شهادة/عطلة مخصصة</sys:String>
+    <sys:String x:Key="Rx_SelectCertificateFirst">الرجاء اختيار شهادة/عطلة من القائمة أولاً</sys:String>
+    <sys:String x:Key="Rx_AddAtLeastOneLine">أضِف دواءً أو شهادة/عطلة واحدة على الأقل قبل إنشاء الوصفة</sys:String>
 
     <!-- ===== حجز موعد (ScheduleAppointmentDialog) ===== -->
     <sys:String x:Key="Sched_Title">حجز موعد</sys:String>
     <sys:String x:Key="Sched_Header">حجز زيارة جديدة</sys:String>
     <sys:String x:Key="Sched_DateLabel">تاريخ الموعد *</sys:String>
     <sys:String x:Key="Sched_TimeLabel">وقت الموعد *</sys:String>
+    <sys:String x:Key="Sched_PlannedTreatment">العلاج المخطَّط لهذا الموعد</sys:String>
+    <sys:String x:Key="Sched_SameDayPatients">مرضى محجوزون بنفس اليوم</sys:String>
+    <sys:String x:Key="Sched_NoSameDayPatients">لا يوجد أي مريض آخر محجوز بهذا اليوم بعد.</sys:String>
+    <sys:String x:Key="Sched_NoPlannedTreatment">بلا علاج محدَّد</sys:String>
+    <sys:String x:Key="Sched_DirectEditTitle">تعديل الموعد</sys:String>
+    <sys:String x:Key="Sched_DirectEditHeader">تعديل الموعد مباشرة</sys:String>
+    <sys:String x:Key="Sched_DirectEditSave">حفظ التعديل</sys:String>
+    <sys:String x:Key="Sched_DirectAppointmentNotFound">الموعد غير موجود أو لم يعد موعداً مستقبلياً.</sys:String>
+    <sys:String x:Key="Sched_SelectFutureDate">اختر تاريخاً مستقبلياً ابتداءً من الغد.</sys:String>
+    <sys:String x:Key="Sched_DoctorOnly">هذه العملية متاحة للطبيب فقط.</sys:String>
+    <sys:String x:Key="Sched_DirectBlockedPending">يوجد طلب تعديل معلّق لهذا الموعد. يجب معالجة الطلب المعلّق أولاً.</sys:String>
+    <sys:String x:Key="Sched_ConfirmDeleteFormat">هل تريد حذف موعد {0} بتاريخ {1} نهائياً؟ سيتم حذف الموعد فقط.</sys:String>
+    <sys:String x:Key="Sched_DeleteAppointmentTitle">حذف الموعد</sys:String>
+    <sys:String x:Key="Sched_DeleteAppointmentSuccess">تم حذف الموعد بنجاح.</sys:String>
+    <sys:String x:Key="Main_NextAppointment">الموعد القادم</sys:String>
+    <sys:String x:Key="Main_EditAppointment">تعديل الموعد</sys:String>
+    <sys:String x:Key="Main_DeleteAppointment">حذف الموعد</sys:String>
+    <sys:String x:Key="Sched_EditTitle">تعديل موعد (يحتاج موافقة الطبيب)</sys:String>
+    <sys:String x:Key="Sched_EditHeader">طلب تعديل موعد</sys:String>
+    <sys:String x:Key="Sched_EditSaveButton">إرسال للموافقة</sys:String>
+    <sys:String x:Key="Sched_EditSuccessMessage">أُرسل طلب التعديل للطبيب. لن يُطبَّق التعديل إلا بعد موافقته.</sys:String>
+    <sys:String x:Key="Sched_EditSuccessTitle">أُرسل الطلب</sys:String>
+    <sys:String x:Key="Sched_EditErrorAlreadyPending">يوجد طلب تعديل معلَّق لهذا الموعد بالفعل - انتظري رد الطبيب قبل تقديم طلب آخر.</sys:String>
+    <sys:String x:Key="Main_EditAppointmentButton">تعديل</sys:String>
+    <sys:String x:Key="Main_AppointmentPending">قيد المراجعة</sys:String>
+    <sys:String x:Key="Notif_PendingRequestsTitle">طلبات تعديل مواعيد بانتظار موافقتك</sys:String>
+    <sys:String x:Key="Notif_BellButtonFormat">🔔 {0}</sys:String>
+    <sys:String x:Key="Notif_NoPendingRequests">لا توجد طلبات معلَّقة حالياً.</sys:String>
+    <sys:String x:Key="Notif_RequestedByFormat">قدَّمته: {0} — بتاريخ {1}</sys:String>
+    <sys:String x:Key="Notif_CurrentAppointmentFormat">الموعد الحالي: {0} — {1}</sys:String>
+    <sys:String x:Key="Notif_ProposedAppointmentFormat">المُقترَح: {0} — {1}</sys:String>
+    <sys:String x:Key="Notif_ApproveButton">موافقة</sys:String>
+    <sys:String x:Key="Notif_RejectButton">رفض</sys:String>
+    <sys:String x:Key="Notif_RejectReasonPrompt">سبب الرفض (اختياري):</sys:String>
+    <sys:String x:Key="Notif_ApprovedMsg">تمت الموافقة على التعديل.</sys:String>
+    <sys:String x:Key="Notif_RejectedMsg">تم رفض التعديل.</sys:String>
+    <sys:String x:Key="Notif_NurseApprovedFormat">وافق الطبيب على تعديل موعد المريض "{0}".</sys:String>
+    <sys:String x:Key="Notif_NurseRejectedFormat">رفض الطبيب تعديل موعد المريض "{0}".&#10;السبب: {1}</sys:String>
+    <sys:String x:Key="Notif_NurseRejectedNoReason">بلا سبب محدَّد</sys:String>
+    <sys:String x:Key="Notif_NurseResultTitle">رد الطبيب على طلب التعديل</sys:String>
     <sys:String x:Key="Sched_SaveButton">حفظ الموعد</sys:String>
     <sys:String x:Key="Sched_SelectDateFirst">الرجاء اختيار تاريخ الموعد.</sys:String>
     <sys:String x:Key="Sched_SuccessMessage">تم حجز الموعد بنجاح!</sys:String>
@@ -115,6 +172,7 @@
     <sys:String x:Key="AdvSearch_ColPaid">مدفوع</sys:String>
     <sys:String x:Key="AdvSearch_ColRemaining">المتبقي</sys:String>
     <sys:String x:Key="AdvSearch_InitialHint">أدخل أي مجموعة من المعايير أعلاه ثم اضغط بحث</sys:String>
+    <sys:String x:Key="AdvSearch_NoResultsFound">لا توجد جلسات مطابقة</sys:String>
     <sys:String x:Key="AdvSearch_ResultsFoundFormat">تم العثور على {0} نتيجة</sys:String>
     <sys:String x:Key="AdvSearch_SearchErrorFormat">خطأ في البحث: {0}</sys:String>
     <sys:String x:Key="AdvSearch_SelectResultFirst">الرجاء اختيار نتيجة من القائمة أولاً</sys:String>
@@ -122,13 +180,19 @@
     <sys:String x:Key="Common_AccessDenied">صلاحية مرفوضة</sys:String>
     <sys:String x:Key="Common_Confirm">تأكيد</sys:String>
     <sys:String x:Key="Common_Close">إغلاق</sys:String>
+    <sys:String x:Key="Common_Edit">تعديل</sys:String>
+    <sys:String x:Key="Common_Delete">حذف</sys:String>
 
     <!-- ===== شاشة تسجيل الدخول ===== -->
     <sys:String x:Key="Login_TitleDoctor">تسجيل دخول الطبيب</sys:String>
     <sys:String x:Key="Login_TitleNurse">تسجيل دخول الاستقبال</sys:String>
+    <sys:String x:Key="Login_TitleProsthetist">تسجيل دخول المرمم</sys:String>
+    <sys:String x:Key="Login_ProsthetistDoctorNotAuthorized">هذا التطبيق متاح للطبيب الرئيسي فقط.</sys:String>
     <sys:String x:Key="Login_Username">اسم المستخدم</sys:String>
     <sys:String x:Key="Login_Password">كلمة المرور</sys:String>
     <sys:String x:Key="Login_ShowPassword">إظهار/إخفاء كلمة المرور</sys:String>
+    <sys:String x:Key="Login_RememberMe">تذكّر اسم المستخدم</sys:String>
+    <sys:String x:Key="Login_RememberPassword">تذكّر كلمة المرور أيضاً على هذا الجهاز</sys:String>
     <sys:String x:Key="Login_LoginButton">تسجيل الدخول</sys:String>
     <sys:String x:Key="Login_EnterCredentials">الرجاء إدخال اسم المستخدم وكلمة المرور</sys:String>
     <sys:String x:Key="Login_ConnectionErrorFormat">تعذّر الاتصال بقاعدة البيانات: {0}</sys:String>
@@ -155,10 +219,18 @@
     <sys:String x:Key="Main_OpenPatientFile">فتح ملف المريض</sys:String>
     <sys:String x:Key="Main_Search">بحث</sys:String>
     <sys:String x:Key="Main_SearchPatient">بحث عن مريض</sys:String>
+    <sys:String x:Key="Main_TodayQueueSearchToolTip">البحث عن مريض في قائمة اليوم</sys:String>
+    <sys:String x:Key="Main_TodayQueueSearchPlaceholder">بحث في قائمة اليوم…</sys:String>
+    <sys:String x:Key="Main_ClearSearch">مسح البحث</sys:String>
+    <sys:String x:Key="Main_AdvancedSearchMenuItem">بحث متقدم</sys:String>
     <sys:String x:Key="Main_CollectPayment">تحصيل دفعة</sys:String>
     <sys:String x:Key="Main_Treatments">العلاجات</sys:String>
     <sys:String x:Key="Main_Backup">نسخ احتياطي</sys:String>
     <sys:String x:Key="Main_ManageUsers">إدارة المستخدمين</sys:String>
+    <sys:String x:Key="Main_OpenProsthetistApp">فتح تطبيق المرمم</sys:String>
+    <sys:String x:Key="Main_ManageProstheticLookups">أنواع العمل والمراحل</sys:String>
+    <sys:String x:Key="Main_ProsthetistAppNotFoundFormat">تعذَّر العثور على تطبيق المرمم في المسار المتوقَّع: {0} — تأكد من تثبيته بجانب تطبيق الطبيب، أو شغِّله يدوياً من مجلده.</sys:String>
+    <sys:String x:Key="Main_ProsthetistAppLaunchErrorFormat">تعذَّر تشغيل تطبيق المرمم: {0}</sys:String>
     <sys:String x:Key="Main_Finances">الفاينانس</sys:String>
     <sys:String x:Key="Main_Refresh">تحديث</sys:String>
     <sys:String x:Key="Main_Logout">تسجيل الخروج</sys:String>
@@ -169,7 +241,8 @@
     <sys:String x:Key="Main_ColNextAppointment">الموعد القادم</sys:String>
     <sys:String x:Key="Main_ColActions">الإجراءات</sys:String>
 
-    <sys:String x:Key="Main_PatientsTodayFormat">عدد مرضى اليوم: {0}</sys:String>
+    <sys:String x:Key="Main_PatientsTodayDetailedFormat">عدد المرضى اليوم: {0}  —  في الانتظار: {1}  ·  تمت معالجتهم: {2}  ·  ملغى: {3}  ·  أخرى: {4}</sys:String>
+    <sys:String x:Key="Main_EmptyQueue">لا يوجد أي مريض في قائمة الانتظار اليوم بعد</sys:String>
     <sys:String x:Key="Main_CouldNotLoadQueueFormat">تعذّر تحميل قائمة الانتظار: {0}</sys:String>
 
     <sys:String x:Key="Main_StatusWaiting">في الانتظار</sys:String>
@@ -179,6 +252,16 @@
     <sys:String x:Key="Main_StatusScheduled">موعد محجوز</sys:String>
 
     <sys:String x:Key="Main_Cancel">إلغاء</sys:String>
+    <sys:String x:Key="Main_DeletePatient">حذف</sys:String>
+    <sys:String x:Key="Main_ConfirmDeletePatientTitle">حذف المريض نهائياً</sys:String>
+    <sys:String x:Key="Main_ConfirmDeletePatientMessageFormat">سيؤدي هذا إلى حذف "{0}" وكل سجلاته الطبية وجلساته ودفعاته نهائياً من قاعدة البيانات. لا يمكن التراجع عن هذا الإجراء إطلاقاً. هل أنت متأكد تماماً؟</sys:String>
+    <sys:String x:Key="Main_PatientDeletedFormat">تم حذف "{0}" نهائياً.</sys:String>
+    <sys:String x:Key="Main_CouldNotDeletePatientFormat">تعذّر حذف المريض: {0}</sys:String>
+    <sys:String x:Key="Main_NoPermissionDeletePatient">لا تملك صلاحية حذف المرضى.</sys:String>
+    <sys:String x:Key="Main_EditPatient">تعديل</sys:String>
+    <sys:String x:Key="Main_ViewingQueueOf">تعرض قائمة انتظار:</sys:String>
+    <sys:String x:Key="Main_UnassignedPatients">غير مُسنَدين لطبيب</sys:String>
+    <sys:String x:Key="Main_NoPermissionEditPatient">لا تملك صلاحية تعديل بيانات المرضى.</sys:String>
     <sys:String x:Key="Main_CheckIn">تسجيل حضور</sys:String>
     <sys:String x:Key="Main_Pay">دفع</sys:String>
     <sys:String x:Key="Main_Paid">مدفوع ✓</sys:String>
@@ -200,6 +283,7 @@
 
     <!-- ===== شاشة تسجيل مريض جديد ===== -->
     <sys:String x:Key="AddPatient_Title">تسجيل مريض جديد</sys:String>
+    <sys:String x:Key="AddPatient_TitleEdit">تعديل بيانات المريض</sys:String>
     <sys:String x:Key="AddPatient_FullName">الاسم الكامل *</sys:String>
     <sys:String x:Key="AddPatient_Age">العمر</sys:String>
     <sys:String x:Key="AddPatient_Gender">الجنس</sys:String>
@@ -209,10 +293,17 @@
     <sys:String x:Key="AddPatient_Address">العنوان</sys:String>
     <sys:String x:Key="AddPatient_Notes">ملاحظات طبية أساسية (حساسية / أمراض مزمنة)</sys:String>
     <sys:String x:Key="AddPatient_SaveButton">حفظ وإضافة لقائمة الانتظار</sys:String>
+    <sys:String x:Key="AddPatient_SaveAndBookButton">حفظ وحجز موعد</sys:String>
+    <sys:String x:Key="AddPatient_BookingDuplicateMessageFormat">يوجد بالفعل مريض مسجّل بنفس الاسم ورقم الهاتف: {0}. ابحث عن المريض الموجود بدلاً من إنشاء سجل جديد.</sys:String>
+    <sys:String x:Key="AddPatient_BookingCancelledPatientSaved">تم تسجيل المريض، لكن لم يتم حجز موعد. المريض محفوظ في النظام ولم تتم إضافته إلى قائمة الانتظار.</sys:String>
+    <sys:String x:Key="AddPatient_SaveChangesButton">حفظ التعديلات</sys:String>
+    <sys:String x:Key="AddPatient_AssignedDoctor">الطبيب المسؤول</sys:String>
+    <sys:String x:Key="AddPatient_UnassignedDoctor">غير مُسنَد بعد</sys:String>
     <sys:String x:Key="AddPatient_FullNameRequired">الاسم الكامل مطلوب</sys:String>
     <sys:String x:Key="AddPatient_InvalidAge">العمر غير صحيح</sys:String>
     <sys:String x:Key="AddPatient_DuplicateFoundFormat">يوجد مريض مسجَّل مسبقاً بنفس الاسم ورقم الهاتف:&#10;{0} - {1}&#10;&#10;هل تريد إضافته إلى قائمة الانتظار بدل إنشاء سجل جديد؟</sys:String>
     <sys:String x:Key="AddPatient_DuplicateTitle">احتمال وجود مريض مكرَّر</sys:String>
+    <sys:String x:Key="AddPatient_SameNameWarningFormat">يوجد مريض آخر مسجَّل مسبقاً بنفس الاسم "{0}" (رقم هاتفه: {1})، لكن برقم هاتف مختلف عن المُدخَل الآن.&#10;&#10;هل أنت متأكدة أن هذا شخص مختلف فعلاً، وتريدين تسجيله كمريض جديد منفصل؟&#10;(اختاري "لا" للتوقف والبحث عنه يدوياً بدل المتابعة)</sys:String>
     <sys:String x:Key="AddPatient_SaveErrorFormat">حدث خطأ أثناء الحفظ: {0}</sys:String>
 
     <!-- ===== شاشة البحث عن مريض ===== -->
@@ -223,6 +314,11 @@
     <sys:String x:Key="Search_ColFile">الملف</sys:String>
     <sys:String x:Key="Search_ColPayment">الدفع</sys:String>
     <sys:String x:Key="Search_OpenFileBtn">فتح</sys:String>
+    <sys:String x:Key="Search_DoctorFilterAll">كل الأطباء</sys:String>
+    <sys:String x:Key="Search_ColEdit">تعديل</sys:String>
+    <sys:String x:Key="Search_EditPatientBtn">تعديل</sys:String>
+    <sys:String x:Key="Search_ColDelete">حذف</sys:String>
+    <sys:String x:Key="Search_DeletePatientBtn">حذف</sys:String>
     <sys:String x:Key="Search_GenderAny">أي جنس</sys:String>
     <sys:String x:Key="Search_PaymentAll">كل حالات الدفع</sys:String>
     <sys:String x:Key="Search_PaymentUnpaid">لديه رصيد غير مدفوع</sys:String>
@@ -265,6 +361,8 @@
     <sys:String x:Key="UserMgmt_ColLastLogin">آخر تسجيل دخول</sys:String>
     <sys:String x:Key="UserMgmt_RoleDoctor">طبيب</sys:String>
     <sys:String x:Key="UserMgmt_RoleNurse">ممرضة</sys:String>
+    <sys:String x:Key="UserMgmt_RoleProsthetist">مرمم أسنان</sys:String>
+    <sys:String x:Key="UserMgmt_MainDoctorBadge">رئيسي</sys:String>
     <sys:String x:Key="UserMgmt_AdminYes">مدير</sys:String>
     <sys:String x:Key="UserMgmt_StatusActive">نشط</sys:String>
     <sys:String x:Key="UserMgmt_StatusInactive">معطَّل</sys:String>
@@ -287,6 +385,7 @@
     <sys:String x:Key="Perm_Treatments">العلاجات</sys:String>
     <sys:String x:Key="Perm_Payments">الدفعات</sys:String>
     <sys:String x:Key="Perm_RegisterPatients">تسجيل المرضى</sys:String>
+    <sys:String x:Key="Perm_EditPatients">تعديل بيانات المرضى</sys:String>
 
     <!-- ===== شاشة إضافة/تعديل مستخدم ===== -->
     <sys:String x:Key="UserEdit_TitleAdd">إضافة مستخدم</sys:String>
@@ -305,6 +404,40 @@
     <sys:String x:Key="UserEdit_PermTreatments">إدارة العلاجات والأسعار</sys:String>
     <sys:String x:Key="UserEdit_PermPayments">تحصيل الدفعات</sys:String>
     <sys:String x:Key="UserEdit_PermRegisterPatients">تسجيل مرضى جدد</sys:String>
+    <sys:String x:Key="UserEdit_PermEditPatients">تعديل بيانات مرضى موجودين (تصحيح خطأ إدخال)</sys:String>
+    <sys:String x:Key="UserEdit_PermDeletePatients">حذف المرضى نهائياً</sys:String>
+    <sys:String x:Key="UserEdit_DoctorAccessHeader">قوائم انتظار الأطباء المسموح لها رؤيتها</sys:String>
+    <sys:String x:Key="UserEdit_NoDoctorsYet">لا يوجد أطباء مسجَّلون بعد بالنظام.</sys:String>
+    <sys:String x:Key="UserEdit_ProsthPermissionsHeader">صلاحيات الترميم الدقيقة</sys:String>
+    <sys:String x:Key="UserEdit_NoProsthPermsYet">لا توجد صلاحيات ترميم مُعرَّفة في القاعدة.</sys:String>
+    <sys:String x:Key="UserEdit_MainDoctorHeader">الطبيب الرئيسي</sys:String>
+    <sys:String x:Key="UserEdit_IsMainDoctor">هذا هو الطبيب الرئيسي</sys:String>
+    <sys:String x:Key="UserEdit_MainDoctorHint">طبيب رئيسي واحد فقط في كل النظام. تحديد طبيب جديد يُلغي صفة الطبيب الرئيسي عن أي طبيب آخر تلقائياً. الطبيب الرئيسي وحده يملك صلاحية الدخول لتطبيق المرمم بحساب طبيب كامل الصلاحيات.</sys:String>
+    <sys:String x:Key="UserEdit_MainDoctorReadOnlyHint">لا تملك صلاحية تغيير هذا الإعداد - فقط الطبيب الرئيسي الحالي يستطيع تسليم هذه الصفة لطبيب آخر.</sys:String>
+    <sys:String x:Key="UserEdit_CannotClearMainDoctor">لا يمكن إلغاء صفة الطبيب الرئيسي دون تعيين بديل. لتسليم هذه الصفة، افتح حساب الطبيب الآخر وحدِّده هو كطبيب رئيسي بدلاً من ذلك.</sys:String>
+
+    <!-- ===== صلاحيات الترميم الدقيقة (فئة Prosthetics في جدول Permissions) ===== -->
+    <sys:String x:Key="ProsthPerm_ViewAllCases">عرض كل حالات الترميم (وليس المسندة له فقط)</sys:String>
+    <sys:String x:Key="ProsthPerm_CreateCase">إنشاء حالة ترميم جديدة</sys:String>
+    <sys:String x:Key="ProsthPerm_EditCase">تعديل معلومات الحالة (نوع العمل / السعر / الملاحظات)</sys:String>
+    <sys:String x:Key="ProsthPerm_DeleteCase">حذف حالة ترميم</sys:String>
+    <sys:String x:Key="ProsthPerm_TransferCase">نقل الحالة لمرمم آخر</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewStage">عرض مرحلة العلاج</sys:String>
+    <sys:String x:Key="ProsthPerm_EditStage">تغيير مرحلة العلاج</sys:String>
+    <sys:String x:Key="ProsthPerm_ManageLookups">إدارة قوائم أنواع العمل ومراحل العلاج</sys:String>
+    <sys:String x:Key="ProsthPerm_AddSession">إضافة جلسة ترميم</sys:String>
+    <sys:String x:Key="ProsthPerm_EditSession">تعديل جلسة ترميم</sys:String>
+    <sys:String x:Key="ProsthPerm_DeleteSession">حذف جلسة ترميم</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewPatient">عرض بيانات المريض</sys:String>
+    <sys:String x:Key="ProsthPerm_EditPatientInfo">تعديل بيانات المريض الأساسية</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewTreatment">عرض علاجات المريض في العيادة</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewDiagnosis">عرض تشخيصات المريض</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewMedications">عرض أدوية المريض</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewFinance">الدخول إلى لوحة مالية الترميم</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewPayment">عرض دفعات الحالة</sys:String>
+    <sys:String x:Key="ProsthPerm_AddPayment">إضافة دفعة</sys:String>
+    <sys:String x:Key="ProsthPerm_EditPayment">تعديل دفعة</sys:String>
+    <sys:String x:Key="ProsthPerm_DeletePayment">حذف دفعة</sys:String>
     <sys:String x:Key="UserEdit_AccountActive">الحساب مفعَّل</sys:String>
     <sys:String x:Key="UserEdit_FullNameUsernameRequired">الاسم الكامل واسم المستخدم مطلوبان</sys:String>
     <sys:String x:Key="UserEdit_PasswordRequiredForNew">كلمة المرور مطلوبة للحساب الجديد</sys:String>
@@ -322,9 +455,21 @@
     <sys:String x:Key="Fin_ExportTooltip">تصدير التقرير إلى CSV/Excel</sys:String>
     <sys:String x:Key="Fin_Refresh">🔄 تحديث</sys:String>
     <sys:String x:Key="Fin_TodayRevenue">إيرادات اليوم</sys:String>
+    <sys:String x:Key="Fin_Today">اليوم</sys:String>
     <sys:String x:Key="Fin_ThisMonth">هذا الشهر</sys:String>
     <sys:String x:Key="Fin_ThisYear">هذه السنة</sys:String>
     <sys:String x:Key="Fin_Outstanding">المستحق</sys:String>
+    <sys:String x:Key="Fin_CurrencySuffix">دج</sys:String>
+    <sys:String x:Key="Fin_MarginFormat">هامش ربح: {0}%</sys:String>
+    <sys:String x:Key="Fin_TrendUpFormat">▲ {0}% عن {1}</sys:String>
+    <sys:String x:Key="Fin_TrendDownFormat">▼ {0}% عن {1}</sys:String>
+    <sys:String x:Key="Fin_TrendFlatFormat">— لا تغيير عن {0}</sys:String>
+    <sys:String x:Key="Fin_TrendNew">جديد (لا بيانات سابقة للمقارنة)</sys:String>
+    <sys:String x:Key="Fin_CompareYesterday">الأمس</sys:String>
+    <sys:String x:Key="Fin_CompareLastMonth">الشهر الماضي</sys:String>
+    <sys:String x:Key="Fin_CompareLastYear">العام الماضي</sys:String>
+    <sys:String x:Key="Fin_CommissionBreakdownFormat">عمولات الأطباء هذا الشهر: {0} ({1}% من إجمالي المصاريف)</sys:String>
+    <sys:String x:Key="Fin_CommissionBreakdownNone">لا توجد عمولات أطباء مسجَّلة هذا الشهر.</sys:String>
     <sys:String x:Key="Fin_DailyPatientsChart">المرضى يوميًا (آخر 14 يومًا)</sys:String>
     <sys:String x:Key="Fin_NoPatientActivity">لا يوجد نشاط للمرضى مسجَّل في هذه الفترة</sys:String>
     <sys:String x:Key="Fin_TopTreatments">أكثر العلاجات شيوعًا</sys:String>
@@ -348,6 +493,16 @@
     <sys:String x:Key="Fin_ColPhone">الهاتف</sys:String>
     <sys:String x:Key="Fin_ColLastVisit">آخر زيارة</sys:String>
     <sys:String x:Key="Fin_ColAmountOwed">المبلغ المستحق</sys:String>
+    <sys:String x:Key="Fin_RecentIncome">آخر المداخيل</sys:String>
+    <sys:String x:Key="Fin_NoIncomeYet">لا توجد أي دفعات مُحصَّلة بعد.</sys:String>
+    <sys:String x:Key="Fin_ColEdit">تعديل</sys:String>
+    <sys:String x:Key="Fin_ColDelete">حذف</sys:String>
+    <sys:String x:Key="Fin_EditIncomeTitle">تعديل مبلغ الدفعة</sys:String>
+    <sys:String x:Key="Fin_EditIncomeAmountLabel">المبلغ</sys:String>
+    <sys:String x:Key="Fin_EditIncomePromptFormat">تعديل مبلغ الدفعة الخاصة بالمريض: {0}</sys:String>
+    <sys:String x:Key="Fin_InvalidAmount">الرجاء إدخال مبلغ صحيح (رقم موجب).</sys:String>
+    <sys:String x:Key="Fin_DeleteIncomeTitle">حذف دفعة</sys:String>
+    <sys:String x:Key="Fin_DeleteIncomeConfirmFormat">هل أنت متأكد من حذف دفعة بمبلغ {1} للمريض "{0}"؟ هذا الإجراء لا يمكن التراجع عنه.</sys:String>
     <sys:String x:Key="Fin_TodayExpense">مصاريف اليوم</sys:String>
     <sys:String x:Key="Fin_MonthExpense">مصاريف هذا الشهر</sys:String>
     <sys:String x:Key="Fin_YearExpense">مصاريف هذه السنة</sys:String>
@@ -407,11 +562,28 @@
     <sys:String x:Key="Expense_DeleteConfirmAutoMessageFormat">هذا مصروف عمولة طبيب مُولَّد تلقائياً من دفعة فعلية:&#10;"{0}" - {1}&#10;حذفه لن يؤثر على الدفعة نفسها، لكنه سيزيد صافي ربح العيادة المحسوب لهذه الفترة. هل تريد المتابعة؟</sys:String>
     <sys:String x:Key="Expense_DeleteErrorFormat">تعذّر حذف المصروف: {0}</sys:String>
 
+    <!-- Patch 12: مصاريف المرمم (ProstheticExpenses) - نافذة إضافة/إدارة مستقلة عن Expense_* أعلاه -->
+    <sys:String x:Key="ProsthExpense_Title">إضافة مصروف مرمم</sys:String>
+    <sys:String x:Key="ProsthExpense_Header">إضافة مصروف جديد</sys:String>
+    <sys:String x:Key="ProsthExpense_Prosthetist">المرمم</sys:String>
+    <sys:String x:Key="ProsthExpense_ProsthetistRequired">الرجاء اختيار المرمم.</sys:String>
+    <sys:String x:Key="ProsthExpense_CatLabFees">تكاليف المخبر</sys:String>
+    <sys:String x:Key="ProsthExpense_CatMaterials">المواد</sys:String>
+    <sys:String x:Key="ProsthExpense_CatShipping">الشحن</sys:String>
+    <sys:String x:Key="ProsthExpense_CatDues">مستحقات المرمم</sys:String>
+    <sys:String x:Key="ProsthExpense_NoPermission">لا تملك صلاحية القيام بهذه العملية.</sys:String>
+    <sys:String x:Key="ProsthExpense_WindowTitle">مصاريف الترميم</sys:String>
+    <sys:String x:Key="ProsthExpense_AddButton">إضافة مصروف</sys:String>
+    <sys:String x:Key="ProsthExpense_TotalExpenses">إجمالي المصاريف</sys:String>
+    <sys:String x:Key="ProsthExpense_NoData">لا توجد مصاريف في هذه الفترة.</sys:String>
+
     <!-- ===== شاشة إدارة العلاجات والأسعار ===== -->
     <sys:String x:Key="Treat_Title">إدارة الأدوية والعلاجات</sys:String>
     <sys:String x:Key="Treat_Header">إدارة الأدوية والعلاجات</sys:String>
     <sys:String x:Key="Treat_TabTreatments">🦷 العلاجات</sys:String>
     <sys:String x:Key="Treat_TabMedications">💊 الأدوية</sys:String>
+    <sys:String x:Key="Treat_TabDiagnoses">🩺 التشخيصات</sys:String>
+    <sys:String x:Key="Treat_TabCertificates">📄 الشهادات/العطل</sys:String>
     <sys:String x:Key="Treat_Name">اسم العلاج *</sys:String>
     <sys:String x:Key="Treat_Price">السعر (دج / دولار) *</sys:String>
     <sys:String x:Key="Treat_CancelEdit">إلغاء التعديل</sys:String>
@@ -436,6 +608,16 @@
     <sys:String x:Key="Med_AddButton">+ إضافة دواء</sys:String>
     <sys:String x:Key="Med_NameRequired">الرجاء إدخال اسم الدواء</sys:String>
     <sys:String x:Key="Med_ColName">اسم الدواء</sys:String>
+    <sys:String x:Key="Diag_Name">اسم التشخيص *</sys:String>
+    <sys:String x:Key="Diag_AddButton">+ إضافة تشخيص</sys:String>
+    <sys:String x:Key="Diag_NameRequired">الرجاء إدخال اسم التشخيص</sys:String>
+    <sys:String x:Key="Diag_ColName">اسم التشخيص</sys:String>
+    <sys:String x:Key="Cert_Name">اسم الشهادة/العطلة *</sys:String>
+    <sys:String x:Key="Cert_Text">نص الشهادة الطبية / العطلة المرضية</sys:String>
+    <sys:String x:Key="Cert_AddButton">+ إضافة شهادة/عطلة</sys:String>
+    <sys:String x:Key="Cert_NameRequired">الرجاء إدخال اسم الشهادة/العطلة</sys:String>
+    <sys:String x:Key="Cert_ColName">الاسم</sys:String>
+    <sys:String x:Key="Cert_ColText">نص الشهادة/العطلة</sys:String>
     <sys:String x:Key="Med_ColDosage">الجرعة الافتراضية</sys:String>
     <sys:String x:Key="Med_ColDuration">المدة الافتراضية</sys:String>
 
@@ -451,5 +633,239 @@
     <sys:String x:Key="Backup_InProgress">جارٍ النسخ الاحتياطي...</sys:String>
     <sys:String x:Key="Backup_NowButton">نسخ احتياطي الآن</sys:String>
     <sys:String x:Key="Backup_Success">تم النسخ الاحتياطي بنجاح.</sys:String>
+    <sys:String x:Key="Backup_FolderSaved">تم حفظ مجلد النسخ الاحتياطي بنجاح.</sys:String>
+    <sys:String x:Key="Backup_FolderSaveErrorFormat">تعذّر حفظ مجلد النسخ الاحتياطي: {0}</sys:String>
+    <sys:String x:Key="Backup_SelectFolder">اختيار مجلد النسخ الاحتياطي</sys:String>
 
+    <sys:String x:Key="PF_ColActions">الإجراءات</sys:String>
+    <sys:String x:Key="PF_EditSessionButton">تعديل</sys:String>
+    <sys:String x:Key="PF_DeleteSessionButton">حذف</sys:String>
+    <sys:String x:Key="PF_TodaySessionNotice">تم تحميل جلسة اليوم؛ الحفظ سيحدّثها ولن ينشئ جلسة جديدة.</sys:String>
+    <sys:String x:Key="PF_EditingSessionNotice">وضع تعديل الجلسة</sys:String>
+    <sys:String x:Key="PF_UpdateSessionButton">تحديث الجلسة</sys:String>
+    <sys:String x:Key="PF_DeleteSessionTitle">حذف الجلسة</sys:String>
+    <sys:String x:Key="PF_DeleteSessionConfirm">هل أنت متأكد من حذف هذه الجلسة؟ هذا الإجراء لا يمكن التراجع عنه.</sys:String>
+    <sys:String x:Key="PF_DeleteSessionPaidConfirm">هذه الجلسة مرتبطة بمبالغ مدفوعة. هل أنت متأكد من حذفها؟ سيتم حذف الدفعات والسجلات المالية التابعة لها أيضاً.</sys:String>
+    <sys:String x:Key="PF_DeleteSessionErrorFormat">فشل حذف الجلسة: {0}</sys:String>
+    <sys:String x:Key="Fin_SelectAll">اختيار الكل</sys:String>
+    <sys:String x:Key="Fin_ClearSelection">إلغاء التحديد</sys:String>
+    <sys:String x:Key="Fin_DeleteSelected">حذف المحدد</sys:String>
+    <sys:String x:Key="Fin_DeleteSelectedConfirmFormat">هل أنت متأكد من حذف {0} سجل/سجلات محددة؟ هذا الإجراء لا يمكن التراجع عنه.</sys:String>
+    <sys:String x:Key="Main_PrintPrescriptionTooltip">طباعة وصفة الطبيب</sys:String>
+    <sys:String x:Key="Nurse_NoPrescriptionForToday">لا توجد وصفة طبية مسجلة لهذا المريض اليوم.</sys:String>
+    <sys:String x:Key="Fin_ZeroSelected">تصفير المحدد</sys:String>
+    <sys:String x:Key="Fin_ZeroSelectedTitle">تصفير الأرصدة</sys:String>
+    <sys:String x:Key="Fin_ZeroSelectedConfirmFormat">سيتم تسجيل دفع كامل للرصيد المتبقي لـ {0} مريض/مرضى محددين. هل تريد المتابعة؟</sys:String>
+    <sys:String x:Key="Fin_ZeroSelectedNoPayments">لم يتم تسجيل أي دفعة مستحقة للمرضى المحددين.</sys:String>
+    <sys:String x:Key="Fin_ZeroSelectedNeedsUser">لا يمكن تسجيل الدفعات الجماعية بدون مستخدم مسجل الدخول.</sys:String>
+    <sys:String x:Key="Fin_DoctorStatsWindowTitle">الإحصائيات التفصيلية للأطباء</sys:String>
+    <sys:String x:Key="Fin_DoctorStatsTooltip">فتح جميع إحصائيات الأطباء بالتفصيل</sys:String>
+    <sys:String x:Key="Fin_Close">إغلاق</sys:String>
+    <sys:String x:Key="Fin_ThisMonthFilter">هذا الشهر</sys:String>
+    <sys:String x:Key="Fin_ThisYearFilter">هذه السنة</sys:String>
+    <sys:String x:Key="Fin_AllDoctors">كل الأطباء</sys:String>
+    <sys:String x:Key="Fin_DoctorFilterTooltip">اختر الطبيب أو كل الأطباء</sys:String>
+    <sys:String x:Key="Fin_DoctorCount">الأطباء</sys:String>
+    <sys:String x:Key="Fin_PatientCount">عدد المرضى</sys:String>
+    <sys:String x:Key="Fin_SessionCount">عدد الجلسات</sys:String>
+    <sys:String x:Key="Fin_TotalDoctorIncome">إجمالي المدخول</sys:String>
+    <sys:String x:Key="Fin_TotalDoctorCommission">إجمالي عمولات الأطباء</sys:String>
+    <sys:String x:Key="Fin_ClinicShare">حصة العيادة</sys:String>
+    <sys:String x:Key="Fin_DoctorDetailedTable">تفاصيل كل طبيب</sys:String>
+    <sys:String x:Key="Fin_Doctor">الطبيب</sys:String>
+    <sys:String x:Key="Fin_CommissionPercent">نسبة العمولة</sys:String>
+    <sys:String x:Key="Fin_DoctorShare">حصة الطبيب</sys:String>
+    <sys:String x:Key="Fin_IncomePerPatient">متوسط المدخول/مريض</sys:String>
+    <sys:String x:Key="Fin_IncomeShare">نسبة من المدخول</sys:String>
+    <sys:String x:Key="Fin_PrimaryDoctor">طبيب رئيسي</sys:String>
+    <sys:String x:Key="Fin_PeriodFormat">الفترة: من {0} إلى {1}</sys:String>
+    <sys:String x:Key="Fin_PeriodDoctorFormat">{0} — من {1} إلى {2}</sys:String>
+    <sys:String x:Key="Fin_NoDoctorIncome">لا يوجد مدخول مسجل في هذه الفترة</sys:String>
+    <sys:String x:Key="Fin_TopDoctorFormat">الأعلى مدخولاً: {0} — {1}</sys:String>
+
+    <!-- ===== حالات الترميم (Prosthetic Cases) - Patch 2: إنشاء وعرض فقط من ملف المريض ===== -->
+    <sys:String x:Key="ProsthCase_ListTitle">حالات الترميم</sys:String>
+    <sys:String x:Key="ProsthCase_NewTitle">حالة ترميم جديدة</sys:String>
+    <sys:String x:Key="ProsthCase_NewButton">+ حالة جديدة</sys:String>
+    <sys:String x:Key="ProsthCase_EditTitleFormat">حالة ترميم رقم {0}</sys:String>
+    <sys:String x:Key="ProsthCase_PatientName">اسم المريض</sys:String>
+    <sys:String x:Key="ProsthCase_PatientPhone">رقم الهاتف</sys:String>
+    <sys:String x:Key="ProsthCase_PatientInfoRestricted">مقيَّد (لا تملك صلاحية عرض بيانات المريض)</sys:String>
+    <sys:String x:Key="ProsthCase_NoStage">— بدون تحديد —</sys:String>
+    <sys:String x:Key="ProsthCase_DoubleClickHint">انقر نقرًا مزدوجًا على أي حالة لعرض كامل تفاصيلها وتعديلها</sys:String>
+    <sys:String x:Key="ProsthCase_Prosthetist">المرمم المسؤول</sys:String>
+    <sys:String x:Key="ProsthCase_WorkType">نوع العمل</sys:String>
+    <sys:String x:Key="ProsthCase_NoWorkType">— بدون تحديد —</sys:String>
+    <sys:String x:Key="ProsthCase_Arch">الفك</sys:String>
+    <sys:String x:Key="ProsthCase_ArchBoth">علوي وسفلي</sys:String>
+    <sys:String x:Key="ProsthCase_Upper">علوي</sys:String>
+    <sys:String x:Key="ProsthCase_Lower">سفلي</sys:String>
+    <sys:String x:Key="ProsthCase_ToothScope">الأسنان المعنية</sys:String>
+    <sys:String x:Key="ProsthCase_TotalPrice">السعر المتفق عليه</sys:String>
+    <sys:String x:Key="ProsthCase_Notes">ملاحظات</sys:String>
+    <sys:String x:Key="ProsthCase_NoProsthetistsYet">لا يوجد مرممون مسجَّلون بعد. أنشئ حساب مرمم أولاً من إدارة المستخدمين.</sys:String>
+    <sys:String x:Key="ProsthCase_ProsthetistRequired">يجب اختيار المرمم المسؤول عن الحالة</sys:String>
+    <sys:String x:Key="ProsthCase_ArchOrScopeRequired">حدِّد الفك (علوي/سفلي) أو صف الأسنان المعنيّة في الحقل أدناه</sys:String>
+    <sys:String x:Key="ProsthCase_InvalidPrice">السعر المُدخَل غير صالح</sys:String>
+    <sys:String x:Key="ProsthCase_SaveErrorFormat">تعذّر حفظ الحالة: {0}</sys:String>
+    <sys:String x:Key="ProsthCase_LoadErrorFormat">تعذّر تحميل البيانات: {0}</sys:String>
+    <sys:String x:Key="ProsthCase_ColCaseNumber">رقم الحالة</sys:String>
+    <sys:String x:Key="ProsthCase_ColStage">المرحلة</sys:String>
+    <sys:String x:Key="ProsthCase_ColStatus">الحالة</sys:String>
+    <sys:String x:Key="ProsthCase_ColCreatedAt">تاريخ الإنشاء</sys:String>
+    <sys:String x:Key="ProsthCase_ColPrice">السعر</sys:String>
+    <sys:String x:Key="ProsthCase_ColOutstanding">المتبقي</sys:String>
+    <sys:String x:Key="ProsthCase_StatusOpen">مفتوحة</sys:String>
+    <sys:String x:Key="ProsthCase_StatusCompleted">مكتملة</sys:String>
+    <sys:String x:Key="ProsthCase_StatusCancelled">ملغاة</sys:String>
+    <sys:String x:Key="ProsthCase_CountFormat">عدد الحالات: {0}</sys:String>
+    <sys:String x:Key="ProsthCase_OnlyDoctorCanCreate">فقط الطبيب يستطيع إنشاء حالة ترميم جديدة</sys:String>
+
+    <!-- ===== لوحة تطبيق المرمم (Patch 3) ===== -->
+    <sys:String x:Key="ProsthMain_SearchPlaceholder">ابحث بالاسم، الهاتف، أو رقم الحالة</sys:String>
+    <sys:String x:Key="ProsthMain_SearchPlaceholderCaseNumberOnly">ابحث برقم الحالة فقط (لا تملك صلاحية البحث باسم/هاتف المريض)</sys:String>
+    <sys:String x:Key="ProsthMain_SearchButton">بحث</sys:String>
+    <sys:String x:Key="ProsthMain_AllStatuses">كل الحالات</sys:String>
+    <sys:String x:Key="ProsthMain_ViewAllCases">عرض كل الحالات (وليس حالاتي فقط)</sys:String>
+    <sys:String x:Key="ProsthMain_LoadMore">تحميل المزيد</sys:String>
+    <sys:String x:Key="ProsthMain_OpenStatistics">الإحصائيات</sys:String>
+    <sys:String x:Key="ProsthMain_OpenExpenses">المصاريف</sys:String>
+    <sys:String x:Key="ProsthMain_ShowingCountFormat">عرض {0} من أصل {1} حالة</sys:String>
+
+    <!-- ===== تبويبات نافذة الحالة (Patch 4) ===== -->
+    <sys:String x:Key="ProsthCase_TabInfo">معلومات الحالة</sys:String>
+    <sys:String x:Key="ProsthCase_TabSessions">الجلسات</sys:String>
+    <sys:String x:Key="ProsthCase_TabPayments">المدفوعات</sys:String>
+    <sys:String x:Key="ProsthCase_TabClinicalSummary">الملخص السريري</sys:String>
+    <sys:String x:Key="ProsthCase_TabHistory">السجل</sys:String>
+
+    <!-- ===== Patch 11.1: نافذة إحصائيات الترميم ===== -->
+    <sys:String x:Key="ProsthStats_WindowTitle">إحصائيات الترميم</sys:String>
+    <sys:String x:Key="ProsthStats_Close">إغلاق</sys:String>
+    <sys:String x:Key="ProsthStats_ProsthetistLabel">المرمم:</sys:String>
+    <sys:String x:Key="ProsthStats_AllProsthetists">كل المرممين</sys:String>
+    <sys:String x:Key="ProsthStats_Today">اليوم</sys:String>
+    <sys:String x:Key="ProsthStats_ThisWeek">هذا الأسبوع</sys:String>
+    <sys:String x:Key="ProsthStats_ThisMonth">هذا الشهر</sys:String>
+    <sys:String x:Key="ProsthStats_From">من:</sys:String>
+    <sys:String x:Key="ProsthStats_To">إلى:</sys:String>
+    <sys:String x:Key="ProsthStats_Apply">تطبيق</sys:String>
+    <sys:String x:Key="ProsthStats_InvalidRange">يجب أن يكون تاريخ "إلى" مساوياً أو بعد تاريخ "من".</sys:String>
+    <sys:String x:Key="ProsthStats_PeriodFormat">الفترة: من {0} إلى {1}</sys:String>
+    <sys:String x:Key="ProsthStats_TotalCases">الحالات</sys:String>
+    <sys:String x:Key="ProsthStats_CompletedCases">المكتملة</sys:String>
+    <sys:String x:Key="ProsthStats_ActiveCases">النشطة</sys:String>
+    <sys:String x:Key="ProsthStats_SessionCount">الجلسات</sys:String>
+    <sys:String x:Key="ProsthStats_TotalCaseValue">قيمة الحالات</sys:String>
+    <sys:String x:Key="ProsthStats_TotalPayments">المدفوعات</sys:String>
+    <sys:String x:Key="ProsthStats_TotalOutstanding">المتبقي</sys:String>
+    <sys:String x:Key="ProsthStats_AverageCaseValue">متوسط قيمة الحالة</sys:String>
+    <sys:String x:Key="ProsthStats_NetIncome">الدخل الصافي</sys:String>
+    <sys:String x:Key="ProsthStats_ByStage">الحالات حسب المرحلة</sys:String>
+    <sys:String x:Key="ProsthStats_Upper">Upper:</sys:String>
+    <sys:String x:Key="ProsthStats_Lower">Lower:</sys:String>
+    <sys:String x:Key="ProsthStats_Both">Upper + Lower:</sys:String>
+    <sys:String x:Key="ProsthStats_NoData">لا توجد حالات في هذه الفترة.</sys:String>
+
+    <!-- ===== Patch 11.2: التحليل المتقدم ===== -->
+    <sys:String x:Key="ProsthStats_RefreshData">تحديث البيانات</sys:String>
+    <sys:String x:Key="ProsthStats_TabSummary">ملخص</sys:String>
+    <sys:String x:Key="ProsthStats_TabComparison">مقارنة المرممين</sys:String>
+    <sys:String x:Key="ProsthStats_TabStages">المراحل</sys:String>
+    <sys:String x:Key="ProsthStats_TabOverdue">الحالات المتأخرة</sys:String>
+    <sys:String x:Key="ProsthStats_CompletionRate">نسبة إنجاز الحالات</sys:String>
+    <sys:String x:Key="ProsthStats_AvgCompletionDaysFormat">متوسط مدة إنجاز الحالة: {0} يوم</sys:String>
+    <sys:String x:Key="ProsthStats_AvgCompletionDaysUnavailable">متوسط مدة الإنجاز: لا توجد حالات مكتملة في هذه الفترة بعد.</sys:String>
+    <sys:String x:Key="ProsthStats_ArchDistribution">توزيع أنواع الحالات</sys:String>
+    <sys:String x:Key="ProsthStats_ComparisonNeedsAll">اختر "كل المرممين" في الفلتر أعلاه لعرض مقارنة جنباً إلى جنب. عند اختيار مرمم واحد، تظهر أرقامه بالفعل في تبويب "ملخص".</sys:String>
+    <sys:String x:Key="ProsthStats_ColProsthetist">المرمم</sys:String>
+    <sys:String x:Key="ProsthStats_ColPaid">المدفوع</sys:String>
+    <sys:String x:Key="ProsthStats_MostCrowded">الأكثر ازدحاماً</sys:String>
+    <sys:String x:Key="ProsthStats_StageCountPercentFormat">{0} ({1}%)</sys:String>
+    <sys:String x:Key="ProsthStats_AvgDaysInStageFormat">بمتوسط {0} يوم في هذه المرحلة</sys:String>
+    <sys:String x:Key="ProsthStats_OverdueHint">الحالات المفتوحة بصرف النظر عن فلتر الفترة أعلاه، مرتَّبة من الأقدم. هذه القائمة غير مقيَّدة بالفترة المختارة.</sys:String>
+    <sys:String x:Key="ProsthStats_ColCreatedAt">تاريخ الإنشاء</sys:String>
+    <sys:String x:Key="ProsthStats_ColDaysOpen">أيام مفتوحة</sys:String>
+    <sys:String x:Key="ProsthStats_DaysOpenWarningFormat">{0} ⚠</sys:String>
+
+    <!-- ===== Patch 13: إدارة أنواع العمل والمراحل (الطبيب الرئيسي فقط) ===== -->
+    <sys:String x:Key="ProsthLookup_WindowTitle">أنواع العمل والمراحل</sys:String>
+    <sys:String x:Key="ProsthLookup_Header">إدارة أنواع العمل والمراحل</sys:String>
+    <sys:String x:Key="ProsthLookup_TabWorkTypes">أنواع العمل</sys:String>
+    <sys:String x:Key="ProsthLookup_TabStages">المراحل</sys:String>
+    <sys:String x:Key="ProsthLookup_Name">الاسم</sys:String>
+    <sys:String x:Key="ProsthLookup_ColName">الاسم</sys:String>
+    <sys:String x:Key="ProsthLookup_ColOrder">الترتيب</sys:String>
+    <sys:String x:Key="ProsthLookup_ColStatus">الحالة</sys:String>
+    <sys:String x:Key="ProsthLookup_ColActions">الإجراءات</sys:String>
+    <sys:String x:Key="ProsthLookup_Price">السعر (دج)</sys:String>
+    <sys:String x:Key="ProsthLookup_ColPrice">السعر</sys:String>
+    <sys:String x:Key="ProsthLookup_InvalidPrice">الرجاء إدخال سعر صحيح (رقم موجب).</sys:String>
+    <sys:String x:Key="ProsthLookup_StatusActive">نشط</sys:String>
+    <sys:String x:Key="ProsthLookup_StatusInactive">معطَّل</sys:String>
+    <sys:String x:Key="ProsthLookup_Enable">تفعيل</sys:String>
+    <sys:String x:Key="ProsthLookup_Disable">تعطيل</sys:String>
+    <sys:String x:Key="ProsthLookup_DeleteButton">حذف</sys:String>
+    <sys:String x:Key="ProsthLookup_ConfirmDeleteFormat">هل أنت متأكد من حذف "{0}" نهائياً؟ لا يمكن التراجع عن هذه العملية.</sys:String>
+    <sys:String x:Key="ProsthLookup_ConfirmDeleteTitle">تأكيد الحذف النهائي</sys:String>
+    <sys:String x:Key="ProsthLookup_InUseFormat">لا يمكن حذف هذا العنصر نهائياً لأنه مستخدَم حالياً في {0} حالة/حالات ترميم موجودة، وحذفه سيفقد تلك الحالات معلوماتها. هل تريد تعطيله بدلاً من ذلك (يختفي من قوائم الحالات الجديدة فقط، وتبقى الحالات القديمة سليمة)؟</sys:String>
+    <sys:String x:Key="ProsthLookup_InUseTitle">العنصر قيد الاستخدام</sys:String>
+    <sys:String x:Key="ProsthLookup_MoveUp">نقل لأعلى</sys:String>
+    <sys:String x:Key="ProsthLookup_MoveDown">نقل لأسفل</sys:String>
+    <sys:String x:Key="ProsthLookup_EditButton">تعديل</sys:String>
+    <sys:String x:Key="ProsthLookup_AddButton">إضافة</sys:String>
+    <sys:String x:Key="ProsthLookup_SaveEdit">حفظ</sys:String>
+    <sys:String x:Key="ProsthLookup_CancelEdit">إلغاء</sys:String>
+    <sys:String x:Key="ProsthLookup_NameRequired">الرجاء إدخال اسم.</sys:String>
+    <sys:String x:Key="ProsthLookup_ErrorFormat">خطأ: {0}</sys:String>
+    <sys:String x:Key="ProsthLookup_MainDoctorOnly">الطبيب الرئيسي فقط يستطيع إدارة أنواع العمل والمراحل.</sys:String>
+    <sys:String x:Key="ProsthHistory_Empty">لا توجد تغييرات مسجَّلة لهذه الحالة حتى الآن.</sys:String>
+    <sys:String x:Key="ProsthHistory_ActionCreated">إنشاء الحالة</sys:String>
+    <sys:String x:Key="ProsthHistory_ActionCreatedDetail">تم إنشاء الحالة وإضافتها إلى النظام.</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldProsthetist">المرمم المسؤول</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldStage">المرحلة</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldStatus">حالة الملف</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldWorkType">نوع العمل</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldArch">الفك</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldToothScope">نطاق الأسنان</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldPrice">السعر</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldNotes">الملاحظات</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalDiagnosis">التشخيص</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalTreatment">العلاج</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalMedication">الأدوية</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalFieldRestricted">مقيَّد</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalNoSessions">لا توجد جلسات سريرية مسجَّلة لهذا المريض حتى الآن.</sys:String>
+
+    <!-- ===== الجلسات ===== -->
+    <sys:String x:Key="ProsthSession_AddTitle">إضافة جلسة</sys:String>
+    <sys:String x:Key="ProsthSession_EditTitle">تعديل جلسة</sys:String>
+    <sys:String x:Key="ProsthSession_AddButton">+ إضافة جلسة</sys:String>
+    <sys:String x:Key="ProsthSession_Date">التاريخ</sys:String>
+    <sys:String x:Key="ProsthSession_Description">وصف الجلسة</sys:String>
+    <sys:String x:Key="ProsthSession_PerformedBy">بواسطة</sys:String>
+    <sys:String x:Key="ProsthSession_DateRequired">يجب تحديد التاريخ</sys:String>
+    <sys:String x:Key="ProsthSession_ConfirmDelete">هل تريد حذف هذه الجلسة؟</sys:String>
+
+    <!-- ===== المدفوعات ===== -->
+    <sys:String x:Key="ProsthPayment_AddTitle">إضافة دفعة</sys:String>
+    <sys:String x:Key="ProsthPayment_EditTitle">تعديل دفعة</sys:String>
+    <sys:String x:Key="ProsthPayment_AddButton">+ إضافة دفعة</sys:String>
+    <sys:String x:Key="ProsthPayment_Amount">المبلغ</sys:String>
+    <sys:String x:Key="ProsthPayment_ReceivedBy">استلمها</sys:String>
+    <sys:String x:Key="ProsthPayment_TotalPaid">إجمالي المدفوع</sys:String>
+    <sys:String x:Key="ProsthPayment_InvalidAmount">المبلغ المُدخَل غير صالح</sys:String>
+    <sys:String x:Key="ProsthPayment_ConfirmDelete">هل تريد حذف هذه الدفعة؟</sys:String>
+    <sys:String x:Key="ProsthCase_DeleteButton">حذف الحالة</sys:String>
+    <sys:String x:Key="ProsthCase_ConfirmDeleteTitle">حذف حالة ترميم</sys:String>
+    <sys:String x:Key="ProsthCase_ConfirmDeleteFormat">هل تريد حذف الحالة رقم {0} نهائياً؟ سيتم حذف جميع جلساتها ومدفوعاتها وسجل تاريخها أيضاً. لا يمكن التراجع عن هذا الإجراء.</sys:String>
+    <sys:String x:Key="ProsthPayment_CreditFormat">يوجد فائض مدفوع: {0}</sys:String>
+    <sys:String x:Key="ProsthPayment_OverpaymentWarningFormat">هذه الدفعة ستتجاوز السعر المتفق عليه بمقدار {0}. هل تريد المتابعة؟</sys:String>
+
+    <!-- ===== حالة الاتصال (كل التطبيقات) ===== -->
+    <sys:String x:Key="Conn_Connected">متصل</sys:String>
+    <sys:String x:Key="Conn_ConnectedTooltip">متصل بالخادم. اضغط للتحقق الآن.</sys:String>
+    <sys:String x:Key="Conn_Disconnected">انقطع الاتصال</sys:String>
+    <sys:String x:Key="Conn_DisconnectedTooltip">انقطع الاتصال بالخادم. اضغط لإعادة المحاولة الآن.</sys:String>
+    <sys:String x:Key="Conn_LostTitle">انقطع الاتصال بالخادم</sys:String>
+    <sys:String x:Key="Conn_LostSubtitle">جارٍ محاولة إعادة الاتصال تلقائياً. يمكنك متابعة العمل بالبيانات المعروضة حالياً.</sys:String>
 </ResourceDictionary>

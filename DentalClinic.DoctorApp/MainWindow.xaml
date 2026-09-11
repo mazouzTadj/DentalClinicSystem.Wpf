@@ -1,15 +1,59 @@
 <Window x:Class="DentalClinic.DoctorApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:DentalClinic.UI;assembly=DentalClinic.UI"
         xmlns:conv="clr-namespace:DentalClinic.UI.Converters;assembly=DentalClinic.UI"
+        xmlns:controls="clr-namespace:DentalClinic.UI.Controls;assembly=DentalClinic.UI"
         Title="{DynamicResource App_DoctorTitle}" Height="750" Width="1300" MinWidth="1040" MinHeight="550"
         Icon="pack://application:,,,/DentalClinic.UI;component/Assets/logo_icon.ico"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource WindowBackgroundBrush}">
+        Background="{StaticResource WindowBackgroundBrush}"
+        ui:WindowFx.AnimateEntrance="True">
 
     <Window.Resources>
         <conv:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- Search box styling: compact, calm and consistent with the clinic UI -->
+        <Style x:Key="TodayQueueSearchTextBoxStyle" TargetType="TextBox">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource AccentBrush}"/>
+        </Style>
+
+        <Style x:Key="TodayQueueSearchClearButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ClearBg" CornerRadius="14" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ClearBg" Property="Background" Value="#E9EDF2"/>
+                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ClearBg" Property="Background" Value="#DDE3EA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <DockPanel LastChildFill="True">
@@ -31,6 +75,78 @@
                 <Button x:Name="OpenPatientFileButton" DockPanel.Dock="Left" Content="{DynamicResource Main_OpenPatientFile}" Width="180" Height="42" Margin="12,0,0,0"
                 Style="{StaticResource PrimaryButtonStyle}" Visibility="Collapsed"
                 Click="OpenFileButton_Click"/>
+
+                <!-- بحث سريع داخل قائمة اليوم: يحدد المريض المطابق دون إخفاء بقية الصفوف -->
+                <Border x:Name="TodayQueueSearchContainer" DockPanel.Dock="Left" Width="280" Height="42" Margin="14,0,0,0"
+                        Background="White" BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" CornerRadius="12"
+                        SnapsToDevicePixels="True">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.035" BlurRadius="8" ShadowDepth="1" Direction="270"/>
+                    </Border.Effect>
+                    <Grid Margin="4,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="38"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="34"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Search icon -->
+                        <Grid Grid.Column="0" Width="34" Height="34" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Ellipse Width="15" Height="15" Stroke="{StaticResource TextSecondaryBrush}" StrokeThickness="1.7"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center" Margin="-4,-4,0,0"/>
+                            <Line X1="20" Y1="20" X2="25" Y2="25" Stroke="{StaticResource TextSecondaryBrush}" StrokeThickness="1.7"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <TextBox x:Name="TodayQueueSearchBox"
+                                     Style="{StaticResource TodayQueueSearchTextBoxStyle}"
+                                     TextChanged="TodayQueueSearchBox_TextChanged"
+                                     ToolTip="{DynamicResource Main_TodayQueueSearchToolTip}"
+                                     AutomationProperties.Name="{DynamicResource Main_TodayQueueSearchToolTip}"/>
+                            <TextBlock Text="{DynamicResource Main_TodayQueueSearchPlaceholder}"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Opacity="0.85" FontSize="13" VerticalAlignment="Center"
+                                       IsHitTestVisible="False">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=TodayQueueSearchBox}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+
+                        <Button x:Name="ClearTodayQueueSearchButton" Grid.Column="2" Content="×"
+                                Style="{StaticResource TodayQueueSearchClearButtonStyle}"
+                                Visibility="Collapsed" Click="ClearTodayQueueSearchButton_Click"
+                                ToolTip="{DynamicResource Main_ClearSearch}"
+                                AutomationProperties.Name="{DynamicResource Main_ClearSearch}"/>
+                    </Grid>
+                </Border>
+
+                <Button x:Name="SearchPatientButton" DockPanel.Dock="Left" Content="{DynamicResource Main_AdvancedSearchMenuItem}" Width="130" Height="42" Margin="10,0,0,0"
+                Style="{StaticResource SecondaryButtonStyle}"
+                Click="AdvancedSearchButton_Click"/>
+
+                <!--
+                <Button Content="{DynamicResource Main_AdvancedSearchMenuItem}" Height="42" Margin="0,0,0,2"
+                Style="{StaticResource SidebarMenuItemStyle}"
+                Click="AdvancedSearchButton_Click"/> -->
+                <!-- زر البحث - إلى جانب فتح ملف المريض مباشرة بدل داخل القائمة الجانبية، لسهولة الوصول إليه بسرعة 
+                <Button x:Name="SearchPatientButton" DockPanel.Dock="Left" Content="{DynamicResource Main_SearchPatient}" Width="130" Height="42" Margin="10,0,0,0"
+                Style="{StaticResource SecondaryButtonStyle}"
+                Click="SearchPatientButton_Click"/>-->
+
+                <!-- 🔔 جرس إشعارات طلبات تعديل المواعيد المعلَّقة - يظهر فقط عند وجود طلب واحد على الأقل -->
+                <Button x:Name="NotificationBellButton" DockPanel.Dock="Right" Height="42" Padding="14,0"
+                        Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                        Click="NotificationBellButton_Click"/>
+                <controls:ConnectionStatusIndicator x:Name="ConnectionStatusIndicatorControl" DockPanel.Dock="Right" Margin="0,0,14,0"/>
             </DockPanel>
         </Border>
 
@@ -49,47 +165,64 @@
                 <StackPanel Button.Click="HamburgerMenuItem_Click">
 
                     <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.RegisterPatients -->
-                    <Button x:Name="RegisterPatientButton" Content="{DynamicResource Main_RegisterPatient}" Height="44" Margin="0,0,0,8"
-                    Style="{StaticResource PrimaryButtonStyle}" Visibility="Collapsed"
+                    <Button x:Name="RegisterPatientButton" Content="{DynamicResource Main_RegisterPatient}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}" Visibility="Collapsed"
                     Click="RegisterPatientButton_Click"/>
 
-                    <Button Content="{DynamicResource Main_Search}" Height="44" Margin="0,0,0,8"
-                    Style="{StaticResource SecondaryButtonStyle}"
-                    Click="AdvancedSearchButton_Click"/>
+                    <Button Content="{DynamicResource Main_SearchPatient}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}"
+                    Click="SearchPatientButton_Click"/>
+
+                    
+                    <!--
+                    <Button Content="{DynamicResource Main_AdvancedSearchMenuItem}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}"
+                    Click="AdvancedSearchButton_Click"/> -->
 
                     <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.CollectPayments -->
-                    <Button x:Name="CollectPaymentButton" Content="{DynamicResource Main_CollectPayment}" Height="44" Margin="0,0,0,8"
-                    Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                    <Button x:Name="CollectPaymentButton" Content="{DynamicResource Main_CollectPayment}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}" Visibility="Collapsed"
                     Click="CollectPaymentButton_Click"/>
 
                     <!-- 🩺 زر إدارة العلاجات والأسعار - يظهر فقط لمن يملك صلاحية UserPermission.ManageTreatments -->
-                    <Button x:Name="ManageTreatmentsButton" Content="{DynamicResource Main_Treatments}" Height="44" Margin="0,0,0,8"
-                    Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                    <Button x:Name="ManageTreatmentsButton" Content="{DynamicResource Main_Treatments}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}" Visibility="Collapsed"
                     Click="ManageTreatmentsButton_Click"/>
 
                     <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.AccessBackup -->
-                    <Button x:Name="BackupButton" Content="{DynamicResource Main_Backup}" Height="44" Margin="0,0,0,8"
-                    Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                    <Button x:Name="BackupButton" Content="{DynamicResource Main_Backup}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}" Visibility="Collapsed"
                     Click="BackupButton_Click"/>
 
                     <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.ManageUsers -->
-                    <Button x:Name="ManageUsersButton" Content="{DynamicResource Main_ManageUsers}" Height="44" Margin="0,0,0,8"
-                    Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                    <Button x:Name="ManageUsersButton" Content="{DynamicResource Main_ManageUsers}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}" Visibility="Collapsed"
                     Click="ManageUsersButton_Click"/>
 
+                    <!-- مخفي افتراضياً - نفس صلاحية ManageUsers (فتح تطبيق منفصل يخص إدارة عمل المرممين) -->
+                    <Button x:Name="OpenProsthetistAppButton" Content="{DynamicResource Main_OpenProsthetistApp}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}" Visibility="Collapsed"
+                    Click="OpenProsthetistAppButton_Click"/>
+
+                    <!-- Patch 13: مخفي افتراضياً - الطبيب الرئيسي (IsMainDoctor) فقط، بلا أي صلاحية
+                         إضافية مطلوبة - راجع OpenLookupManagementButton.Visibility في الكود الخلفي -->
+                    <Button x:Name="OpenLookupManagementButton" Content="{DynamicResource Main_ManageProstheticLookups}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}" Visibility="Collapsed"
+                    Click="OpenLookupManagementButton_Click"/>
+
                     <!-- مخفي افتراضياً - يظهر فقط لمن يملك صلاحية UserPermission.AccessFinance -->
-                    <Button x:Name="FinancialDashboardButton" Content="{DynamicResource Main_Finances}" Height="44" Margin="0,0,0,8"
-                    Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                    <Button x:Name="FinancialDashboardButton" Content="{DynamicResource Main_Finances}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}" Visibility="Collapsed"
                     Click="FinancialDashboardButton_Click"/>
 
-                    <Border Height="1" Background="{StaticResource BorderSoftBrush}" Margin="4,4,4,12"/>
+                    <Border Height="1" Background="{StaticResource BorderSoftBrush}" Margin="4,8,4,8"/>
 
-                    <Button Content="{DynamicResource Main_Refresh}" Height="44" Margin="0,0,0,8"
-                    Style="{StaticResource SecondaryButtonStyle}"
+                    <Button Content="{DynamicResource Main_Refresh}" Height="42" Margin="0,0,0,2"
+                    Style="{StaticResource SidebarMenuItemStyle}"
                     Click="RefreshButton_Click"/>
 
-                    <Button Content="{DynamicResource Main_Logout}" Height="44"
-                    Style="{StaticResource DangerButtonStyle}"
+                    <Button Content="{DynamicResource Main_Logout}" Height="42"
+                    Style="{StaticResource SidebarMenuItemStyle}" Foreground="{StaticResource ErrorBrush}"
                     Click="LogoutButton_Click"/>
                 </StackPanel>
             </Border>
@@ -105,6 +238,7 @@
             <Border.Effect>
                 <DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="14" ShadowDepth="3"/>
             </Border.Effect>
+            <Grid>
             <DataGrid x:Name="QueueGrid"
                       Style="{StaticResource ModernDataGridStyle}"
                       ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
@@ -112,28 +246,44 @@
                       CellStyle="{StaticResource ModernCellStyle}"
                       MouseDoubleClick="QueueGrid_MouseDoubleClick">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{DynamicResource Main_ColPatientName}" Binding="{Binding PatientFullName}" Width="*"/>
-                    <DataGridTextColumn Header="{DynamicResource Main_ColCheckInTime}" Binding="{Binding CheckInTimeText}" Width="160"/>
+                    <DataGridTextColumn Header="{DynamicResource Main_ColPatientName}" Binding="{Binding PatientFullName}" Width="*" ElementStyle="{StaticResource CellTextStyle}"/>
+                    <DataGridTextColumn Header="{DynamicResource Main_ColCheckInTime}" Binding="{Binding CheckInTimeText}" Width="160" ElementStyle="{StaticResource CellTextStyle}"/>
                     <DataGridTemplateColumn Header="{DynamicResource Main_ColStatus}" Width="160">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}"
-                                        CornerRadius="12" Padding="12,4" HorizontalAlignment="Left">
+                                        CornerRadius="12" Padding="12,4" Margin="14,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding StatusText}" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
                                 </Border>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="{DynamicResource Main_ColActions}" Width="170">
+                    <DataGridTemplateColumn Header="{DynamicResource Main_NextAppointment}" Width="145">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding NextAppointmentText}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource CellTextStyle}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="{DynamicResource Main_ColActions}" Width="320">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <!-- إصلاح: زر تسجيل الحضور لموعد محجوز (Scheduled) وصل يومه فعلياً -->
                                     <Button Content="{DynamicResource Main_CheckIn}" Height="26" Width="72" FontSize="11" Margin="0,0,6,0"
                                             Style="{StaticResource PrimaryButtonStyle}"
                                             Visibility="{Binding CanCheckIn, Converter={StaticResource BoolToVis}}"
                                             Tag="{Binding}" Click="CheckInButton_Click"/>
+                                    <Button Content="{DynamicResource Main_EditAppointment}" Height="26" Width="72" FontSize="11" Margin="0,0,6,0"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding CanEditAppointment, Converter={StaticResource BoolToVis}}"
+                                            Tag="{Binding}" Click="EditAppointmentButton_Click"/>
+                                    <Button Content="{DynamicResource Main_DeleteAppointment}" Height="26" Width="72" FontSize="11" Margin="0,0,6,0"
+                                            Style="{StaticResource DangerButtonStyle}"
+                                            Visibility="{Binding CanDeleteAppointment, Converter={StaticResource BoolToVis}}"
+                                            Tag="{Binding}" Click="DeleteAppointmentButton_Click"/>
                                     <Button Content="{DynamicResource Main_Cancel}" Height="26" Width="72" FontSize="11"
                                             Style="{StaticResource DangerButtonStyle}"
                                             Visibility="{Binding CanCancel, Converter={StaticResource BoolToVis}}"
@@ -142,8 +292,38 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+
+                    <!-- عمود تعديل بيانات المريض - يُخفى بالكامل برمجياً في الكود الخلفي لمن لا يملك صلاحية EditPatients -->
+                    <DataGridTemplateColumn x:Name="EditPatientColumn" Header="{DynamicResource Main_EditPatient}" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="{DynamicResource Main_EditPatient}" Height="26" Width="65" FontSize="11"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        Tag="{Binding}" Click="EditPatientButton_Click"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- عمود حذف المريض نهائياً - يُخفى بالكامل برمجياً في الكود الخلفي لمن لا يملك صلاحية DeletePatients -->
+                    <DataGridTemplateColumn x:Name="DeletePatientColumn" Header="{DynamicResource Main_DeletePatient}" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="{DynamicResource Main_DeletePatient}" Height="26" Width="65" FontSize="11"
+                                        Style="{StaticResource DangerButtonStyle}"
+                                        Tag="{Binding}" Click="DeletePatientButton_Click"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+
+            <!-- حالة فارغة أنيقة - تظهر فقط عندما لا يوجد أي مريض في قائمة الانتظار اليوم -->
+            <StackPanel x:Name="EmptyQueuePanel" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="🦷" FontSize="42" HorizontalAlignment="Center" Opacity="0.35" Margin="0,0,0,10"/>
+                <TextBlock Text="{DynamicResource Main_EmptyQueue}" FontSize="15"
+                           Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
+            </StackPanel>
+            </Grid>
         </Border>
     </DockPanel>
 </Window>

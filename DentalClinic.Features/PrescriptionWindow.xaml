@@ -5,6 +5,78 @@
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
 
+    <Window.Resources>
+        <!-- سطر دواء عادي: اسم الدواء + الجرعة + عدد العلب -->
+        <DataTemplate x:Key="MedicationLineTemplate">
+            <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,10" Padding="12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="30"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="6"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="6"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding MedicationName, UpdateSourceTrigger=PropertyChanged}"
+                             FontWeight="SemiBold" FontSize="13" BorderThickness="0" Background="Transparent"/>
+
+                    <!-- الجرعة: نفس حجم خط اسم الدواء لكن بدون سماكة (Regular) ولون داكن واضح
+                         بدل الرمادي الباهت السابق، لتُقرأ بوضوح عند الكتابة/الطباعة -->
+                    <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding Dosage, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="13" FontWeight="Normal" BorderThickness="0" Background="Transparent"
+                             Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                    <!-- عدد العلب: يمكن للمستخدم تعديل القيمة الافتراضية (1BTS) قبل الطباعة، بنفس حجم خط اسم الدواء وبدون سماكة -->
+                    <Grid Grid.Row="4" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{DynamicResource Rx_BoxCountLabel}" FontSize="11"
+                                   Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="2" Text="{Binding BoxCount, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="13" FontWeight="Normal" BorderThickness="0" Background="Transparent"
+                                 Foreground="{StaticResource TextPrimaryBrush}"/>
+                    </Grid>
+
+                    <Button Grid.Row="0" Grid.RowSpan="5" Grid.Column="1" Content="&#10005;"
+                            Style="{StaticResource WindowControlButtonStyle}" Width="26" Height="26"
+                            VerticalAlignment="Top" Tag="{Binding}" Click="RemoveLineButton_Click"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!-- سطر شهادة طبية / عطلة مرضية: فقرة نصية واحدة فقط بنفس خط اسم الدواء، بدون جرعة ولا عدد علب -->
+        <DataTemplate x:Key="CertificateLineTemplate">
+            <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,10" Padding="12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="30"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{DynamicResource Rx_CertificateLineLabel}" FontSize="10.5" FontStyle="Italic"
+                                   Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding MedicationName, UpdateSourceTrigger=PropertyChanged}"
+                                 FontWeight="SemiBold" FontSize="13" BorderThickness="0" Background="Transparent"
+                                 TextWrapping="Wrap" AcceptsReturn="True" MinHeight="60" VerticalContentAlignment="Top"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="1" Content="&#10005;"
+                            Style="{StaticResource WindowControlButtonStyle}" Width="26" Height="26"
+                            VerticalAlignment="Top" Tag="{Binding}" Click="RemoveLineButton_Click"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
+
     <Border CornerRadius="18" Background="{StaticResource CardBackgroundBrush}">
         <Border.Effect>
             <DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="30" ShadowDepth="6"/>
@@ -53,49 +125,29 @@
                     <TextBlock Text="{DynamicResource Rx_LinesHeader}" FontSize="13" FontWeight="SemiBold"
                                Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,8"/>
 
-                    <ItemsControl x:Name="LinesItems">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,10" Padding="12">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="30"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="6"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding MedicationName, UpdateSourceTrigger=PropertyChanged}"
-                                                 FontWeight="SemiBold" FontSize="13" BorderThickness="0" Background="Transparent"/>
-
-                                        <Grid Grid.Row="2" Grid.Column="0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="8"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBox Grid.Column="0" Text="{Binding Dosage, UpdateSourceTrigger=PropertyChanged}"
-                                                     FontSize="12" BorderThickness="0" Background="Transparent"
-                                                     Foreground="{StaticResource TextSecondaryBrush}"/>
-                                            <TextBox Grid.Column="2" Text="{Binding Duration, UpdateSourceTrigger=PropertyChanged}"
-                                                     FontSize="12" BorderThickness="0" Background="Transparent"
-                                                     Foreground="{StaticResource TextSecondaryBrush}"/>
-                                        </Grid>
-
-                                        <Button Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Content="&#10005;"
-                                                Style="{StaticResource WindowControlButtonStyle}" Width="26" Height="26"
-                                                VerticalAlignment="Top" Tag="{Binding}" Click="RemoveLineButton_Click"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <ItemsControl x:Name="LinesItems"/>
 
                     <Button Content="{DynamicResource Rx_AddCustomLineButton}" Height="36" Margin="0,0,0,18"
                             Style="{StaticResource SecondaryButtonStyle}" Click="AddCustomLineButton_Click"/>
+
+                    <!-- شهادة طبية / عطلة مرضية: إضافة سريعة من قائمة جاهزة، أو فقرة مخصصة حرة -->
+                    <TextBlock Text="{DynamicResource Rx_CertificateSectionLabel}" Style="{StaticResource FieldLabelStyle}"/>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}">
+                            <ComboBox x:Name="CertificatePresetBox" BorderThickness="0" Background="Transparent"
+                                      Padding="10,8" FontSize="13" VerticalContentAlignment="Center"
+                                      DisplayMemberPath="CertificateName"/>
+                        </Border>
+                        <Button Grid.Column="2" Content="{DynamicResource Rx_AddButton}" Style="{StaticResource PrimaryButtonStyle}"
+                                Click="AddCertificatePresetButton_Click"/>
+                    </Grid>
+                    <Button Content="{DynamicResource Rx_AddCustomCertificateButton}" Height="36" Margin="0,0,0,18"
+                            Style="{StaticResource SecondaryButtonStyle}" Click="AddCustomCertificateButton_Click"/>
 
                     <TextBlock Text="{DynamicResource Rx_NotesLabel}" Style="{StaticResource FieldLabelStyle}"/>
                     <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,10">
@@ -104,6 +156,11 @@
                     </Border>
 
                     <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}"/>
+                    <TextBlock Text="Printer" Style="{StaticResource FieldLabelStyle}"/>
+                    <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,10">
+                        <ComboBox x:Name="PrinterBox" BorderThickness="0" Background="Transparent"
+                                  Padding="10,8" FontSize="13" VerticalContentAlignment="Center"/>
+                    </Border>
 
                     <Button Content="{DynamicResource Rx_GenerateButton}" Height="46" Margin="0,10,0,0"
                             Style="{StaticResource PrimaryButtonStyle}"

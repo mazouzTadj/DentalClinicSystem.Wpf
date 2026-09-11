@@ -20,6 +20,7 @@ public partial class FinancialDashboardWindow : Window
 {
     private readonly FinancialRepository _financialRepo;
     private readonly DoctorCommissionService _commissionService;
+    private readonly PaymentRepository _paymentRepo;
     private readonly UserAccount? _currentUser;
 
     // currentUser اختياري للحفاظ على التوافق مع أي استدعاء قديم، لكنه ضروري لإظهار زر
@@ -29,11 +30,16 @@ public partial class FinancialDashboardWindow : Window
         InitializeComponent();
         _currentUser = currentUser;
 
+        // نفس إصلاح PatientFileWindow: لا تسمح للنافذة أن تتجاوز الشاشات الصغيرة
+        var maxAvailableHeight = SystemParameters.WorkArea.Height - 20;
+        if (Height > maxAvailableHeight) Height = maxAvailableHeight;
+
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"]?.ConnectionString
                                ?? "Server=.;Database=DentalClinicDB;Trusted_Connection=True;TrustServerCertificate=True;";
         var db = new DatabaseHelper(connectionString);
         _financialRepo = new FinancialRepository(db);
         _commissionService = new DoctorCommissionService(db);
+        _paymentRepo = new PaymentRepository(db);
 
         if (_currentUser != null && _currentUser.HasPermission(UserPermission.ManageUsers))
         {
@@ -100,6 +106,7 @@ public partial class FinancialDashboardWindow : Window
                         LoadDailyChart();
                         LoadDoctorStats();
                         LoadOutstandingBalances();
+                        LoadIncomePaymentsGrid();
                     });
                 });
             }
@@ -135,10 +142,51 @@ public partial class FinancialDashboardWindow : Window
     private void LoadRevenueSummary()
     {
         var summary = _financialRepo.GetRevenueSummary();
-        TodayRevenueText.Text = summary.TodayRevenue.ToString("N2", CultureInfo.InvariantCulture);
-        MonthRevenueText.Text = summary.MonthRevenue.ToString("N2", CultureInfo.InvariantCulture);
-        YearRevenueText.Text = summary.YearRevenue.ToString("N2", CultureInfo.InvariantCulture);
-        OutstandingText.Text = summary.TotalOutstanding.ToString("N2", CultureInfo.InvariantCulture);
+        TodayRevenueText.Text = MoneyFormatter.Format(summary.TodayRevenue);
+        MonthRevenueText.Text = MoneyFormatter.Format(summary.MonthRevenue);
+        YearRevenueText.Text = MoneyFormatter.Format(summary.YearRevenue);
+        OutstandingText.Text = MoneyFormatter.Format(summary.TotalOutstanding);
+
+        SetTrend(TodayRevenueTrendText, summary.TodayRevenue, summary.YesterdayRevenue, "Fin_CompareYesterday");
+        SetTrend(MonthRevenueTrendText, summary.MonthRevenue, summary.LastMonthRevenue, "Fin_CompareLastMonth");
+        SetTrend(YearRevenueTrendText, summary.YearRevenue, summary.LastYearRevenue, "Fin_CompareLastYear");
+    }
+
+    // مؤشر الاتجاه (↑/↓ نسبة مئوية مقارنة بالفترة المناظرة السابقة) - يُستخدم في بطاقات الإيراد
+    // وبطاقات صافي الربح معاً. compareLabelKey مفتاح ترجمة لاسم الفترة المقارَنة (أمس/الشهر الماضي/العام الماضي)
+    private static void SetTrend(TextBlock target, decimal current, decimal previous, string compareLabelKey)
+    {
+        var compareLabel = LocalizationManager.T(compareLabelKey);
+
+        if (previous <= 0)
+        {
+            if (current <= 0)
+            {
+                target.Text = string.Empty;
+                return;
+            }
+            target.Text = LocalizationManager.T("Fin_TrendNew");
+            target.Foreground = new SolidColorBrush(Color.FromRgb(0x8E, 0x44, 0xAD));
+            return;
+        }
+
+        var changePercent = Math.Round((current - previous) / previous * 100m, 1);
+
+        if (changePercent == 0)
+        {
+            target.Text = LocalizationManager.T("Fin_TrendFlatFormat", compareLabel);
+            target.Foreground = new SolidColorBrush(Colors.Gray);
+        }
+        else if (changePercent > 0)
+        {
+            target.Text = LocalizationManager.T("Fin_TrendUpFormat", changePercent, compareLabel);
+            target.Foreground = new SolidColorBrush(Color.FromRgb(0x2E, 0x7D, 0x32));
+        }
+        else
+        {
+            target.Text = LocalizationManager.T("Fin_TrendDownFormat", Math.Abs(changePercent), compareLabel);
+            target.Foreground = new SolidColorBrush(Colors.Red);
+        }
     }
 
     private void LoadDailyChart()
@@ -186,6 +234,15 @@ public partial class FinancialDashboardWindow : Window
             .ToList();
     }
 
+    private void DoctorStatsButton_Click(object sender, RoutedEventArgs e)
+    {
+        var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"]?.ConnectionString
+                               ?? "Server=.;Database=DentalClinicDB;Trusted_Connection=True;TrustServerCertificate=True;";
+        var db = new DatabaseHelper(connectionString);
+        var window = new DoctorStatisticsWindow(db) { Owner = this };
+        window.ShowDialog();
+    }
+
     // فتح شاشة إعدادات نسبة عمولة الأطباء (متاحة فقط لمن يملك صلاحية ManageUsers - انظر المُنشئ)
     private void CommissionSettingsButton_Click(object sender, RoutedEventArgs e)
     {
@@ -202,13 +259,234 @@ public partial class FinancialDashboardWindow : Window
         OutstandingGrid.ItemsSource = balances.Select(b => new OutstandingBalanceRowViewModel(b)).ToList();
     }
 
+    // آخر 50 دفعة (أو أقل عند التصفية باسم مريض) - جدول "المداخيل" الجديد بجانب Outstanding Balances
+    private void LoadIncomePaymentsGrid()
+    {
+        var payments = _paymentRepo.GetRecentPayments(50, IncomeSearchBox.Text);
+        IncomePaymentsGrid.ItemsSource = payments.Select(p => new IncomeRowViewModel(p)).ToList();
+        IncomeEmptyText.Visibility = payments.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void IncomeSearchBox_TextChanged(object sender, TextChangedEventArgs e) => LoadIncomePaymentsGrid();
+
+    private static void SetSelectionFromCheckBox(object sender, bool selected)
+    {
+        if (sender is not CheckBox checkBox) return;
+
+        switch (checkBox.DataContext)
+        {
+            case OutstandingBalanceRowViewModel outstanding:
+                outstanding.IsSelected = selected;
+                break;
+            case IncomeRowViewModel income:
+                income.IsSelected = selected;
+                break;
+            case ExpenseRow expense:
+                expense.IsSelected = selected;
+                break;
+        }
+    }
+
+    private void OutstandingSelectionCheckBox_Checked(object sender, RoutedEventArgs e)
+        => SetSelectionFromCheckBox(sender, true);
+
+    private void OutstandingSelectionCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        => SetSelectionFromCheckBox(sender, false);
+
+    private void IncomeSelectionCheckBox_Checked(object sender, RoutedEventArgs e)
+        => SetSelectionFromCheckBox(sender, true);
+
+    private void IncomeSelectionCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        => SetSelectionFromCheckBox(sender, false);
+
+    private void ExpenseSelectionCheckBox_Checked(object sender, RoutedEventArgs e)
+        => SetSelectionFromCheckBox(sender, true);
+
+    private void ExpenseSelectionCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        => SetSelectionFromCheckBox(sender, false);
+
+    private void SelectAllOutstandingButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (OutstandingGrid.ItemsSource is not IEnumerable<OutstandingBalanceRowViewModel> rows) return;
+        foreach (var row in rows) row.IsSelected = true;
+        OutstandingGrid.Items.Refresh();
+    }
+
+    private void ClearOutstandingSelectionButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (OutstandingGrid.ItemsSource is not IEnumerable<OutstandingBalanceRowViewModel> rows) return;
+        foreach (var row in rows) row.IsSelected = false;
+        OutstandingGrid.Items.Refresh();
+    }
+
+    private void ZeroSelectedOutstandingButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (OutstandingGrid.ItemsSource is not IEnumerable<OutstandingBalanceRowViewModel> rows) return;
+        var selected = rows.Where(r => r.IsSelected).ToList();
+        if (selected.Count == 0) return;
+        if (_currentUser == null)
+        {
+            MessageBox.Show(LocalizationManager.T("Fin_ZeroSelectedNeedsUser"), LocalizationManager.T("Common_AccessDenied"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            LocalizationManager.T("Fin_ZeroSelectedConfirmFormat", selected.Count),
+            LocalizationManager.T("Fin_ZeroSelectedTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            var db = new DatabaseHelper(ConfigurationManager.ConnectionStrings["DentalClinicDB"]?.ConnectionString
+                                       ?? "Server=.;Database=DentalClinicDB;Trusted_Connection=True;TrustServerCertificate=True;");
+            var paymentRepo = new PaymentRepository(db);
+            var recordedPayments = 0;
+
+            foreach (var row in selected)
+            {
+                // تسجيل الرصيد المتبقي كدفعات فعلية في Payments، وبالتالي يظهر مباشرة في Recent Income.
+                recordedPayments += paymentRepo.ZeroOutstandingForPatient(
+                    row.PatientID,
+                    _currentUser.UserID,
+                    "Finance: bulk payment / zero balance");
+            }
+
+            // تحديث الجدولين مباشرة حتى لا تبقى واجهة Finance تعرض البيانات القديمة.
+            LoadOutstandingBalances();
+            LoadIncomePaymentsGrid();
+            LoadRevenueSummary();
+            OutstandingGrid.UpdateLayout();
+            IncomePaymentsGrid.UpdateLayout();
+
+            // إعادة تحميل بقية مؤشرات اللوحة أيضاً.
+            _ = LoadDashboardAsync();
+
+            if (recordedPayments == 0)
+            {
+                MessageBox.Show(
+                    LocalizationManager.T("Fin_ZeroSelectedNoPayments"),
+                    LocalizationManager.T("Common_Error"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(LocalizationManager.T("Fin_LoadErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void SelectAllIncomeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (IncomePaymentsGrid.ItemsSource is not IEnumerable<IncomeRowViewModel> rows) return;
+        foreach (var row in rows) row.IsSelected = true;
+        IncomePaymentsGrid.Items.Refresh();
+    }
+
+    private void DeleteSelectedIncomeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (IncomePaymentsGrid.ItemsSource is not IEnumerable<IncomeRowViewModel> rows) return;
+        var selected = rows.Where(r => r.IsSelected).ToList();
+        if (selected.Count == 0) return;
+
+        var confirm = MessageBox.Show(
+            LocalizationManager.T("Fin_DeleteSelectedConfirmFormat", selected.Count),
+            LocalizationManager.T("Fin_DeleteIncomeTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            foreach (var row in selected) _paymentRepo.DeletePayment(row.PaymentID);
+            _ = LoadDashboardAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(LocalizationManager.T("Fin_LoadErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void SelectAllExpensesButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ExpensesDataGrid.ItemsSource is not IEnumerable<ExpenseRow> rows) return;
+        foreach (var row in rows) row.IsSelected = true;
+        ExpensesDataGrid.Items.Refresh();
+    }
+
+    private void DeleteSelectedExpensesButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ExpensesDataGrid.ItemsSource is not IEnumerable<ExpenseRow> rows) return;
+        var selected = rows.Where(r => r.IsSelected).ToList();
+        if (selected.Count == 0) return;
+
+        var confirm = MessageBox.Show(
+            LocalizationManager.T("Fin_DeleteSelectedConfirmFormat", selected.Count),
+            LocalizationManager.T("Fin_RecentExpenses"), MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            foreach (var row in selected) _financialRepo.DeleteExpense(row.ExpenseID);
+            LoadExpensesSummary();
+            LoadNetProfit();
+            LoadDoctorStats();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(LocalizationManager.T("Expense_DeleteErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+
+    // تعديل مبلغ دفعة (تصحيح خطأ إدخال فقط) - يُحدِّث تلقائياً المتبقي على الجلسة وعمولة الطبيب لذلك
+    // اليوم بالذات، ثم يُعاد تحميل لوحة الفاينانس بالكامل حتى تنعكس كل الأرقام المتأثرة فوراً
+    private void EditIncomeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: IncomeRowViewModel income }) return;
+
+        var editWindow = new EditIncomeWindow(income.PatientFullName, income.Amount) { Owner = this };
+        if (editWindow.ShowDialog() != true) return;
+
+        try
+        {
+            _paymentRepo.UpdatePaymentAmount(income.PaymentID, editWindow.NewAmount);
+            _ = LoadDashboardAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(LocalizationManager.T("Fin_LoadErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    // حذف دفعة نهائياً - عملية لا رجعة فيها، بتأكيد صريح. نفس إعادة الحساب التلقائي أعلاه بعد الحذف.
+    private void DeleteIncomeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: IncomeRowViewModel income }) return;
+
+        var confirm = MessageBox.Show(
+            LocalizationManager.T("Fin_DeleteIncomeConfirmFormat", income.PatientFullName, income.AmountText),
+            LocalizationManager.T("Fin_DeleteIncomeTitle"),
+            MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            _paymentRepo.DeletePayment(income.PaymentID);
+            _ = LoadDashboardAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(LocalizationManager.T("Fin_LoadErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     // --- توابع المصاريف والصافي والمخطط البياني ---
     private void LoadExpensesSummary()
     {
         var summary = _financialRepo.GetExpenseSummary();
-        TodayExpenseText.Text = summary.TodayExpense.ToString("N2", CultureInfo.InvariantCulture);
-        MonthExpenseText.Text = summary.MonthExpense.ToString("N2", CultureInfo.InvariantCulture);
-        YearExpenseText.Text = summary.YearExpense.ToString("N2", CultureInfo.InvariantCulture);
+        TodayExpenseText.Text = MoneyFormatter.Format(summary.TodayExpense);
+        MonthExpenseText.Text = MoneyFormatter.Format(summary.MonthExpense);
+        YearExpenseText.Text = MoneyFormatter.Format(summary.YearExpense);
 
         var expenses = _financialRepo.GetRecentExpenses();
         ExpensesDataGrid.ItemsSource = expenses;
@@ -221,8 +499,8 @@ public partial class FinancialDashboardWindow : Window
         if (sender is not Button btn || btn.Tag is not ExpenseRow expense) return;
 
         var message = expense.IsAutoGenerated
-            ? LocalizationManager.T("Expense_DeleteConfirmAutoMessageFormat", expense.Description, expense.Amount.ToString("N2", CultureInfo.InvariantCulture))
-            : LocalizationManager.T("Expense_DeleteConfirmMessageFormat", expense.Description, expense.Amount.ToString("N2", CultureInfo.InvariantCulture));
+            ? LocalizationManager.T("Expense_DeleteConfirmAutoMessageFormat", expense.Description, MoneyFormatter.Format(expense.Amount))
+            : LocalizationManager.T("Expense_DeleteConfirmMessageFormat", expense.Description, MoneyFormatter.Format(expense.Amount));
 
         var confirm = MessageBox.Show(message, LocalizationManager.T("Expense_DeleteConfirmTitle"),
             MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -244,15 +522,62 @@ public partial class FinancialDashboardWindow : Window
 
     private void LoadNetProfit()
     {
-        var net = _financialRepo.GetMonthNetProfit();
-        NetIncomeText.Text = net.TotalIncome.ToString("N2", CultureInfo.InvariantCulture);
-        NetExpenseText.Text = net.TotalExpense.ToString("N2", CultureInfo.InvariantCulture);
-        NetProfitText.Text = net.NetProfit.ToString("N2", CultureInfo.InvariantCulture);
+        // بطاقات اليوم/الشهر/السنة الجديدة (حلّت محل بطاقة "Period Overview") - نفس مصدري البيانات
+        // الموجودين أصلاً (ملخص الإيرادات وملخص المصاريف)، بلا حاجة لاستعلام جديد بقاعدة البيانات
+        var revenue = _financialRepo.GetRevenueSummary();
+        var expense = _financialRepo.GetExpenseSummary();
+        var commission = _financialRepo.GetCommissionSummary();
 
-        NetProfitText.Foreground = net.NetProfit >= 0 ? new SolidColorBrush(Color.FromRgb(46, 125, 50)) : new SolidColorBrush(Colors.Red);
+        var todayProfit = revenue.TodayRevenue - expense.TodayExpense;
+        var monthProfit = revenue.MonthRevenue - expense.MonthExpense;
+        var yearProfit = revenue.YearRevenue - expense.YearExpense;
+
+        SetNetProfitCard(TodayNetProfitText, todayProfit);
+        SetNetProfitCard(MonthNetProfitText, monthProfit);
+        SetNetProfitCard(YearNetProfitText, yearProfit);
+
+        SetMarginText(TodayMarginText, todayProfit, revenue.TodayRevenue);
+        SetMarginText(MonthMarginText, monthProfit, revenue.MonthRevenue);
+        SetMarginText(YearMarginText, yearProfit, revenue.YearRevenue);
+
+        SetTrend(TodayNetProfitTrendText, todayProfit, revenue.YesterdayRevenue - expense.YesterdayExpense, "Fin_CompareYesterday");
+        SetTrend(MonthNetProfitTrendText, monthProfit, revenue.LastMonthRevenue - expense.LastMonthExpense, "Fin_CompareLastMonth");
+        SetTrend(YearNetProfitTrendText, yearProfit, revenue.LastYearRevenue - expense.LastYearExpense, "Fin_CompareLastYear");
+
+        // بند عمولات الأطباء مستقلاً - أرقام هذا الشهر تحديداً (الأكثر تمثيلاً لنمط العمل المعتاد)
+        if (expense.MonthExpense > 0 && commission.MonthCommission > 0)
+        {
+            var sharePercent = Math.Round(commission.MonthCommission / expense.MonthExpense * 100m, 1);
+            CommissionBreakdownText.Text = LocalizationManager.T("Fin_CommissionBreakdownFormat",
+                MoneyFormatter.Format(commission.MonthCommission), sharePercent);
+        }
+        else
+        {
+            CommissionBreakdownText.Text = LocalizationManager.T("Fin_CommissionBreakdownNone");
+        }
 
         // تحميل بيانات المخطط البياني للفترة الافتراضية (Weekly)
         LoadChartData("Weekly");
+    }
+
+    // هامش الربح % = صافي الربح / الإيراد الإجمالي لنفس الفترة - يُترك فارغاً إن كان الإيراد صفراً
+    // (نسبة مئوية بلا إيراد أصلاً غير ذات معنى، وليست "صفر بالمئة")
+    private static void SetMarginText(TextBlock target, decimal profit, decimal revenue)
+    {
+        if (revenue <= 0)
+        {
+            target.Text = string.Empty;
+            return;
+        }
+
+        var marginPercent = Math.Round(profit / revenue * 100m, 1);
+        target.Text = LocalizationManager.T("Fin_MarginFormat", marginPercent);
+    }
+
+    private static void SetNetProfitCard(TextBlock textBlock, decimal amount)
+    {
+        textBlock.Text = MoneyFormatter.Format(amount);
+        textBlock.Foreground = amount >= 0 ? new SolidColorBrush(Color.FromRgb(46, 125, 50)) : new SolidColorBrush(Colors.Red);
     }
 
     private void AddExpenseButton_Click(object sender, RoutedEventArgs e)
@@ -326,21 +651,8 @@ public partial class FinancialDashboardWindow : Window
     {
         ProfitChartItems.ItemsSource = chartData;
         ProfitChartEmptyState.Visibility = (chartData == null || chartData.Count == 0) ? Visibility.Visible : Visibility.Collapsed;
-
-        if (chartData != null && chartData.Count > 0)
-        {
-            decimal totalIncome = chartData.Sum(x => x.Income);
-            decimal totalExpense = chartData.Sum(x => x.Expense);
-            decimal netProfit = totalIncome - totalExpense;
-
-            NetIncomeText.Text = totalIncome.ToString("N2", CultureInfo.InvariantCulture);
-            NetExpenseText.Text = totalExpense.ToString("N2", CultureInfo.InvariantCulture);
-            NetProfitText.Text = netProfit.ToString("N2", CultureInfo.InvariantCulture);
-
-            NetProfitText.Foreground = netProfit >= 0
-                ? new SolidColorBrush(Color.FromRgb(46, 125, 50))
-                : new SolidColorBrush(Colors.Red);
-        }
+        // بطاقات اليوم/الشهر/السنة أعلى التبويب ثابتة ولا تتأثر بفلتر (من-إلى) - هذا الفلتر يتحكم
+        // بالرسم البياني تحته فقط (راجع LoadNetProfit لمصدر أرقام البطاقات الثابتة)
     }
 
     // -------------------------------------------------------------
@@ -425,9 +737,9 @@ public partial class FinancialDashboardWindow : Window
     {
         var csv = new StringBuilder();
         csv.AppendLine("Metric,Amount");
-        csv.AppendLine($"Total Income,{NetIncomeText.Text}");
-        csv.AppendLine($"Total Expenses,{NetExpenseText.Text}");
-        csv.AppendLine($"Net Profit,{NetProfitText.Text}");
+        csv.AppendLine($"Today's Net Profit,{TodayNetProfitText.Text}");
+        csv.AppendLine($"This Month's Net Profit,{MonthNetProfitText.Text}");
+        csv.AppendLine($"This Year's Net Profit,{YearNetProfitText.Text}");
 
         File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8);
         MessageBox.Show(LocalizationManager.T("Fin_NetProfitExportedMsg"), LocalizationManager.T("Fin_ExportDoneTitle"), MessageBoxButton.OK, MessageBoxImage.Information);

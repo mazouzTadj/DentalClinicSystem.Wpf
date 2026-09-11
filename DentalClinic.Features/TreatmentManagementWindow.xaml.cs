@@ -24,11 +24,17 @@ public partial class TreatmentManagementWindow : Window
 {
     private readonly DatabaseHelper _db;
     private readonly MedicationPresetRepository _medicationRepo;
+    private readonly DiagnosisPresetRepository _diagnosisRepo;
+    private readonly CertificatePresetRepository _certificateRepo;
     public ObservableCollection<TreatmentGridRowModel> TreatmentsList { get; } = new();
     public ObservableCollection<MedicationPreset> MedicationsList { get; } = new();
+    public ObservableCollection<DiagnosisPreset> DiagnosesList { get; } = new();
+    public ObservableCollection<CertificatePreset> CertificatesList { get; } = new();
 
     private int? _editingTreatmentId = null;
     private int? _editingMedicationId = null;
+    private int? _editingDiagnosisId = null;
+    private int? _editingCertificateId = null;
 
     public TreatmentManagementWindow()
     {
@@ -37,15 +43,21 @@ public partial class TreatmentManagementWindow : Window
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
         _db = new DatabaseHelper(connectionString);
         _medicationRepo = new MedicationPresetRepository(_db);
+        _diagnosisRepo = new DiagnosisPresetRepository(_db);
+        _certificateRepo = new CertificatePresetRepository(_db);
 
         TreatmentsGrid.ItemsSource = TreatmentsList;
         MedicationsGrid.ItemsSource = MedicationsList;
+        DiagnosesGrid.ItemsSource = DiagnosesList;
+        CertificatesGrid.ItemsSource = CertificatesList;
 
         Loaded += (s, e) =>
         {
             EnsureTableExists();
             LoadTreatments();
             LoadMedications();
+            LoadDiagnoses();
+            LoadCertificates();
         };
     }
 
@@ -56,21 +68,53 @@ public partial class TreatmentManagementWindow : Window
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
 
-    // ===================== تبديل بين لوحتَي "العلاجات" و"الأدوية" - نفس نمط تبويبات لوحة الفاينانس =====================
+    // ===================== تبديل بين لوحات "العلاجات" و"الأدوية" و"التشخيصات" - نفس نمط تبويبات لوحة الفاينانس =====================
     private void TabTreatments_Click(object sender, RoutedEventArgs e)
     {
         TreatmentsPanelGrid.Visibility = Visibility.Visible;
         MedicationsPanelGrid.Visibility = Visibility.Collapsed;
+        DiagnosesPanelGrid.Visibility = Visibility.Collapsed;
+        CertificatesPanelGrid.Visibility = Visibility.Collapsed;
         TabTreatmentsButton.Style = (Style)FindResource("PrimaryButtonStyle");
         TabMedicationsButton.Style = (Style)FindResource("SecondaryButtonStyle");
+        TabDiagnosesButton.Style = (Style)FindResource("SecondaryButtonStyle");
+        TabCertificatesButton.Style = (Style)FindResource("SecondaryButtonStyle");
     }
 
     private void TabMedications_Click(object sender, RoutedEventArgs e)
     {
         MedicationsPanelGrid.Visibility = Visibility.Visible;
         TreatmentsPanelGrid.Visibility = Visibility.Collapsed;
+        DiagnosesPanelGrid.Visibility = Visibility.Collapsed;
+        CertificatesPanelGrid.Visibility = Visibility.Collapsed;
         TabMedicationsButton.Style = (Style)FindResource("PrimaryButtonStyle");
         TabTreatmentsButton.Style = (Style)FindResource("SecondaryButtonStyle");
+        TabDiagnosesButton.Style = (Style)FindResource("SecondaryButtonStyle");
+        TabCertificatesButton.Style = (Style)FindResource("SecondaryButtonStyle");
+    }
+
+    private void TabDiagnoses_Click(object sender, RoutedEventArgs e)
+    {
+        DiagnosesPanelGrid.Visibility = Visibility.Visible;
+        TreatmentsPanelGrid.Visibility = Visibility.Collapsed;
+        MedicationsPanelGrid.Visibility = Visibility.Collapsed;
+        CertificatesPanelGrid.Visibility = Visibility.Collapsed;
+        TabDiagnosesButton.Style = (Style)FindResource("PrimaryButtonStyle");
+        TabTreatmentsButton.Style = (Style)FindResource("SecondaryButtonStyle");
+        TabMedicationsButton.Style = (Style)FindResource("SecondaryButtonStyle");
+        TabCertificatesButton.Style = (Style)FindResource("SecondaryButtonStyle");
+    }
+
+    private void TabCertificates_Click(object sender, RoutedEventArgs e)
+    {
+        CertificatesPanelGrid.Visibility = Visibility.Visible;
+        TreatmentsPanelGrid.Visibility = Visibility.Collapsed;
+        MedicationsPanelGrid.Visibility = Visibility.Collapsed;
+        DiagnosesPanelGrid.Visibility = Visibility.Collapsed;
+        TabCertificatesButton.Style = (Style)FindResource("PrimaryButtonStyle");
+        TabTreatmentsButton.Style = (Style)FindResource("SecondaryButtonStyle");
+        TabMedicationsButton.Style = (Style)FindResource("SecondaryButtonStyle");
+        TabDiagnosesButton.Style = (Style)FindResource("SecondaryButtonStyle");
     }
 
     private void EnsureTableExists()
@@ -321,5 +365,205 @@ public partial class TreatmentManagementWindow : Window
         BtnSaveMed.Content = LocalizationManager.T("Med_AddButton");
         BtnCancelEditMed.Visibility = Visibility.Collapsed;
         MedErrorText.Text = string.Empty;
+    }
+
+    // ===================== لوحة التشخيصات =====================
+
+    private void LoadDiagnoses()
+    {
+        try
+        {
+            DiagnosesList.Clear();
+            foreach (var diag in _diagnosisRepo.GetActivePresets())
+            {
+                DiagnosesList.Add(diag);
+            }
+        }
+        catch (Exception ex)
+        {
+            DiagErrorText.Text = LocalizationManager.T("Treat_LoadErrorFormat", ex.Message);
+        }
+    }
+
+    private void BtnSaveDiag_Click(object sender, RoutedEventArgs e)
+    {
+        DiagErrorText.Text = string.Empty;
+
+        var name = TxtDiagnosisName.Text.Trim();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            DiagErrorText.Text = LocalizationManager.T("Diag_NameRequired");
+            return;
+        }
+
+        try
+        {
+            if (_editingDiagnosisId.HasValue)
+            {
+                _diagnosisRepo.UpdatePreset(_editingDiagnosisId.Value, name);
+            }
+            else
+            {
+                _diagnosisRepo.AddPreset(name);
+            }
+
+            ResetDiagForm();
+            LoadDiagnoses();
+        }
+        catch (Exception ex)
+        {
+            DiagErrorText.Text = LocalizationManager.T("Treat_SaveErrorFormat", ex.Message);
+        }
+    }
+
+    private void BtnEditDiag_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is DiagnosisPreset item)
+        {
+            _editingDiagnosisId = item.DiagnosisID;
+            TxtDiagnosisName.Text = item.DiagnosisName;
+
+            BtnSaveDiag.Content = LocalizationManager.T("Treat_UpdateButton");
+            BtnCancelEditDiag.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void BtnDeleteDiag_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is DiagnosisPreset item)
+        {
+            var result = MessageBox.Show(LocalizationManager.T("Treat_ConfirmDeleteFormat", item.DiagnosisName), LocalizationManager.T("Treat_ConfirmDeleteTitle"), MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    _diagnosisRepo.DeactivatePreset(item.DiagnosisID);
+
+                    if (_editingDiagnosisId == item.DiagnosisID) ResetDiagForm();
+
+                    LoadDiagnoses();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(LocalizationManager.T("Treat_DeleteErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+    }
+
+    private void BtnCancelEditDiag_Click(object sender, RoutedEventArgs e)
+    {
+        ResetDiagForm();
+    }
+
+    private void ResetDiagForm()
+    {
+        _editingDiagnosisId = null;
+        TxtDiagnosisName.Text = string.Empty;
+        BtnSaveDiag.Content = LocalizationManager.T("Diag_AddButton");
+        BtnCancelEditDiag.Visibility = Visibility.Collapsed;
+        DiagErrorText.Text = string.Empty;
+    }
+
+    // ===================== لوحة الشهادات الطبية / العطل المرضية =====================
+
+    private void LoadCertificates()
+    {
+        try
+        {
+            CertificatesList.Clear();
+            foreach (var cert in _certificateRepo.GetActivePresets())
+            {
+                CertificatesList.Add(cert);
+            }
+        }
+        catch (Exception ex)
+        {
+            CertErrorText.Text = LocalizationManager.T("Treat_LoadErrorFormat", ex.Message);
+        }
+    }
+
+    private void BtnSaveCert_Click(object sender, RoutedEventArgs e)
+    {
+        CertErrorText.Text = string.Empty;
+
+        var name = TxtCertificateName.Text.Trim();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            CertErrorText.Text = LocalizationManager.T("Cert_NameRequired");
+            return;
+        }
+
+        var text = string.IsNullOrWhiteSpace(TxtCertificateText.Text) ? null : TxtCertificateText.Text.Trim();
+
+        try
+        {
+            if (_editingCertificateId.HasValue)
+            {
+                _certificateRepo.UpdatePreset(_editingCertificateId.Value, name, text);
+            }
+            else
+            {
+                _certificateRepo.AddPreset(name, text);
+            }
+
+            ResetCertForm();
+            LoadCertificates();
+        }
+        catch (Exception ex)
+        {
+            CertErrorText.Text = LocalizationManager.T("Treat_SaveErrorFormat", ex.Message);
+        }
+    }
+
+    private void BtnEditCert_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is CertificatePreset item)
+        {
+            _editingCertificateId = item.CertificateID;
+            TxtCertificateName.Text = item.CertificateName;
+            TxtCertificateText.Text = item.DefaultText ?? string.Empty;
+
+            BtnSaveCert.Content = LocalizationManager.T("Treat_UpdateButton");
+            BtnCancelEditCert.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void BtnDeleteCert_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is CertificatePreset item)
+        {
+            var result = MessageBox.Show(LocalizationManager.T("Treat_ConfirmDeleteFormat", item.CertificateName), LocalizationManager.T("Treat_ConfirmDeleteTitle"), MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    _certificateRepo.DeactivatePreset(item.CertificateID);
+
+                    if (_editingCertificateId == item.CertificateID) ResetCertForm();
+
+                    LoadCertificates();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(LocalizationManager.T("Treat_DeleteErrorFormat", ex.Message), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+    }
+
+    private void BtnCancelEditCert_Click(object sender, RoutedEventArgs e)
+    {
+        ResetCertForm();
+    }
+
+    private void ResetCertForm()
+    {
+        _editingCertificateId = null;
+        TxtCertificateName.Text = string.Empty;
+        TxtCertificateText.Text = string.Empty;
+        BtnSaveCert.Content = LocalizationManager.T("Cert_AddButton");
+        BtnCancelEditCert.Visibility = Visibility.Collapsed;
+        CertErrorText.Text = string.Empty;
     }
 }

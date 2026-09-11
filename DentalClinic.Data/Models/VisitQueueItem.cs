@@ -24,4 +24,10 @@ public class VisitQueueItem
 
     // أضفنا هذا السطر لكي نستخدمه في واجهة المواعيد المستقبلية
     public DateTime? ScheduledDate { get; set; }
+
+    // معرّف صف الموعد المستقبلي نفسه (وليس معرّف الزيارة الحالية) - لازم لتقديم طلب تعديل عليه لاحقاً
+    public int? FutureVisitID { get; set; }
+
+    // العلاج المخطَّط لذلك الموعد القادم (نص مُجمَّع بفاصلة "؛ "، نفس نمط العلاجات/الأدوية/التشخيصات)
+    public string? FuturePlannedTreatment { get; set; }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Windows;
@@ -14,6 +15,11 @@ public partial class AdvancedSearchWindow : Window
     private readonly UserAccount _currentUser;
     public ObservableCollection<AdvancedSearchRowViewModel> Results { get; } = new();
 
+    // نفس منطق قيود الرؤية بالضبط المطبَّق في قائمة الانتظار وشاشة البحث - كانت هذي الشاشة تحديداً
+    // ثغرة رؤية حقيقية (نتائج البحث بالتشخيص/السن تُظهر مرضى أطباء آخرين) قبل هذا الإصلاح
+    private List<int>? _allowedDoctorUserIds;
+    private bool _includeUnassigned = true;
+
     public AdvancedSearchWindow(UserAccount currentUser)
     {
         _currentUser = currentUser;
@@ -24,7 +30,39 @@ public partial class AdvancedSearchWindow : Window
         var db = new DatabaseHelper(connectionString);
         _sessionRepo = new SessionRepository(db);
 
+        ComputeVisibilityFilter(db);
+
         ResultCountText.Text = LocalizationManager.T("AdvSearch_InitialHint");
+        EmptyResultsText.Text = LocalizationManager.T("AdvSearch_InitialHint");
+        EmptyResultsPanel.Visibility = Visibility.Visible;
+    }
+
+    // نفس تعريف "الطبيب الرئيسي" الموحَّد بكل النظام (DoctorCommissionService) - رئيسي = بلا تقييد،
+    // ثانوي = مرضاه فقط + الغير مُسنَدين
+    private void ComputeVisibilityFilter(DatabaseHelper db)
+    {
+        try
+        {
+            var commissionService = new DoctorCommissionService(db);
+            var primaryDoctorId = commissionService.GetPrimaryDoctorUserId();
+            var isPrimaryDoctor = primaryDoctorId.HasValue && primaryDoctorId.Value == _currentUser.UserID;
+
+            if (isPrimaryDoctor)
+            {
+                _allowedDoctorUserIds = null;
+                _includeUnassigned = true;
+            }
+            else
+            {
+                _allowedDoctorUserIds = new List<int> { _currentUser.UserID };
+                _includeUnassigned = true;
+            }
+        }
+        catch
+        {
+            _allowedDoctorUserIds = new List<int>();
+            _includeUnassigned = true;
+        }
     }
 
     private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -41,7 +79,7 @@ public partial class AdvancedSearchWindow : Window
 
         try
         {
-            var matches = _sessionRepo.AdvancedSearch(criteria);
+            var matches = _sessionRepo.AdvancedSearch(criteria, _allowedDoctorUserIds, _includeUnassigned);
 
             Results.Clear();
             foreach (var r in matches)
@@ -50,6 +88,8 @@ public partial class AdvancedSearchWindow : Window
             }
 
             ResultCountText.Text = LocalizationManager.T("AdvSearch_ResultsFoundFormat", matches.Count);
+            EmptyResultsText.Text = LocalizationManager.T("AdvSearch_NoResultsFound");
+            EmptyResultsPanel.Visibility = Results.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
         catch (Exception ex)
         {
@@ -67,6 +107,8 @@ public partial class AdvancedSearchWindow : Window
         OutstandingOnlyCheck.IsChecked = false;
         Results.Clear();
         ResultCountText.Text = LocalizationManager.T("AdvSearch_InitialHint");
+        EmptyResultsText.Text = LocalizationManager.T("AdvSearch_InitialHint");
+        EmptyResultsPanel.Visibility = Visibility.Visible;
     }
 
     private void ResultsGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

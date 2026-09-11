@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows7.0</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="PdfiumViewer" Version="2.13.0" />
+		<PackageReference Include="PdfiumViewer.Native.x86_64.v8-xfa" Version="2018.4.8.256" />
+	</ItemGroup>
+
+	<!-- حزمة PdfiumViewer.Native تعتمد على ملف .props قديم الطراز (من عصر packages.config) لنسخ
+	     pdfium.dll، وهذه الآلية لا تُفعَّل بشكل موثوق مع مشاريع SDK-style الحديثة أو dotnet publish.
+	     لذلك ننسخ الملف صراحة هنا من مسار NuGet cache، وهذا العنصر ينتقل تلقائياً لأي مشروع
+	     يعتمد على DentalClinic.Printing عبر ProjectReference (Features -> DoctorApp/NurseApp). -->
+	<ItemGroup>
+		<None Include="$(NuGetPackageRoot)pdfiumviewer.native.x86_64.v8-xfa\2018.4.8.256\Build\x64\pdfium.dll"
+		      Condition="Exists('$(NuGetPackageRoot)pdfiumviewer.native.x86_64.v8-xfa\2018.4.8.256\Build\x64\pdfium.dll')">
+			<Link>pdfium.dll</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

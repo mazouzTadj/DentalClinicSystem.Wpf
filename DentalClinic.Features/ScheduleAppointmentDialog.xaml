@@ -1,7 +1,7 @@
 <Window x:Class="DentalClinic.Features.ScheduleAppointmentDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{DynamicResource Sched_Title}" Height="360" Width="420"
+        Title="{DynamicResource Sched_Title}" Height="620" Width="440"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         ShowInTaskbar="False">
@@ -34,12 +34,13 @@
 
                 <!-- عنوان داخلي -->
                 <TextBlock Text="{DynamicResource Sched_Header}" FontSize="18" FontWeight="Bold"
-                           Foreground="{StaticResource AccentBrush}" Margin="0,0,0,25" HorizontalAlignment="Center"/>
+                           Foreground="{StaticResource AccentBrush}" Margin="0,0,0,20" HorizontalAlignment="Center"/>
 
-                <!-- حقل التاريخ -->
+                <!-- حقل التاريخ (بلا وقت - حُذف حقل الوقت بناءً على طلب العميل) -->
                 <TextBlock Text="{DynamicResource Sched_DateLabel}" Style="{StaticResource FieldLabelStyle}"/>
                 <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,16" Padding="5">
-                    <DatePicker x:Name="DpAppointmentDate" BorderThickness="0" Background="Transparent" FontSize="14" VerticalAlignment="Center">
+                    <DatePicker x:Name="DpAppointmentDate" BorderThickness="0" Background="Transparent" FontSize="14" VerticalAlignment="Center"
+                                SelectedDateChanged="DpAppointmentDate_SelectedDateChanged">
                         <DatePicker.CalendarStyle>
                             <Style TargetType="Calendar">
                                 <Setter Property="LayoutTransform">
@@ -53,10 +54,63 @@
                     </DatePicker>
                 </Border>
 
-                <!-- حقل الوقت -->
-                <TextBlock Text="{DynamicResource Sched_TimeLabel}" Style="{StaticResource FieldLabelStyle}"/>
-                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,30" Padding="5">
-                    <ComboBox x:Name="CmbAppointmentTime" BorderThickness="0" Background="Transparent" FontSize="14" VerticalAlignment="Center"/>
+                <!-- 🦷 العلاج المخطَّط لهذا الموعد - اختيار متعدد من نفس قائمة العلاجات المستخدَمة بملف المريض -->
+                <Grid Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{DynamicResource Sched_PlannedTreatment}" Style="{StaticResource FieldLabelStyle}"/>
+                    <Button Grid.Column="1" Content="{DynamicResource PF_PickTreatmentsButton}" Height="26" Padding="10,0"
+                            FontSize="11.5" Style="{StaticResource SecondaryButtonStyle}" Click="PickTreatmentsButton_Click"/>
+                </Grid>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,16" Padding="10" MinHeight="40">
+                    <StackPanel>
+                        <TextBlock x:Name="NoTreatmentsSelectedText" Text="{DynamicResource PF_NoTreatmentsSelected}"
+                                   FontSize="11.5" FontStyle="Italic" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <ItemsControl x:Name="SelectedTreatmentsItems">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource WindowBackgroundBrush}" CornerRadius="14" Padding="10,5" Margin="0,0,6,6">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Name}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            <TextBlock Text=" ✕" FontSize="11" Foreground="{StaticResource ErrorBrush}" Margin="6,0,0,0"
+                                                       Cursor="Hand" Tag="{Binding}" MouseLeftButtonDown="RemoveTreatmentChip_Click"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- 📋 معاينة حية: كل المرضى المحجوزين بنفس اليوم المختار + علاجهم - حتى يشوف الطبيب حِمل
+                     ذلك اليوم قبل ما يوافق على حجز إضافي قد يتجاوز وقت العمل المتاح -->
+                <TextBlock Text="{DynamicResource Sched_SameDayPatients}" Style="{StaticResource FieldLabelStyle}"/>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,16" Padding="10" Height="120">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock x:Name="NoSameDayPatientsText" Text="{DynamicResource Sched_NoSameDayPatients}"
+                                       FontSize="11.5" FontStyle="Italic" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <ItemsControl x:Name="SameDayPatientsList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="0,0,0,1" Padding="0,5">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Name}" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding Treatment}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Border>
 
                 <!-- أزرار الحفظ والإلغاء -->

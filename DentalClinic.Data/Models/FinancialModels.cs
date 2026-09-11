@@ -6,6 +6,11 @@ public class RevenueSummary
     public decimal MonthRevenue { get; set; }
     public decimal YearRevenue { get; set; }
     public decimal TotalOutstanding { get; set; }
+
+    // لحساب مؤشرات المقارنة (↑/↓ نسبة مئوية) - أمس/الشهر الماضي/العام الماضي، لكل فترة على حدة
+    public decimal YesterdayRevenue { get; set; }
+    public decimal LastMonthRevenue { get; set; }
+    public decimal LastYearRevenue { get; set; }
 }
 
 public class OutstandingBalanceRow
@@ -15,6 +20,18 @@ public class OutstandingBalanceRow
     public string PhoneNumber { get; set; } = string.Empty;
     public decimal TotalOwed { get; set; }
     public DateTime LastVisit { get; set; }
+}
+
+// صف دخل (دفعة فعلية مُحصَّلة) - يُستخدم في جدول "المداخيل" الجديد بجانب Outstanding Balances
+public class IncomeRow
+{
+    public int PaymentID { get; set; }
+    public int SessionID { get; set; }
+    public string PatientFullName { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public DateTime PaymentDate { get; set; }
+
+    public string DateText => PaymentDate.ToString("yyyy-MM-dd HH:mm");
 }
 
 public class DailyPatientCount
@@ -33,10 +50,25 @@ public class ExpenseSummary
     public decimal TodayExpense { get; set; }
     public decimal MonthExpense { get; set; }
     public decimal YearExpense { get; set; }
+
+    // لحساب مؤشرات المقارنة (↑/↓ نسبة مئوية) - نفس منطق RevenueSummary أعلاه
+    public decimal YesterdayExpense { get; set; }
+    public decimal LastMonthExpense { get; set; }
+    public decimal LastYearExpense { get; set; }
+}
+
+// إجمالي عمولات الأطباء (بند "Doctor Commission" ضمن المصاريف) لكل فترة على حدة - يُستخدم لعرض
+// "عمولات الأطباء تمثّل X% من إجمالي المصاريف" بشكل مستقل عن باقي بنود المصاريف التشغيلية
+public class CommissionSummary
+{
+    public decimal TodayCommission { get; set; }
+    public decimal MonthCommission { get; set; }
+    public decimal YearCommission { get; set; }
 }
 
 public class ExpenseRow
 {
+    public bool IsSelected { get; set; }
     public int ExpenseID { get; set; }
     public decimal Amount { get; set; }
     public string Description { get; set; } = string.Empty;
@@ -73,6 +105,32 @@ public class DoctorStatRow
 
     // ما تبقى فعلياً لصالح العيادة من دخل هذا الطبيب
     public decimal ClinicShare => GrossIncome - DoctorShare;
+}
+
+public class DoctorDetailedStat
+{
+    public int DoctorUserId { get; set; }
+    public string DoctorName { get; set; } = string.Empty;
+    public int PatientCount { get; set; }
+    public int SessionCount { get; set; }
+    public decimal GrossIncome { get; set; }
+    public decimal CommissionPercent { get; set; }
+    public decimal DoctorShare { get; set; }
+    public bool IsPrimary { get; set; }
+    public decimal ClinicShare => GrossIncome - DoctorShare;
+    public decimal IncomePerPatient => PatientCount > 0 ? GrossIncome / PatientCount : 0m;
+    public decimal IncomePerSession => SessionCount > 0 ? GrossIncome / SessionCount : 0m;
+    public double IncomeSharePercent { get; set; }
+}
+
+public class DoctorDetailedSummary
+{
+    public int PatientCount { get; set; }
+    public int SessionCount { get; set; }
+    public decimal GrossIncome { get; set; }
+    public decimal DoctorShare { get; set; }
+    public decimal ClinicShare => GrossIncome - DoctorShare;
+    public int DoctorCount { get; set; }
 }
 
 public class FinancialChartItem

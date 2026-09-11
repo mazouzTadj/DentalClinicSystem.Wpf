@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>DentalClinic.DoctorApp</RootNamespace>
     <AssemblyName>DoctorApp</AssemblyName>
+    <ApplicationIcon>..\DentalClinic.UI\Assets\logo_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>

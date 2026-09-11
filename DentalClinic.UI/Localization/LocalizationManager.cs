@@ -75,7 +75,33 @@ public static class LocalizationManager
         var uri = new Uri($"pack://application:,,,/DentalClinic.UI;component/Localization/{fileName}");
 
         var dictionary = new ResourceDictionary { Source = uri };
+
+        // إصلاح شامل ومركزي لمشكلة الأقواس/الرموز في كل النصوص العربية دفعة واحدة:
+        // نمرّ على كل مفتاح في القاموس، وإن كانت قيمته نصاً نستبدلها بنسخة مُصحَّحة عبر
+        // BidiTextFixer، بحيث يستفيد كل استخدام لاحق لهذا النص في أي نافذة/عنصر من التطبيق
+        // (سواء عبر {DynamicResource}، {StaticResource}، أو LocalizationManager.T()) من
+        // الإصلاح تلقائياً دون الحاجة لتعديل كل ملف XAML على حدة.
+        if (language == AppLanguage.Arabic)
+        {
+            FixArabicStringsInPlace(dictionary);
+        }
+
         Application.Current.Resources.MergedDictionaries.Add(dictionary);
+    }
+
+    private static void FixArabicStringsInPlace(ResourceDictionary dictionary)
+    {
+        // ننسخ المفاتيح لقائمة منفصلة أولاً لأننا سنُعدِّل القاموس أثناء المرور عليه
+        var keys = new object[dictionary.Keys.Count];
+        dictionary.Keys.CopyTo(keys, 0);
+
+        foreach (var key in keys)
+        {
+            if (dictionary[key] is string original)
+            {
+                dictionary[key] = BidiTextFixer.Fix(original);
+            }
+        }
     }
 
     // دالة مساعدة لجلب نص مترجَم من الكود الخلفي (MessageBox، رسائل الأخطاء، إلخ)

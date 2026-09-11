@@ -1,7 +1,7 @@
 <Window x:Class="DentalClinic.Features.PatientSearchWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{DynamicResource Search_TitleBar}" Height="610" Width="680"
+        Title="{DynamicResource Search_TitleBar}" Height="640" Width="920"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         ShowInTaskbar="False">
@@ -18,6 +18,7 @@
         <Grid Margin="0,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="44"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -79,8 +80,24 @@
                 </Border>
             </Grid>
 
+            <!-- فلتر خاص بالطبيب الرئيسي فقط: عرض مرضى طبيب معيَّن تحديداً - يُخفى بالكامل (ولا يأخذ
+                 أي ارتفاع، بفضل Height="Auto" على صف الشبكة) لأي مستخدم آخر -->
+            <Grid x:Name="DoctorFilterRow" Grid.Row="3" Margin="30,0,30,16" Visibility="Collapsed">
+                <Border Style="{StaticResource InputContainerStyle}">
+                    <ComboBox x:Name="DoctorFilterBox" BorderThickness="0" Background="Transparent"
+                              Padding="10,8" FontSize="13" VerticalContentAlignment="Center"
+                              SelectedValuePath="UserID" SelectionChanged="DoctorFilterBox_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Border>
+            </Grid>
+
             <!-- جدول النتائج -->
-            <Border Grid.Row="3" Margin="30,0,30,10" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}"
+            <Border Grid.Row="4" Margin="30,0,30,10" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}"
                     BorderThickness="1" ClipToBounds="True">
                 <DataGrid x:Name="ResultsGrid"
                           Style="{StaticResource ModernDataGridStyle}"
@@ -88,9 +105,9 @@
                           RowStyle="{StaticResource ModernRowStyle}"
                           CellStyle="{StaticResource ModernCellStyle}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{DynamicResource Search_ColName}" Binding="{Binding FullName}" Width="*"/>
-                        <DataGridTextColumn Header="{DynamicResource Search_ColAge}" Binding="{Binding AgeText}" Width="60"/>
-                        <DataGridTextColumn Header="{DynamicResource Search_ColPhone}" Binding="{Binding PhoneNumber}" Width="130"/>
+                        <DataGridTextColumn Header="{DynamicResource Search_ColName}" Binding="{Binding FullName}" Width="2*" ElementStyle="{StaticResource CellTextStyle}"/>
+                        <DataGridTextColumn Header="{DynamicResource Search_ColAge}" Binding="{Binding AgeText}" Width="60" ElementStyle="{StaticResource CellTextStyle}"/>
+                        <DataGridTextColumn Header="{DynamicResource Search_ColPhone}" Binding="{Binding PhoneNumber}" Width="140" ElementStyle="{StaticResource CellTextStyle}"/>
 
                         <!-- عمود فتح الملف الطبي - العمود بأكمله يُخفى برمجياً في الكود الخلفي لمن لا يملك الصلاحية -->
                         <DataGridTemplateColumn x:Name="OpenFileColumn" Header="{DynamicResource Search_ColFile}" Width="90">
@@ -123,14 +140,36 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+
+                        <!-- عمود تعديل بيانات المريض - يُخفى بالكامل برمجياً لمن لا يملك صلاحية EditPatients -->
+                        <DataGridTemplateColumn x:Name="EditColumn" Header="{DynamicResource Search_ColEdit}" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="{DynamicResource Search_EditPatientBtn}" Height="26" Width="65" FontSize="11"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Tag="{Binding}" Click="EditPatientButton_Click"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- عمود حذف المريض نهائياً - يُخفى بالكامل برمجياً لمن لا يملك صلاحية DeletePatients -->
+                        <DataGridTemplateColumn x:Name="DeleteColumn" Header="{DynamicResource Search_ColDelete}" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="{DynamicResource Search_DeletePatientBtn}" Height="26" Width="65" FontSize="11"
+                                            Style="{StaticResource DangerButtonStyle}"
+                                            Tag="{Binding}" Click="DeletePatientButton_Click"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>
 
-            <TextBlock x:Name="StatusText" Grid.Row="4" Style="{StaticResource ErrorTextStyle}" Margin="30,0,30,6"/>
+            <TextBlock x:Name="StatusText" Grid.Row="5" Style="{StaticResource ErrorTextStyle}" Margin="30,0,30,6"/>
 
             <!-- أزرار الإغلاق والإضافة -->
-            <Grid Grid.Row="5" Margin="30,0,30,24">
+            <Grid Grid.Row="6" Margin="30,0,30,24">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="12"/>

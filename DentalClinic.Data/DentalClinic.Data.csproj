@@ -14,4 +14,11 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- سكربت إنشاء البنية الكاملة (13 جدول + FK + Seed لجدول Roles) - يُضمَّن داخل الـ DLL
+         نفسه ليتمكن SchemaInitializer من تنفيذه تلقائياً عند أول تشغيل على قاعدة فارغة،
+         دون الحاجة لأي ملف خارجي يُنشر بجانب الـ exe -->
+    <EmbeddedResource Include="Schema\DentalClinicSchema.sql" />
+  </ItemGroup>
+
 </Project>

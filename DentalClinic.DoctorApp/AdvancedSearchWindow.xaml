@@ -109,6 +109,7 @@
             <Border.Effect>
                 <DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="14" ShadowDepth="3"/>
             </Border.Effect>
+            <Grid>
             <DataGrid x:Name="ResultsGrid"
                       Style="{StaticResource ModernDataGridStyle}"
                       ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
@@ -116,16 +117,24 @@
                       CellStyle="{StaticResource ModernCellStyle}"
                       MouseDoubleClick="ResultsGrid_MouseDoubleClick">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColPatient}" Binding="{Binding PatientFullName}" Width="1.3*"/>
-                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColPhone}" Binding="{Binding PatientPhone}" Width="130"/>
-                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColDate}" Binding="{Binding DateText}" Width="140"/>
-                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColDiagnosis}" Binding="{Binding Diagnosis}" Width="1.4*"/>
-                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColTreatment}" Binding="{Binding Treatment}" Width="1.4*"/>
-                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColTotal}" Binding="{Binding TotalText}" Width="90"/>
-                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColPaid}" Binding="{Binding PaidText}" Width="90"/>
-                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColRemaining}" Binding="{Binding RemainingText}" Width="100"/>
+                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColPatient}" Binding="{Binding PatientFullName}" Width="1.3*" ElementStyle="{StaticResource CellTextStyle}"/>
+                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColPhone}" Binding="{Binding PatientPhone}" Width="130" ElementStyle="{StaticResource CellTextStyle}"/>
+                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColDate}" Binding="{Binding DateText}" Width="140" ElementStyle="{StaticResource CellTextStyle}"/>
+                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColDiagnosis}" Binding="{Binding Diagnosis}" Width="1.4*" ElementStyle="{StaticResource CellTextStyle}"/>
+                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColTreatment}" Binding="{Binding Treatment}" Width="1.4*" ElementStyle="{StaticResource CellTextStyle}"/>
+                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColTotal}" Binding="{Binding TotalText}" Width="90" ElementStyle="{StaticResource CellTextStyle}"/>
+                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColPaid}" Binding="{Binding PaidText}" Width="90" ElementStyle="{StaticResource CellTextStyle}"/>
+                    <DataGridTextColumn Header="{DynamicResource AdvSearch_ColRemaining}" Binding="{Binding RemainingText}" Width="100" ElementStyle="{StaticResource CellTextStyle}"/>
                 </DataGrid.Columns>
             </DataGrid>
+
+            <!-- حالة فارغة أنيقة - تظهر فقط عندما لا توجد نتائج بحث -->
+            <StackPanel x:Name="EmptyResultsPanel" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="🔍" FontSize="42" HorizontalAlignment="Center" Opacity="0.35" Margin="0,0,0,10"/>
+                <TextBlock x:Name="EmptyResultsText" FontSize="15"
+                           Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
+            </StackPanel>
+            </Grid>
         </Border>
     </DockPanel>
 </Window>

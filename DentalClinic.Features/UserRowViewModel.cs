@@ -11,7 +11,24 @@ public class UserRowViewModel
     public int UserID => User.UserID;
     public string FullName => User.FullName;
     public string Username => User.Username;
-    public string RoleText => LocalizationManager.T(User.Role == UserRole.Doctor ? "UserMgmt_RoleDoctor" : "UserMgmt_RoleNurse");
+    public string RoleText
+    {
+        get
+        {
+            var baseText = LocalizationManager.T(User.Role switch
+            {
+                UserRole.Doctor => "UserMgmt_RoleDoctor",
+                UserRole.Nurse => "UserMgmt_RoleNurse",
+                UserRole.Prosthetist => "UserMgmt_RoleProsthetist",
+                _ => "UserMgmt_RoleDoctor"
+            });
+            // "★" لمن هو الطبيب الرئيسي حالياً - أبسط تعديل ممكن لإظهار الحالة في القائمة الموجودة
+            // أصلاً بدل إضافة عمود جديد كامل في XAML لهذا الغرض وحده
+            return User.Role == UserRole.Doctor && User.IsMainDoctor
+                ? baseText + " ★ " + LocalizationManager.T("UserMgmt_MainDoctorBadge")
+                : baseText;
+        }
+    }
     public string AdminText => User.IsSuperAdmin ? LocalizationManager.T("UserMgmt_AdminYes") : "-";
     // ملاحظة: لا تُستخدَم هذه القيمة لتحديد لون شارة الحالة في XAML (استُخدم User.IsActive مباشرة لذلك
     // حتى يبقى صحيحاً بغض النظر عن اللغة) - هذه فقط للعرض النصي.
@@ -33,6 +50,7 @@ public class UserRowViewModel
             if (User.HasPermission(UserPermission.ManageTreatments)) parts.Add(LocalizationManager.T("Perm_Treatments"));
             if (User.HasPermission(UserPermission.CollectPayments)) parts.Add(LocalizationManager.T("Perm_Payments"));
             if (User.HasPermission(UserPermission.RegisterPatients)) parts.Add(LocalizationManager.T("Perm_RegisterPatients"));
+            if (User.HasPermission(UserPermission.EditPatients)) parts.Add(LocalizationManager.T("Perm_EditPatients"));
             return parts.Count == 0 ? "-" : string.Join(", ", parts);
         }
     }

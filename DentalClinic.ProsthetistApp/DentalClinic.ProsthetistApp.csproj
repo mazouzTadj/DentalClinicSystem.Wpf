@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DentalClinic.ProsthetistApp</RootNamespace>
+    <AssemblyName>ProsthetistApp</AssemblyName>
+    <ApplicationIcon>..\DentalClinic.UI\Assets\logo_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- تسمح بقراءة App.config (سطر الاتصال بقاعدة البيانات) -->
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DentalClinic.Data\DentalClinic.Data.csproj" />
+    <ProjectReference Include="..\DentalClinic.UI\DentalClinic.UI.csproj" />
+    <!-- مشروع مشترك يحوي الشاشات التي يحتاجها أكثر من تطبيق حسب الصلاحيات (Permissions) -
+         تحديداً هنا: ProstheticCaseEditWindow لعرض/تعديل تفاصيل الحالة عند فتحها من قائمة الانتظار -->
+    <ProjectReference Include="..\DentalClinic.Features\DentalClinic.Features.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

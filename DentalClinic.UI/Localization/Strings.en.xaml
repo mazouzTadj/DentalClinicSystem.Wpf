@@ -10,6 +10,8 @@
     <sys:String x:Key="App_NurseTitle">Reception App - Dental Clinic</sys:String>
     <sys:String x:Key="App_DoctorTitleWithNameFormat">Doctor App - Dental Clinic | Dr. {0}</sys:String>
     <sys:String x:Key="App_NurseTitleWithNameFormat">Reception App - Dental Clinic | Welcome {0}</sys:String>
+    <sys:String x:Key="App_ProsthetistTitle">Prosthetist App - Dental Clinic</sys:String>
+    <sys:String x:Key="App_ProsthetistTitleWithNameFormat">Prosthetist App - Dental Clinic | Welcome {0}</sys:String>
     <sys:String x:Key="Common_Welcome">Welcome</sys:String>
     <sys:String x:Key="Common_Save">Save</sys:String>
     <sys:String x:Key="Common_Cancel">Cancel</sys:String>
@@ -22,7 +24,8 @@
     <sys:String x:Key="PF_Title">Patient File</sys:String>
     <sys:String x:Key="PF_PrescriptionButton">Prescription</sys:String>
     <sys:String x:Key="PF_ExportPdfButton">Export to PDF</sys:String>
-    <sys:String x:Key="PF_ScheduleButton">📅 Schedule Next Visit</sys:String>
+    <sys:String x:Key="PF_ScheduleButton">Schedule Next Visit</sys:String>
+    <sys:String x:Key="PF_ProstheticCasesButton">Prosthetic Cases</sys:String>
     <sys:String x:Key="PF_HistoryHeader">Previous Visits History</sys:String>
     <sys:String x:Key="PF_ColDate">Date</sys:String>
     <sys:String x:Key="PF_ColDiagnosis">Diagnosis</sys:String>
@@ -40,12 +43,19 @@
     <sys:String x:Key="PF_Medications">Medications</sys:String>
     <sys:String x:Key="PF_PickMedicationsButton">+ Choose Medications</sys:String>
     <sys:String x:Key="PF_NoMedicationsSelected">No medication selected yet</sys:String>
+    <sys:String x:Key="PF_PickDiagnosesButton">+ Choose Diagnosis</sys:String>
+    <sys:String x:Key="PF_NoDiagnosesSelected">No diagnosis selected yet</sys:String>
+    <sys:String x:Key="PF_Certificates">Medical Certificates / Sick Leave</sys:String>
+    <sys:String x:Key="PF_PickCertificatesButton">+ Choose Certificate/Leave</sys:String>
+    <sys:String x:Key="PF_NoCertificatesSelected">No certificate/leave selected yet</sys:String>
+    <sys:String x:Key="PF_PickerCertificatesTitle">Choose Medical Certificate / Sick Leave</sys:String>
     <sys:String x:Key="PF_TotalPriceLabel">Total Treatment Cost</sys:String>
     <sys:String x:Key="PF_SaveSessionButton">Save Session &amp; Complete Treatment</sys:String>
     <sys:String x:Key="PF_CloseButton">Close</sys:String>
     <sys:String x:Key="PF_SaveSessionButtonReviewMode">Save Session</sys:String>
     <sys:String x:Key="PF_PickerTreatmentsTitle">Choose Treatments</sys:String>
     <sys:String x:Key="PF_PickerMedicationsTitle">Choose Medications</sys:String>
+    <sys:String x:Key="PF_PickerDiagnosesTitle">Choose Diagnosis</sys:String>
     <sys:String x:Key="PF_PatientDataNotLoaded">Patient data is not loaded yet</sys:String>
     <sys:String x:Key="PF_PdfFilter">PDF Files (*.pdf)|*.pdf</sys:String>
     <sys:String x:Key="PF_ExportSuccessMessage">PDF saved successfully. Do you want to open it now?</sys:String>
@@ -75,12 +85,59 @@
     <sys:String x:Key="Rx_AddAtLeastOneMedication">Add at least one medication before generating the prescription</sys:String>
     <sys:String x:Key="Rx_SavedMessage">Prescription saved successfully. Do you want to open it now to print?</sys:String>
     <sys:String x:Key="Rx_GenerateFailedFormat">Failed to generate the prescription: {0}</sys:String>
+    <sys:String x:Key="Rx_BoxCountLabel">Boxes:</sys:String>
+    <sys:String x:Key="Rx_PrintSuccess">Prescription sent to printer successfully.</sys:String>
+    <sys:String x:Key="Rx_CertificateSectionLabel">Medical Certificate / Sick Leave (optional)</sys:String>
+    <sys:String x:Key="Rx_CertificateLineLabel">Medical certificate / sick leave text</sys:String>
+    <sys:String x:Key="Rx_AddCustomCertificateButton">+ Add custom certificate/leave</sys:String>
+    <sys:String x:Key="Rx_SelectCertificateFirst">Please select a certificate/leave from the list first</sys:String>
+    <sys:String x:Key="Rx_AddAtLeastOneLine">Add at least one medication or certificate/leave before generating the prescription</sys:String>
 
     <!-- ===== Schedule Appointment dialog (ScheduleAppointmentDialog) ===== -->
     <sys:String x:Key="Sched_Title">Schedule Appointment</sys:String>
     <sys:String x:Key="Sched_Header">Schedule a New Visit</sys:String>
     <sys:String x:Key="Sched_DateLabel">Appointment Date *</sys:String>
     <sys:String x:Key="Sched_TimeLabel">Appointment Time *</sys:String>
+    <sys:String x:Key="Sched_PlannedTreatment">Planned Treatment for This Visit</sys:String>
+    <sys:String x:Key="Sched_SameDayPatients">Patients Already Booked This Day</sys:String>
+    <sys:String x:Key="Sched_NoSameDayPatients">No other patients booked on this day yet.</sys:String>
+    <sys:String x:Key="Sched_NoPlannedTreatment">No treatment specified</sys:String>
+    <sys:String x:Key="Sched_DirectEditTitle">Edit Appointment</sys:String>
+    <sys:String x:Key="Sched_DirectEditHeader">Edit Appointment Directly</sys:String>
+    <sys:String x:Key="Sched_DirectEditSave">Save Changes</sys:String>
+    <sys:String x:Key="Sched_DirectAppointmentNotFound">The appointment was not found or is no longer a future appointment.</sys:String>
+    <sys:String x:Key="Sched_SelectFutureDate">Select a future date starting tomorrow.</sys:String>
+    <sys:String x:Key="Sched_DoctorOnly">This operation is available to doctors only.</sys:String>
+    <sys:String x:Key="Sched_DirectBlockedPending">A change request is pending for this appointment. Resolve the pending request first.</sys:String>
+    <sys:String x:Key="Sched_ConfirmDeleteFormat">Delete {0}'s appointment on {1}? Only the appointment will be deleted.</sys:String>
+    <sys:String x:Key="Sched_DeleteAppointmentTitle">Delete Appointment</sys:String>
+    <sys:String x:Key="Sched_DeleteAppointmentSuccess">Appointment deleted successfully.</sys:String>
+    <sys:String x:Key="Main_NextAppointment">Next Appointment</sys:String>
+    <sys:String x:Key="Main_EditAppointment">Edit Appointment</sys:String>
+    <sys:String x:Key="Main_DeleteAppointment">Delete Appointment</sys:String>
+    <sys:String x:Key="Sched_EditTitle">Edit Appointment (requires doctor approval)</sys:String>
+    <sys:String x:Key="Sched_EditHeader">Appointment Change Request</sys:String>
+    <sys:String x:Key="Sched_EditSaveButton">Submit for Approval</sys:String>
+    <sys:String x:Key="Sched_EditSuccessMessage">The change request was sent to the doctor. It will not take effect until approved.</sys:String>
+    <sys:String x:Key="Sched_EditSuccessTitle">Request Sent</sys:String>
+    <sys:String x:Key="Sched_EditErrorAlreadyPending">A change request is already pending for this appointment - please wait for the doctor's response before submitting another.</sys:String>
+    <sys:String x:Key="Main_EditAppointmentButton">Edit</sys:String>
+    <sys:String x:Key="Main_AppointmentPending">Pending Review</sys:String>
+    <sys:String x:Key="Notif_PendingRequestsTitle">Appointment Change Requests Awaiting Your Approval</sys:String>
+    <sys:String x:Key="Notif_BellButtonFormat">🔔 {0}</sys:String>
+    <sys:String x:Key="Notif_NoPendingRequests">No pending requests right now.</sys:String>
+    <sys:String x:Key="Notif_RequestedByFormat">Submitted by: {0} — on {1}</sys:String>
+    <sys:String x:Key="Notif_CurrentAppointmentFormat">Current appointment: {0} — {1}</sys:String>
+    <sys:String x:Key="Notif_ProposedAppointmentFormat">Proposed: {0} — {1}</sys:String>
+    <sys:String x:Key="Notif_ApproveButton">Approve</sys:String>
+    <sys:String x:Key="Notif_RejectButton">Reject</sys:String>
+    <sys:String x:Key="Notif_RejectReasonPrompt">Rejection reason (optional):</sys:String>
+    <sys:String x:Key="Notif_ApprovedMsg">The change was approved.</sys:String>
+    <sys:String x:Key="Notif_RejectedMsg">The change was rejected.</sys:String>
+    <sys:String x:Key="Notif_NurseApprovedFormat">The doctor approved the appointment change for patient "{0}".</sys:String>
+    <sys:String x:Key="Notif_NurseRejectedFormat">The doctor rejected the appointment change for patient "{0}".&#10;Reason: {1}</sys:String>
+    <sys:String x:Key="Notif_NurseRejectedNoReason">No reason given</sys:String>
+    <sys:String x:Key="Notif_NurseResultTitle">Doctor's Response to Change Request</sys:String>
     <sys:String x:Key="Sched_SaveButton">Save Appointment</sys:String>
     <sys:String x:Key="Sched_SelectDateFirst">Please select an appointment date.</sys:String>
     <sys:String x:Key="Sched_SuccessMessage">Appointment scheduled successfully!</sys:String>
@@ -115,6 +172,7 @@
     <sys:String x:Key="AdvSearch_ColPaid">Paid</sys:String>
     <sys:String x:Key="AdvSearch_ColRemaining">Remaining</sys:String>
     <sys:String x:Key="AdvSearch_InitialHint">Enter any combination of criteria above and click Search</sys:String>
+    <sys:String x:Key="AdvSearch_NoResultsFound">No matching sessions found</sys:String>
     <sys:String x:Key="AdvSearch_ResultsFoundFormat">{0} result(s) found</sys:String>
     <sys:String x:Key="AdvSearch_SearchErrorFormat">Search error: {0}</sys:String>
     <sys:String x:Key="AdvSearch_SelectResultFirst">Please select a result from the list first</sys:String>
@@ -122,13 +180,19 @@
     <sys:String x:Key="Common_AccessDenied">Access Denied</sys:String>
     <sys:String x:Key="Common_Confirm">Confirm</sys:String>
     <sys:String x:Key="Common_Close">Close</sys:String>
+    <sys:String x:Key="Common_Edit">Edit</sys:String>
+    <sys:String x:Key="Common_Delete">Delete</sys:String>
 
     <!-- ===== شاشة تسجيل الدخول ===== -->
     <sys:String x:Key="Login_TitleDoctor">Doctor Login</sys:String>
     <sys:String x:Key="Login_TitleNurse">Reception Login</sys:String>
+    <sys:String x:Key="Login_TitleProsthetist">Prosthetist Login</sys:String>
+    <sys:String x:Key="Login_ProsthetistDoctorNotAuthorized">This application is available to the main doctor only.</sys:String>
     <sys:String x:Key="Login_Username">Username</sys:String>
     <sys:String x:Key="Login_Password">Password</sys:String>
     <sys:String x:Key="Login_ShowPassword">Show/hide password</sys:String>
+    <sys:String x:Key="Login_RememberMe">Remember my username</sys:String>
+    <sys:String x:Key="Login_RememberPassword">Also remember my password on this device</sys:String>
     <sys:String x:Key="Login_LoginButton">Login</sys:String>
     <sys:String x:Key="Login_EnterCredentials">Please enter username and password</sys:String>
     <sys:String x:Key="Login_ConnectionErrorFormat">Could not connect to the database: {0}</sys:String>
@@ -155,10 +219,18 @@
     <sys:String x:Key="Main_OpenPatientFile">Open Patient File</sys:String>
     <sys:String x:Key="Main_Search">Search</sys:String>
     <sys:String x:Key="Main_SearchPatient">Search Patient</sys:String>
+    <sys:String x:Key="Main_TodayQueueSearchToolTip">Search patient in today’s queue</sys:String>
+    <sys:String x:Key="Main_TodayQueueSearchPlaceholder">Search today’s queue…</sys:String>
+    <sys:String x:Key="Main_ClearSearch">Clear search</sys:String>
+    <sys:String x:Key="Main_AdvancedSearchMenuItem">Advanced Search</sys:String>
     <sys:String x:Key="Main_CollectPayment">Collect Payment</sys:String>
     <sys:String x:Key="Main_Treatments">Treatments</sys:String>
     <sys:String x:Key="Main_Backup">Backup</sys:String>
     <sys:String x:Key="Main_ManageUsers">Manage Users</sys:String>
+    <sys:String x:Key="Main_OpenProsthetistApp">Open Prosthetist App</sys:String>
+    <sys:String x:Key="Main_ManageProstheticLookups">Work Types &amp; Stages</sys:String>
+    <sys:String x:Key="Main_ProsthetistAppNotFoundFormat">Could not find the Prosthetist app at the expected path: {0} — make sure it's installed alongside the Doctor app, or launch it manually from its folder.</sys:String>
+    <sys:String x:Key="Main_ProsthetistAppLaunchErrorFormat">Could not launch the Prosthetist app: {0}</sys:String>
     <sys:String x:Key="Main_Finances">Finances</sys:String>
     <sys:String x:Key="Main_Refresh">Refresh</sys:String>
     <sys:String x:Key="Main_Logout">Logout</sys:String>
@@ -169,7 +241,8 @@
     <sys:String x:Key="Main_ColNextAppointment">NEXT APPOINTMENT</sys:String>
     <sys:String x:Key="Main_ColActions">ACTIONS</sys:String>
 
-    <sys:String x:Key="Main_PatientsTodayFormat">Patients today: {0}</sys:String>
+    <sys:String x:Key="Main_PatientsTodayDetailedFormat">Patients today: {0}  —  Waiting: {1}  ·  Completed: {2}  ·  Cancelled: {3}  ·  Other: {4}</sys:String>
+    <sys:String x:Key="Main_EmptyQueue">No patients in today's queue yet</sys:String>
     <sys:String x:Key="Main_CouldNotLoadQueueFormat">Could not load the queue: {0}</sys:String>
 
     <sys:String x:Key="Main_StatusWaiting">Waiting</sys:String>
@@ -179,6 +252,16 @@
     <sys:String x:Key="Main_StatusScheduled">Scheduled</sys:String>
 
     <sys:String x:Key="Main_Cancel">Cancel</sys:String>
+    <sys:String x:Key="Main_DeletePatient">Delete</sys:String>
+    <sys:String x:Key="Main_ConfirmDeletePatientTitle">Permanently Delete Patient</sys:String>
+    <sys:String x:Key="Main_ConfirmDeletePatientMessageFormat">This will permanently delete "{0}" and all their medical records, sessions and payments from the database. This action CANNOT be undone. Are you absolutely sure?</sys:String>
+    <sys:String x:Key="Main_PatientDeletedFormat">"{0}" was permanently deleted.</sys:String>
+    <sys:String x:Key="Main_CouldNotDeletePatientFormat">Could not delete the patient: {0}</sys:String>
+    <sys:String x:Key="Main_NoPermissionDeletePatient">You do not have permission to delete patients.</sys:String>
+    <sys:String x:Key="Main_EditPatient">Edit</sys:String>
+    <sys:String x:Key="Main_ViewingQueueOf">Viewing queue for:</sys:String>
+    <sys:String x:Key="Main_UnassignedPatients">Unassigned Patients</sys:String>
+    <sys:String x:Key="Main_NoPermissionEditPatient">You do not have permission to edit patient data.</sys:String>
     <sys:String x:Key="Main_CheckIn">Check-In</sys:String>
     <sys:String x:Key="Main_Pay">Pay</sys:String>
     <sys:String x:Key="Main_Paid">Paid ✓</sys:String>
@@ -200,6 +283,7 @@
 
     <!-- ===== شاشة تسجيل مريض جديد ===== -->
     <sys:String x:Key="AddPatient_Title">Register New Patient</sys:String>
+    <sys:String x:Key="AddPatient_TitleEdit">Edit Patient Information</sys:String>
     <sys:String x:Key="AddPatient_FullName">Full Name *</sys:String>
     <sys:String x:Key="AddPatient_Age">Age</sys:String>
     <sys:String x:Key="AddPatient_Gender">Gender</sys:String>
@@ -209,10 +293,17 @@
     <sys:String x:Key="AddPatient_Address">Address</sys:String>
     <sys:String x:Key="AddPatient_Notes">Basic Medical Notes (allergies / chronic conditions)</sys:String>
     <sys:String x:Key="AddPatient_SaveButton">Save &amp; Add to Queue</sys:String>
+    <sys:String x:Key="AddPatient_SaveAndBookButton">Save &amp; Book Appointment</sys:String>
+    <sys:String x:Key="AddPatient_BookingDuplicateMessageFormat">A patient with the same name and phone number already exists: {0}. Search for the existing patient instead of creating a new record.</sys:String>
+    <sys:String x:Key="AddPatient_BookingCancelledPatientSaved">The patient was registered, but no appointment was booked. The patient was saved and was not added to the waiting queue.</sys:String>
+    <sys:String x:Key="AddPatient_SaveChangesButton">Save Changes</sys:String>
+    <sys:String x:Key="AddPatient_AssignedDoctor">Assigned Doctor</sys:String>
+    <sys:String x:Key="AddPatient_UnassignedDoctor">Not Assigned Yet</sys:String>
     <sys:String x:Key="AddPatient_FullNameRequired">Full name is required</sys:String>
     <sys:String x:Key="AddPatient_InvalidAge">Invalid age</sys:String>
     <sys:String x:Key="AddPatient_DuplicateFoundFormat">A patient is already registered with the same name and phone number:&#10;{0} - {1}&#10;&#10;Do you want to add them to the queue instead of creating a new record?</sys:String>
     <sys:String x:Key="AddPatient_DuplicateTitle">Possible Duplicate Patient</sys:String>
+    <sys:String x:Key="AddPatient_SameNameWarningFormat">Another patient is already registered with the same name "{0}" (phone: {1}), but with a different phone number than the one entered now.&#10;&#10;Are you sure this is genuinely a different person, and you want to register them as a new, separate patient?&#10;(Choose "No" to stop and search for them manually instead)</sys:String>
     <sys:String x:Key="AddPatient_SaveErrorFormat">An error occurred while saving: {0}</sys:String>
 
     <!-- ===== شاشة البحث عن مريض ===== -->
@@ -223,6 +314,11 @@
     <sys:String x:Key="Search_ColFile">File</sys:String>
     <sys:String x:Key="Search_ColPayment">Payment</sys:String>
     <sys:String x:Key="Search_OpenFileBtn">Open</sys:String>
+    <sys:String x:Key="Search_DoctorFilterAll">All Doctors</sys:String>
+    <sys:String x:Key="Search_ColEdit">Edit</sys:String>
+    <sys:String x:Key="Search_EditPatientBtn">Edit</sys:String>
+    <sys:String x:Key="Search_ColDelete">Delete</sys:String>
+    <sys:String x:Key="Search_DeletePatientBtn">Delete</sys:String>
     <sys:String x:Key="Search_GenderAny">Any Gender</sys:String>
     <sys:String x:Key="Search_PaymentAll">All Payment Statuses</sys:String>
     <sys:String x:Key="Search_PaymentUnpaid">Has Unpaid Balance</sys:String>
@@ -265,6 +361,8 @@
     <sys:String x:Key="UserMgmt_ColLastLogin">Last Login</sys:String>
     <sys:String x:Key="UserMgmt_RoleDoctor">Doctor</sys:String>
     <sys:String x:Key="UserMgmt_RoleNurse">Nurse</sys:String>
+    <sys:String x:Key="UserMgmt_RoleProsthetist">Dental Prosthetist</sys:String>
+    <sys:String x:Key="UserMgmt_MainDoctorBadge">Main</sys:String>
     <sys:String x:Key="UserMgmt_AdminYes">Admin</sys:String>
     <sys:String x:Key="UserMgmt_StatusActive">Active</sys:String>
     <sys:String x:Key="UserMgmt_StatusInactive">Inactive</sys:String>
@@ -287,6 +385,7 @@
     <sys:String x:Key="Perm_Treatments">Treatments</sys:String>
     <sys:String x:Key="Perm_Payments">Payments</sys:String>
     <sys:String x:Key="Perm_RegisterPatients">Register Patients</sys:String>
+    <sys:String x:Key="Perm_EditPatients">Edit Patient Data</sys:String>
 
     <!-- ===== شاشة إضافة/تعديل مستخدم ===== -->
     <sys:String x:Key="UserEdit_TitleAdd">Add User</sys:String>
@@ -305,6 +404,40 @@
     <sys:String x:Key="UserEdit_PermTreatments">Manage Treatments &amp; Prices</sys:String>
     <sys:String x:Key="UserEdit_PermPayments">Collect Payments</sys:String>
     <sys:String x:Key="UserEdit_PermRegisterPatients">Register New Patients</sys:String>
+    <sys:String x:Key="UserEdit_PermEditPatients">Edit Existing Patient Data (fix entry errors)</sys:String>
+    <sys:String x:Key="UserEdit_PermDeletePatients">Permanently Delete Patients</sys:String>
+    <sys:String x:Key="UserEdit_DoctorAccessHeader">Doctor Queues This Nurse Can View</sys:String>
+    <sys:String x:Key="UserEdit_NoDoctorsYet">No doctors registered in the system yet.</sys:String>
+    <sys:String x:Key="UserEdit_ProsthPermissionsHeader">Detailed Prosthetics Permissions</sys:String>
+    <sys:String x:Key="UserEdit_NoProsthPermsYet">No prosthetics permissions defined in the database.</sys:String>
+    <sys:String x:Key="UserEdit_MainDoctorHeader">Main Doctor</sys:String>
+    <sys:String x:Key="UserEdit_IsMainDoctor">This is the main doctor</sys:String>
+    <sys:String x:Key="UserEdit_MainDoctorHint">Only one main doctor at a time across the whole system. Assigning a new one automatically clears this status from any other doctor. Only the main doctor can log into the Prosthetist app with full doctor-level access.</sys:String>
+    <sys:String x:Key="UserEdit_MainDoctorReadOnlyHint">You don't have permission to change this setting - only the current main doctor can hand off this status to another doctor.</sys:String>
+    <sys:String x:Key="UserEdit_CannotClearMainDoctor">The main doctor status can't be removed without a replacement. To hand it off, open the other doctor's account and set them as the main doctor instead.</sys:String>
+
+    <!-- ===== Detailed prosthetics permissions (category "Prosthetics" in Permissions table) ===== -->
+    <sys:String x:Key="ProsthPerm_ViewAllCases">View all prosthetic cases (not only assigned)</sys:String>
+    <sys:String x:Key="ProsthPerm_CreateCase">Create a new prosthetic case</sys:String>
+    <sys:String x:Key="ProsthPerm_EditCase">Edit case info (work type / price / notes)</sys:String>
+    <sys:String x:Key="ProsthPerm_DeleteCase">Delete a prosthetic case</sys:String>
+    <sys:String x:Key="ProsthPerm_TransferCase">Transfer case to another prosthetist</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewStage">View treatment stage</sys:String>
+    <sys:String x:Key="ProsthPerm_EditStage">Change treatment stage</sys:String>
+    <sys:String x:Key="ProsthPerm_ManageLookups">Manage work types &amp; treatment stages lists</sys:String>
+    <sys:String x:Key="ProsthPerm_AddSession">Add prosthetic session</sys:String>
+    <sys:String x:Key="ProsthPerm_EditSession">Edit prosthetic session</sys:String>
+    <sys:String x:Key="ProsthPerm_DeleteSession">Delete prosthetic session</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewPatient">View patient profile info</sys:String>
+    <sys:String x:Key="ProsthPerm_EditPatientInfo">Edit patient basic info</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewTreatment">View patient's clinic treatments</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewDiagnosis">View patient's diagnoses</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewMedications">View patient's medications</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewFinance">Access prosthetics finance dashboard</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewPayment">View payments within a case</sys:String>
+    <sys:String x:Key="ProsthPerm_AddPayment">Add prosthetic payment</sys:String>
+    <sys:String x:Key="ProsthPerm_EditPayment">Edit prosthetic payment</sys:String>
+    <sys:String x:Key="ProsthPerm_DeletePayment">Delete prosthetic payment</sys:String>
     <sys:String x:Key="UserEdit_AccountActive">Account is active</sys:String>
     <sys:String x:Key="UserEdit_FullNameUsernameRequired">Full name and username are required</sys:String>
     <sys:String x:Key="UserEdit_PasswordRequiredForNew">Password is required for a new account</sys:String>
@@ -322,9 +455,21 @@
     <sys:String x:Key="Fin_ExportTooltip">Export report to CSV/Excel</sys:String>
     <sys:String x:Key="Fin_Refresh">🔄 Refresh</sys:String>
     <sys:String x:Key="Fin_TodayRevenue">Today's Revenue</sys:String>
+    <sys:String x:Key="Fin_Today">Today</sys:String>
     <sys:String x:Key="Fin_ThisMonth">This Month</sys:String>
     <sys:String x:Key="Fin_ThisYear">This Year</sys:String>
     <sys:String x:Key="Fin_Outstanding">Outstanding</sys:String>
+    <sys:String x:Key="Fin_CurrencySuffix">DZD</sys:String>
+    <sys:String x:Key="Fin_MarginFormat">Profit margin: {0}%</sys:String>
+    <sys:String x:Key="Fin_TrendUpFormat">▲ {0}% vs {1}</sys:String>
+    <sys:String x:Key="Fin_TrendDownFormat">▼ {0}% vs {1}</sys:String>
+    <sys:String x:Key="Fin_TrendFlatFormat">— No change vs {0}</sys:String>
+    <sys:String x:Key="Fin_TrendNew">New (no prior data to compare)</sys:String>
+    <sys:String x:Key="Fin_CompareYesterday">yesterday</sys:String>
+    <sys:String x:Key="Fin_CompareLastMonth">last month</sys:String>
+    <sys:String x:Key="Fin_CompareLastYear">last year</sys:String>
+    <sys:String x:Key="Fin_CommissionBreakdownFormat">Doctor commissions this month: {0} ({1}% of total expenses)</sys:String>
+    <sys:String x:Key="Fin_CommissionBreakdownNone">No doctor commissions recorded this month.</sys:String>
     <sys:String x:Key="Fin_DailyPatientsChart">Patients per Day (Last 14 Days)</sys:String>
     <sys:String x:Key="Fin_NoPatientActivity">No patient activity recorded in this period</sys:String>
     <sys:String x:Key="Fin_TopTreatments">Most Common Treatments</sys:String>
@@ -348,6 +493,16 @@
     <sys:String x:Key="Fin_ColPhone">Phone</sys:String>
     <sys:String x:Key="Fin_ColLastVisit">Last Visit</sys:String>
     <sys:String x:Key="Fin_ColAmountOwed">Amount Owed</sys:String>
+    <sys:String x:Key="Fin_RecentIncome">Recent Income</sys:String>
+    <sys:String x:Key="Fin_NoIncomeYet">No payments collected yet.</sys:String>
+    <sys:String x:Key="Fin_ColEdit">Edit</sys:String>
+    <sys:String x:Key="Fin_ColDelete">Delete</sys:String>
+    <sys:String x:Key="Fin_EditIncomeTitle">Edit Payment Amount</sys:String>
+    <sys:String x:Key="Fin_EditIncomeAmountLabel">Amount</sys:String>
+    <sys:String x:Key="Fin_EditIncomePromptFormat">Edit the payment amount for patient: {0}</sys:String>
+    <sys:String x:Key="Fin_InvalidAmount">Please enter a valid amount (a positive number).</sys:String>
+    <sys:String x:Key="Fin_DeleteIncomeTitle">Delete Payment</sys:String>
+    <sys:String x:Key="Fin_DeleteIncomeConfirmFormat">Are you sure you want to delete a payment of {1} for patient "{0}"? This action cannot be undone.</sys:String>
     <sys:String x:Key="Fin_TodayExpense">Today's Expenses</sys:String>
     <sys:String x:Key="Fin_MonthExpense">This Month's Expenses</sys:String>
     <sys:String x:Key="Fin_YearExpense">This Year's Expenses</sys:String>
@@ -407,11 +562,28 @@
     <sys:String x:Key="Expense_DeleteConfirmAutoMessageFormat">This is a doctor commission expense auto-generated from an actual payment:&#10;"{0}" - {1}&#10;Deleting it won't affect the payment itself, but it will increase the clinic's calculated net profit for this period. Continue?</sys:String>
     <sys:String x:Key="Expense_DeleteErrorFormat">Could not delete expense: {0}</sys:String>
 
+    <!-- Patch 12: prosthetist expenses (ProstheticExpenses) - separate add/manage window from Expense_* above -->
+    <sys:String x:Key="ProsthExpense_Title">Add Prosthetist Expense</sys:String>
+    <sys:String x:Key="ProsthExpense_Header">Add New Expense</sys:String>
+    <sys:String x:Key="ProsthExpense_Prosthetist">Prosthetist</sys:String>
+    <sys:String x:Key="ProsthExpense_ProsthetistRequired">Please select a prosthetist.</sys:String>
+    <sys:String x:Key="ProsthExpense_CatLabFees">Lab Fees</sys:String>
+    <sys:String x:Key="ProsthExpense_CatMaterials">Materials</sys:String>
+    <sys:String x:Key="ProsthExpense_CatShipping">Shipping</sys:String>
+    <sys:String x:Key="ProsthExpense_CatDues">Prosthetist Dues</sys:String>
+    <sys:String x:Key="ProsthExpense_NoPermission">You don't have permission to perform this action.</sys:String>
+    <sys:String x:Key="ProsthExpense_WindowTitle">Prosthetic Expenses</sys:String>
+    <sys:String x:Key="ProsthExpense_AddButton">Add Expense</sys:String>
+    <sys:String x:Key="ProsthExpense_TotalExpenses">Total Expenses</sys:String>
+    <sys:String x:Key="ProsthExpense_NoData">No expenses in this period.</sys:String>
+
     <!-- ===== شاشة إدارة العلاجات والأسعار ===== -->
     <sys:String x:Key="Treat_Title">Medications &amp; Treatments Management</sys:String>
     <sys:String x:Key="Treat_Header">Medications &amp; Treatments Management</sys:String>
     <sys:String x:Key="Treat_TabTreatments">🦷 Treatments</sys:String>
     <sys:String x:Key="Treat_TabMedications">💊 Medications</sys:String>
+    <sys:String x:Key="Treat_TabDiagnoses">🩺 Diagnoses</sys:String>
+    <sys:String x:Key="Treat_TabCertificates">📄 Certificates/Leave</sys:String>
     <sys:String x:Key="Treat_Name">Treatment Name *</sys:String>
     <sys:String x:Key="Treat_Price">Price (DA / $) *</sys:String>
     <sys:String x:Key="Treat_CancelEdit">Cancel Edit</sys:String>
@@ -436,6 +608,16 @@
     <sys:String x:Key="Med_AddButton">+ Add Medication</sys:String>
     <sys:String x:Key="Med_NameRequired">Please enter medication name</sys:String>
     <sys:String x:Key="Med_ColName">Medication Name</sys:String>
+    <sys:String x:Key="Diag_Name">Diagnosis Name *</sys:String>
+    <sys:String x:Key="Diag_AddButton">+ Add Diagnosis</sys:String>
+    <sys:String x:Key="Diag_NameRequired">Please enter the diagnosis name</sys:String>
+    <sys:String x:Key="Diag_ColName">Diagnosis Name</sys:String>
+    <sys:String x:Key="Cert_Name">Certificate/Leave Name *</sys:String>
+    <sys:String x:Key="Cert_Text">Medical certificate / sick leave text</sys:String>
+    <sys:String x:Key="Cert_AddButton">+ Add Certificate/Leave</sys:String>
+    <sys:String x:Key="Cert_NameRequired">Please enter the certificate/leave name</sys:String>
+    <sys:String x:Key="Cert_ColName">Name</sys:String>
+    <sys:String x:Key="Cert_ColText">Certificate/Leave Text</sys:String>
     <sys:String x:Key="Med_ColDosage">Default Dosage</sys:String>
     <sys:String x:Key="Med_ColDuration">Default Duration</sys:String>
 
@@ -451,5 +633,239 @@
     <sys:String x:Key="Backup_InProgress">Backing up...</sys:String>
     <sys:String x:Key="Backup_NowButton">Backup Now</sys:String>
     <sys:String x:Key="Backup_Success">Backup completed successfully.</sys:String>
+    <sys:String x:Key="Backup_FolderSaved">Backup folder saved successfully.</sys:String>
+    <sys:String x:Key="Backup_FolderSaveErrorFormat">Could not save backup folder: {0}</sys:String>
+    <sys:String x:Key="Backup_SelectFolder">Select backup folder</sys:String>
 
+    <sys:String x:Key="PF_ColActions">Actions</sys:String>
+    <sys:String x:Key="PF_EditSessionButton">Edit</sys:String>
+    <sys:String x:Key="PF_DeleteSessionButton">Delete</sys:String>
+    <sys:String x:Key="PF_TodaySessionNotice">Today's session has been loaded; saving will update it instead of creating a new session.</sys:String>
+    <sys:String x:Key="PF_EditingSessionNotice">Editing session</sys:String>
+    <sys:String x:Key="PF_UpdateSessionButton">Update Session</sys:String>
+    <sys:String x:Key="PF_DeleteSessionTitle">Delete Session</sys:String>
+    <sys:String x:Key="PF_DeleteSessionConfirm">Are you sure you want to delete this session? This action cannot be undone.</sys:String>
+    <sys:String x:Key="PF_DeleteSessionPaidConfirm">This session has payments. Are you sure you want to delete it? Its payments and related financial records will also be deleted.</sys:String>
+    <sys:String x:Key="PF_DeleteSessionErrorFormat">Failed to delete session: {0}</sys:String>
+    <sys:String x:Key="Fin_SelectAll">Select All</sys:String>
+    <sys:String x:Key="Fin_ClearSelection">Clear Selection</sys:String>
+    <sys:String x:Key="Fin_DeleteSelected">Delete Selected</sys:String>
+    <sys:String x:Key="Fin_DeleteSelectedConfirmFormat">Are you sure you want to delete {0} selected record(s)? This action cannot be undone.</sys:String>
+    <sys:String x:Key="Main_PrintPrescriptionTooltip">Print doctor prescription</sys:String>
+    <sys:String x:Key="Nurse_NoPrescriptionForToday">No prescription is recorded for this patient today.</sys:String>
+    <sys:String x:Key="Fin_ZeroSelected">Zero Selected</sys:String>
+    <sys:String x:Key="Fin_ZeroSelectedTitle">Zero Outstanding Balances</sys:String>
+    <sys:String x:Key="Fin_ZeroSelectedConfirmFormat">A full payment will be recorded for the remaining balance of {0} selected patient(s). Continue?</sys:String>
+    <sys:String x:Key="Fin_ZeroSelectedNoPayments">No outstanding payment was recorded for the selected patients.</sys:String>
+    <sys:String x:Key="Fin_ZeroSelectedNeedsUser">Bulk payments require a signed-in user.</sys:String>
+    <sys:String x:Key="Fin_DoctorStatsWindowTitle">Detailed Doctor Statistics</sys:String>
+    <sys:String x:Key="Fin_DoctorStatsTooltip">Open all doctor statistics in detail</sys:String>
+    <sys:String x:Key="Fin_Close">Close</sys:String>
+    <sys:String x:Key="Fin_ThisMonthFilter">This Month</sys:String>
+    <sys:String x:Key="Fin_ThisYearFilter">This Year</sys:String>
+    <sys:String x:Key="Fin_AllDoctors">All Doctors</sys:String>
+    <sys:String x:Key="Fin_DoctorFilterTooltip">Select a doctor or all doctors</sys:String>
+    <sys:String x:Key="Fin_DoctorCount">Doctors</sys:String>
+    <sys:String x:Key="Fin_PatientCount">Patients</sys:String>
+    <sys:String x:Key="Fin_SessionCount">Sessions</sys:String>
+    <sys:String x:Key="Fin_TotalDoctorIncome">Total Income</sys:String>
+    <sys:String x:Key="Fin_TotalDoctorCommission">Total Doctor Commissions</sys:String>
+    <sys:String x:Key="Fin_ClinicShare">Clinic Share</sys:String>
+    <sys:String x:Key="Fin_DoctorDetailedTable">Doctor Details</sys:String>
+    <sys:String x:Key="Fin_Doctor">Doctor</sys:String>
+    <sys:String x:Key="Fin_CommissionPercent">Commission</sys:String>
+    <sys:String x:Key="Fin_DoctorShare">Doctor Share</sys:String>
+    <sys:String x:Key="Fin_IncomePerPatient">Income / Patient</sys:String>
+    <sys:String x:Key="Fin_IncomeShare">Income Share</sys:String>
+    <sys:String x:Key="Fin_PrimaryDoctor">Primary Doctor</sys:String>
+    <sys:String x:Key="Fin_PeriodFormat">Period: {0} to {1}</sys:String>
+    <sys:String x:Key="Fin_PeriodDoctorFormat">{0} — {1} to {2}</sys:String>
+    <sys:String x:Key="Fin_NoDoctorIncome">No income recorded in this period</sys:String>
+    <sys:String x:Key="Fin_TopDoctorFormat">Top income: {0} — {1}</sys:String>
+
+    <!-- ===== Prosthetic Cases - Patch 2: create & list only, from the patient file ===== -->
+    <sys:String x:Key="ProsthCase_ListTitle">Prosthetic Cases</sys:String>
+    <sys:String x:Key="ProsthCase_NewTitle">New Prosthetic Case</sys:String>
+    <sys:String x:Key="ProsthCase_NewButton">+ New Case</sys:String>
+    <sys:String x:Key="ProsthCase_EditTitleFormat">Prosthetic Case #{0}</sys:String>
+    <sys:String x:Key="ProsthCase_PatientName">Patient Name</sys:String>
+    <sys:String x:Key="ProsthCase_PatientPhone">Phone Number</sys:String>
+    <sys:String x:Key="ProsthCase_PatientInfoRestricted">Restricted (no permission to view patient info)</sys:String>
+    <sys:String x:Key="ProsthCase_NoStage">— Not set —</sys:String>
+    <sys:String x:Key="ProsthCase_DoubleClickHint">Double-click a case to view full details and edit it</sys:String>
+    <sys:String x:Key="ProsthCase_Prosthetist">Responsible Prosthetist</sys:String>
+    <sys:String x:Key="ProsthCase_WorkType">Work Type</sys:String>
+    <sys:String x:Key="ProsthCase_NoWorkType">— Not specified —</sys:String>
+    <sys:String x:Key="ProsthCase_Arch">Arch</sys:String>
+    <sys:String x:Key="ProsthCase_ArchBoth">Upper &amp; Lower</sys:String>
+    <sys:String x:Key="ProsthCase_Upper">Upper</sys:String>
+    <sys:String x:Key="ProsthCase_Lower">Lower</sys:String>
+    <sys:String x:Key="ProsthCase_ToothScope">Concerned Teeth</sys:String>
+    <sys:String x:Key="ProsthCase_TotalPrice">Agreed Price</sys:String>
+    <sys:String x:Key="ProsthCase_Notes">Notes</sys:String>
+    <sys:String x:Key="ProsthCase_NoProsthetistsYet">No prosthetists registered yet. Create a prosthetist account first from User Management.</sys:String>
+    <sys:String x:Key="ProsthCase_ProsthetistRequired">You must select the responsible prosthetist</sys:String>
+    <sys:String x:Key="ProsthCase_ArchOrScopeRequired">Specify the arch (upper/lower) or describe the affected teeth in the field below</sys:String>
+    <sys:String x:Key="ProsthCase_InvalidPrice">The entered price is invalid</sys:String>
+    <sys:String x:Key="ProsthCase_SaveErrorFormat">Could not save the case: {0}</sys:String>
+    <sys:String x:Key="ProsthCase_LoadErrorFormat">Could not load data: {0}</sys:String>
+    <sys:String x:Key="ProsthCase_ColCaseNumber">Case #</sys:String>
+    <sys:String x:Key="ProsthCase_ColStage">Stage</sys:String>
+    <sys:String x:Key="ProsthCase_ColStatus">Status</sys:String>
+    <sys:String x:Key="ProsthCase_ColCreatedAt">Created</sys:String>
+    <sys:String x:Key="ProsthCase_ColPrice">Price</sys:String>
+    <sys:String x:Key="ProsthCase_ColOutstanding">Outstanding</sys:String>
+    <sys:String x:Key="ProsthCase_StatusOpen">Open</sys:String>
+    <sys:String x:Key="ProsthCase_StatusCompleted">Completed</sys:String>
+    <sys:String x:Key="ProsthCase_StatusCancelled">Cancelled</sys:String>
+    <sys:String x:Key="ProsthCase_CountFormat">Cases: {0}</sys:String>
+    <sys:String x:Key="ProsthCase_OnlyDoctorCanCreate">Only a doctor can create a new prosthetic case</sys:String>
+
+    <!-- ===== Prosthetist app dashboard (Patch 3) ===== -->
+    <sys:String x:Key="ProsthMain_SearchPlaceholder">Search by name, phone, or case number</sys:String>
+    <sys:String x:Key="ProsthMain_SearchPlaceholderCaseNumberOnly">Search by case number (no permission to search by patient name/phone)</sys:String>
+    <sys:String x:Key="ProsthMain_SearchButton">Search</sys:String>
+    <sys:String x:Key="ProsthMain_AllStatuses">All Statuses</sys:String>
+    <sys:String x:Key="ProsthMain_ViewAllCases">Show all cases (not only mine)</sys:String>
+    <sys:String x:Key="ProsthMain_LoadMore">Load More</sys:String>
+    <sys:String x:Key="ProsthMain_OpenStatistics">Statistics</sys:String>
+    <sys:String x:Key="ProsthMain_OpenExpenses">Expenses</sys:String>
+    <sys:String x:Key="ProsthMain_ShowingCountFormat">Showing {0} of {1} cases</sys:String>
+
+    <!-- ===== Case window tabs (Patch 4) ===== -->
+    <sys:String x:Key="ProsthCase_TabInfo">Case Info</sys:String>
+    <sys:String x:Key="ProsthCase_TabSessions">Sessions</sys:String>
+    <sys:String x:Key="ProsthCase_TabPayments">Payments</sys:String>
+    <sys:String x:Key="ProsthCase_TabClinicalSummary">Clinical Summary</sys:String>
+    <sys:String x:Key="ProsthCase_TabHistory">History</sys:String>
+
+    <!-- ===== Patch 11.1: Prosthetic statistics window ===== -->
+    <sys:String x:Key="ProsthStats_WindowTitle">Prosthetics Statistics</sys:String>
+    <sys:String x:Key="ProsthStats_Close">Close</sys:String>
+    <sys:String x:Key="ProsthStats_ProsthetistLabel">Prosthetist:</sys:String>
+    <sys:String x:Key="ProsthStats_AllProsthetists">All prosthetists</sys:String>
+    <sys:String x:Key="ProsthStats_Today">Today</sys:String>
+    <sys:String x:Key="ProsthStats_ThisWeek">This week</sys:String>
+    <sys:String x:Key="ProsthStats_ThisMonth">This month</sys:String>
+    <sys:String x:Key="ProsthStats_From">From:</sys:String>
+    <sys:String x:Key="ProsthStats_To">To:</sys:String>
+    <sys:String x:Key="ProsthStats_Apply">Apply</sys:String>
+    <sys:String x:Key="ProsthStats_InvalidRange">The end date must be on or after the start date.</sys:String>
+    <sys:String x:Key="ProsthStats_PeriodFormat">Period: {0} to {1}</sys:String>
+    <sys:String x:Key="ProsthStats_TotalCases">Cases</sys:String>
+    <sys:String x:Key="ProsthStats_CompletedCases">Completed</sys:String>
+    <sys:String x:Key="ProsthStats_ActiveCases">Active</sys:String>
+    <sys:String x:Key="ProsthStats_SessionCount">Sessions</sys:String>
+    <sys:String x:Key="ProsthStats_TotalCaseValue">Total case value</sys:String>
+    <sys:String x:Key="ProsthStats_TotalPayments">Payments received</sys:String>
+    <sys:String x:Key="ProsthStats_TotalOutstanding">Outstanding</sys:String>
+    <sys:String x:Key="ProsthStats_AverageCaseValue">Average case value</sys:String>
+    <sys:String x:Key="ProsthStats_NetIncome">Net Income</sys:String>
+    <sys:String x:Key="ProsthStats_ByStage">Cases by stage</sys:String>
+    <sys:String x:Key="ProsthStats_Upper">Upper:</sys:String>
+    <sys:String x:Key="ProsthStats_Lower">Lower:</sys:String>
+    <sys:String x:Key="ProsthStats_Both">Upper &amp; Lower:</sys:String>
+    <sys:String x:Key="ProsthStats_NoData">No cases in this period.</sys:String>
+
+    <!-- ===== Patch 11.2: advanced analysis ===== -->
+    <sys:String x:Key="ProsthStats_RefreshData">Refresh</sys:String>
+    <sys:String x:Key="ProsthStats_TabSummary">Summary</sys:String>
+    <sys:String x:Key="ProsthStats_TabComparison">Prosthetist Comparison</sys:String>
+    <sys:String x:Key="ProsthStats_TabStages">Stages</sys:String>
+    <sys:String x:Key="ProsthStats_TabOverdue">Overdue Cases</sys:String>
+    <sys:String x:Key="ProsthStats_CompletionRate">Case completion rate</sys:String>
+    <sys:String x:Key="ProsthStats_AvgCompletionDaysFormat">Average time to complete a case: {0} days</sys:String>
+    <sys:String x:Key="ProsthStats_AvgCompletionDaysUnavailable">Average completion time: no completed cases in this period yet.</sys:String>
+    <sys:String x:Key="ProsthStats_ArchDistribution">Case type distribution</sys:String>
+    <sys:String x:Key="ProsthStats_ComparisonNeedsAll">Select "All prosthetists" in the filter above to see a side-by-side comparison. With one prosthetist selected, their figures already appear in the Summary tab.</sys:String>
+    <sys:String x:Key="ProsthStats_ColProsthetist">Prosthetist</sys:String>
+    <sys:String x:Key="ProsthStats_ColPaid">Paid</sys:String>
+    <sys:String x:Key="ProsthStats_MostCrowded">Busiest stage</sys:String>
+    <sys:String x:Key="ProsthStats_StageCountPercentFormat">{0} ({1}%)</sys:String>
+    <sys:String x:Key="ProsthStats_AvgDaysInStageFormat">Avg. {0} days in this stage</sys:String>
+    <sys:String x:Key="ProsthStats_OverdueHint">Open cases regardless of the period filter above, sorted from oldest. This list is not restricted by the selected period.</sys:String>
+    <sys:String x:Key="ProsthStats_ColCreatedAt">Created on</sys:String>
+    <sys:String x:Key="ProsthStats_ColDaysOpen">Days open</sys:String>
+    <sys:String x:Key="ProsthStats_DaysOpenWarningFormat">{0} ⚠</sys:String>
+
+    <!-- ===== Patch 13: إدارة أنواع العمل والمراحل (الطبيب الرئيسي فقط) ===== -->
+    <sys:String x:Key="ProsthLookup_WindowTitle">Work Types &amp; Stages</sys:String>
+    <sys:String x:Key="ProsthLookup_Header">Manage Work Types &amp; Stages</sys:String>
+    <sys:String x:Key="ProsthLookup_TabWorkTypes">Work Types</sys:String>
+    <sys:String x:Key="ProsthLookup_TabStages">Stages</sys:String>
+    <sys:String x:Key="ProsthLookup_Name">Name</sys:String>
+    <sys:String x:Key="ProsthLookup_ColName">Name</sys:String>
+    <sys:String x:Key="ProsthLookup_ColOrder">Order</sys:String>
+    <sys:String x:Key="ProsthLookup_ColStatus">Status</sys:String>
+    <sys:String x:Key="ProsthLookup_ColActions">Actions</sys:String>
+    <sys:String x:Key="ProsthLookup_Price">Price</sys:String>
+    <sys:String x:Key="ProsthLookup_ColPrice">Price</sys:String>
+    <sys:String x:Key="ProsthLookup_InvalidPrice">Please enter a valid (non-negative) price.</sys:String>
+    <sys:String x:Key="ProsthLookup_StatusActive">Active</sys:String>
+    <sys:String x:Key="ProsthLookup_StatusInactive">Inactive</sys:String>
+    <sys:String x:Key="ProsthLookup_Enable">Enable</sys:String>
+    <sys:String x:Key="ProsthLookup_Disable">Disable</sys:String>
+    <sys:String x:Key="ProsthLookup_DeleteButton">Delete</sys:String>
+    <sys:String x:Key="ProsthLookup_ConfirmDeleteFormat">Are you sure you want to permanently delete "{0}"? This cannot be undone.</sys:String>
+    <sys:String x:Key="ProsthLookup_ConfirmDeleteTitle">Confirm permanent deletion</sys:String>
+    <sys:String x:Key="ProsthLookup_InUseFormat">This item can't be permanently deleted because it's used by {0} existing case(s), and deleting it would lose that information. Disable it instead? (It will disappear from new-case lists only; existing cases stay unaffected.)</sys:String>
+    <sys:String x:Key="ProsthLookup_InUseTitle">Item in use</sys:String>
+    <sys:String x:Key="ProsthLookup_MoveUp">Move up</sys:String>
+    <sys:String x:Key="ProsthLookup_MoveDown">Move down</sys:String>
+    <sys:String x:Key="ProsthLookup_EditButton">Edit</sys:String>
+    <sys:String x:Key="ProsthLookup_AddButton">Add</sys:String>
+    <sys:String x:Key="ProsthLookup_SaveEdit">Save</sys:String>
+    <sys:String x:Key="ProsthLookup_CancelEdit">Cancel</sys:String>
+    <sys:String x:Key="ProsthLookup_NameRequired">Please enter a name.</sys:String>
+    <sys:String x:Key="ProsthLookup_ErrorFormat">Error: {0}</sys:String>
+    <sys:String x:Key="ProsthLookup_MainDoctorOnly">Only the main doctor can manage work types and stages.</sys:String>
+    <sys:String x:Key="ProsthHistory_Empty">No changes recorded for this case yet.</sys:String>
+    <sys:String x:Key="ProsthHistory_ActionCreated">Case created</sys:String>
+    <sys:String x:Key="ProsthHistory_ActionCreatedDetail">The case was created and added to the system.</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldProsthetist">Responsible prosthetist</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldStage">Stage</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldStatus">Case status</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldWorkType">Work type</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldArch">Arch</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldToothScope">Tooth range</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldPrice">Price</sys:String>
+    <sys:String x:Key="ProsthHistory_FieldNotes">Notes</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalDiagnosis">Diagnosis</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalTreatment">Treatment</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalMedication">Medication</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalFieldRestricted">Restricted</sys:String>
+    <sys:String x:Key="ProsthCase_ClinicalNoSessions">No clinical sessions recorded for this patient yet.</sys:String>
+
+    <!-- ===== Sessions ===== -->
+    <sys:String x:Key="ProsthSession_AddTitle">Add Session</sys:String>
+    <sys:String x:Key="ProsthSession_EditTitle">Edit Session</sys:String>
+    <sys:String x:Key="ProsthSession_AddButton">+ Add Session</sys:String>
+    <sys:String x:Key="ProsthSession_Date">Date</sys:String>
+    <sys:String x:Key="ProsthSession_Description">Session Description</sys:String>
+    <sys:String x:Key="ProsthSession_PerformedBy">Performed By</sys:String>
+    <sys:String x:Key="ProsthSession_DateRequired">You must select a date</sys:String>
+    <sys:String x:Key="ProsthSession_ConfirmDelete">Delete this session?</sys:String>
+
+    <!-- ===== Payments ===== -->
+    <sys:String x:Key="ProsthPayment_AddTitle">Add Payment</sys:String>
+    <sys:String x:Key="ProsthPayment_EditTitle">Edit Payment</sys:String>
+    <sys:String x:Key="ProsthPayment_AddButton">+ Add Payment</sys:String>
+    <sys:String x:Key="ProsthPayment_Amount">Amount</sys:String>
+    <sys:String x:Key="ProsthPayment_ReceivedBy">Received By</sys:String>
+    <sys:String x:Key="ProsthPayment_TotalPaid">Total Paid</sys:String>
+    <sys:String x:Key="ProsthPayment_InvalidAmount">The entered amount is invalid</sys:String>
+    <sys:String x:Key="ProsthPayment_ConfirmDelete">Delete this payment?</sys:String>
+    <sys:String x:Key="ProsthCase_DeleteButton">Delete Case</sys:String>
+    <sys:String x:Key="ProsthCase_ConfirmDeleteTitle">Delete Prosthetic Case</sys:String>
+    <sys:String x:Key="ProsthCase_ConfirmDeleteFormat">Permanently delete case #{0}? This will also delete all its sessions, payments, and history. This cannot be undone.</sys:String>
+    <sys:String x:Key="ProsthPayment_CreditFormat">Overpaid by: {0}</sys:String>
+    <sys:String x:Key="ProsthPayment_OverpaymentWarningFormat">This payment will exceed the agreed price by {0}. Continue?</sys:String>
+
+    <!-- ===== Connection status (all apps) ===== -->
+    <sys:String x:Key="Conn_Connected">Connected</sys:String>
+    <sys:String x:Key="Conn_ConnectedTooltip">Connected to the server. Click to check now.</sys:String>
+    <sys:String x:Key="Conn_Disconnected">Disconnected</sys:String>
+    <sys:String x:Key="Conn_DisconnectedTooltip">Lost connection to the server. Click to retry now.</sys:String>
+    <sys:String x:Key="Conn_LostTitle">Connection lost</sys:String>
+    <sys:String x:Key="Conn_LostSubtitle">Trying to reconnect to the server automatically. You can keep working with the data already on screen.</sys:String>
 </ResourceDictionary>

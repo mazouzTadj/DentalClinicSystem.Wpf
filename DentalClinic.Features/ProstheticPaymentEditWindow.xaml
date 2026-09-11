@@ -1,0 +1,54 @@
+<Window x:Class="DentalClinic.Features.ProstheticPaymentEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource ProsthPayment_AddTitle}" Height="400" Width="400"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+
+    <Border CornerRadius="18" Background="{StaticResource CardBackgroundBrush}">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="30" ShadowDepth="6"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <TextBlock x:Name="TitleText" FontWeight="Bold" FontSize="14"
+                           Foreground="{StaticResource AccentBrush}"
+                           VerticalAlignment="Center" Margin="20,0,0,0"/>
+                <Button Content="&#10005;" Style="{StaticResource WindowControlButtonStyle}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,10,0" Click="CloseButton_Click"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1" Margin="26,10,26,20">
+                <TextBlock Text="{DynamicResource ProsthPayment_Amount}" Style="{StaticResource FieldLabelStyle}" Margin="4,4,0,4"/>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
+                    <TextBox x:Name="AmountBox" Style="{StaticResource PlainTextBoxStyle}"/>
+                </Border>
+
+                <TextBlock Text="{DynamicResource ProsthSession_Date}" Style="{StaticResource FieldLabelStyle}"/>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
+                    <DatePicker x:Name="PaymentDateBox" BorderThickness="0" Background="Transparent" Padding="8,4"/>
+                </Border>
+
+                <TextBlock Text="{DynamicResource ProsthCase_Notes}" Style="{StaticResource FieldLabelStyle}"/>
+                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14" MinHeight="70">
+                    <TextBox x:Name="NotesBox" Style="{StaticResource PlainTextBoxStyle}"
+                             AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                </Border>
+
+                <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}"/>
+
+                <Button Content="{DynamicResource Common_Save}" Height="44" Margin="0,6,0,0"
+                        Style="{StaticResource PrimaryButtonStyle}" Click="SaveButton_Click"/>
+                <Button Content="{DynamicResource Common_Cancel}" Height="36" Margin="0,8,0,0"
+                        Style="{StaticResource SecondaryButtonStyle}" Click="CancelButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

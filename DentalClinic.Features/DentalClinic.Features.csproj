@@ -11,11 +11,14 @@
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
     <PackageReference Include="QuestPDF" Version="2026.7.1" />
+    <!-- لتشفير كلمة المرور محلياً (DPAPI) عند تفعيل "تذكّر كلمة المرور أيضاً" -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DentalClinic.Data\DentalClinic.Data.csproj" />
     <ProjectReference Include="..\DentalClinic.UI\DentalClinic.UI.csproj" />
+    <ProjectReference Include="..\DentalClinic.Printing\DentalClinic.Printing.csproj" />
   </ItemGroup>
 
 </Project>

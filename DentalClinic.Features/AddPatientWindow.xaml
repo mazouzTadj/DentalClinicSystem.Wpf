@@ -1,7 +1,7 @@
 <Window x:Class="DentalClinic.Features.AddPatientWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{DynamicResource AddPatient_Title}" Height="640" Width="460"
+        Title="{DynamicResource AddPatient_Title}" Height="700" Width="460"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         ShowInTaskbar="False">
@@ -18,7 +18,7 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
-                <TextBlock Text="{DynamicResource AddPatient_Title}" FontWeight="Bold" FontSize="14"
+                <TextBlock x:Name="TitleText" Text="{DynamicResource AddPatient_Title}" FontWeight="Bold" FontSize="14"
                            Foreground="{StaticResource AccentBrush}"
                            VerticalAlignment="Center" Margin="20,0,0,0"/>
                 <Button Content="&#10005;" Style="{StaticResource WindowControlButtonStyle}"
@@ -80,12 +80,40 @@
                                  VerticalContentAlignment="Top" Padding="12,10"/>
                     </Border>
 
+                    <TextBlock Text="{DynamicResource AddPatient_AssignedDoctor}"
+                               Style="{StaticResource FieldLabelStyle}"/>
+                    <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,14">
+                        <ComboBox x:Name="AssignedDoctorBox" BorderThickness="0" Background="Transparent"
+                                  Padding="10,8" FontSize="14" VerticalContentAlignment="Center"
+                                  SelectedValuePath="UserID">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{Binding StatusBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Border>
+
                     <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}"/>
 
-                    <Button Content="{DynamicResource AddPatient_SaveButton}" Height="46" Margin="0,10,0,0"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            Click="SaveButton_Click"/>
-                    <Button Content="{DynamicResource Common_Cancel}" Height="38" Margin="0,10,0,0"
+                    <Grid x:Name="NewPatientActionPanel" Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="SaveButtonElement" Grid.Column="0" Content="{DynamicResource AddPatient_SaveButton}" Height="46"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Click="SaveButton_Click"/>
+                        <Button x:Name="SaveAndBookButton" Grid.Column="2" Content="{DynamicResource AddPatient_SaveAndBookButton}" Height="46"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Click="SaveAndBookButton_Click"/>
+                    </Grid>
+                    <Button x:Name="CancelButtonElement" Content="{DynamicResource Common_Cancel}" Height="38" Margin="0,10,0,0"
                             Style="{StaticResource SecondaryButtonStyle}"
                             Click="CancelButton_Click"/>
                 </StackPanel>

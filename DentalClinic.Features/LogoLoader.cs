@@ -10,7 +10,7 @@ internal static class LogoLoader
     public static byte[]? TryLoadLogoBytes() => TryLoadAssetBytes("logo_icon.png");
 
     // شعار السن بخط رفيع بسيط (بلا خلفية ملوّنة) - أقرب بصرياً لرأسية "الوصفة الطبية" الورقية التقليدية
-    public static byte[]? TryLoadOutlineToothLogoBytes() => TryLoadAssetBytes("logo_icon1.png");
+    public static byte[]? TryLoadOutlineToothLogoBytes() => TryLoadAssetBytes("logo_icon.png");
 
     private static byte[]? TryLoadAssetBytes(string fileName)
     {

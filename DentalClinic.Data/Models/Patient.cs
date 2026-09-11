@@ -14,4 +14,8 @@ public class Patient
     public int RegisteredByUserID { get; set; }
     public DateTime RegisteredAt { get; set; }
     public bool IsActive { get; set; } = true;
+
+    // الطبيب المسؤول عن هذا المريض (NULL = غير مُسنَد بعد - يظهر لكل الأطباء والممرضات لحد ما يُحدَّد).
+    // علاقة دائمة وثابتة على مستوى المريض نفسه (وليست لكل زيارة على حدة).
+    public int? AssignedDoctorUserID { get; set; }
 }

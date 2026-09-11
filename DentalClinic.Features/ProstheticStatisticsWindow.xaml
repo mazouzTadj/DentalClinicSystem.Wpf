@@ -1,0 +1,267 @@
+<Window x:Class="DentalClinic.Features.ProstheticStatisticsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource ProsthStats_WindowTitle}"
+        Width="1200" Height="780" MinWidth="980" MinHeight="620"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource WindowBackgroundBrush}">
+    <Grid Margin="22">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ===== العنوان ===== -->
+        <Grid Grid.Row="0" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{DynamicResource ProsthStats_WindowTitle}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                <TextBlock x:Name="PeriodText" Text="" Margin="0,4,0,0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+            </StackPanel>
+            <!-- Patch 11.2: يعيد تحميل كل التبويبات بالفلاتر الحالية دون إغلاق النافذة -->
+            <Button Grid.Column="1" x:Name="RefreshDataButton" Content="{DynamicResource ProsthStats_RefreshData}"
+                    Width="120" Height="34" Margin="0,0,10,0" Style="{StaticResource SecondaryButtonStyle}" Click="RefreshDataButton_Click"/>
+            <Button Grid.Column="2" Content="{DynamicResource ProsthStats_Close}" Width="90" Height="34" Style="{StaticResource SecondaryButtonStyle}" Click="CloseButton_Click"/>
+        </Grid>
+
+        <!-- ===== شريط الفلاتر: المرمم + الفترة ===== -->
+        <Border Grid.Row="1" Background="White" CornerRadius="12" Padding="14" Margin="0,0,0,14">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Bottom" x:Name="ErrorText" Foreground="{StaticResource ErrorBrush}" FontSize="12" Margin="0,8,0,0"/>
+                <WrapPanel VerticalAlignment="Center">
+                    <TextBlock Text="{DynamicResource ProsthStats_ProsthetistLabel}" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <Border Width="200" Height="38" CornerRadius="10" Background="{StaticResource InputBackgroundBrush}"
+                            BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" Margin="0,0,18,0">
+                        <ComboBox x:Name="ProsthetistFilterCombo"
+                                  Width="198" MinWidth="198" Height="36"
+                                  Margin="0"
+                                  TextSearch.TextPath="FullName"
+                                  VerticalContentAlignment="Center"
+                                  SelectionChanged="ProsthetistFilterCombo_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FullName}" TextTrimming="CharacterEllipsis"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Border>
+
+                    <Button x:Name="TodayButton" Content="{DynamicResource ProsthStats_Today}" Width="90" Height="34" Margin="0,0,8,0" Style="{StaticResource SecondaryButtonStyle}" Click="TodayButton_Click"/>
+                    <Button x:Name="WeekButton" Content="{DynamicResource ProsthStats_ThisWeek}" Width="100" Height="34" Margin="0,0,8,0" Style="{StaticResource SecondaryButtonStyle}" Click="WeekButton_Click"/>
+                    <Button x:Name="MonthButton" Content="{DynamicResource ProsthStats_ThisMonth}" Width="100" Height="34" Margin="0,0,18,0" Style="{StaticResource SecondaryButtonStyle}" Click="MonthButton_Click"/>
+
+                    <TextBlock Text="{DynamicResource ProsthStats_From}" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <DatePicker x:Name="FromDatePicker" Width="130" Height="34" Margin="0,0,10,0"/>
+                    <TextBlock Text="{DynamicResource ProsthStats_To}" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <DatePicker x:Name="ToDatePicker" Width="130" Height="34" Margin="0,0,10,0"/>
+
+                    <Button Content="{DynamicResource ProsthStats_Apply}" Width="110" Height="34" Style="{StaticResource PrimaryButtonStyle}" Click="ApplyFilterButton_Click"/>
+                </WrapPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- ===== Tabs: ملخص | مقارنة المرممين | المراحل | الحالات المتأخرة (Patch 11.2) ===== -->
+        <TabControl Grid.Row="2" Background="Transparent" BorderThickness="0">
+
+            <!-- ===== تبويب 1: ملخص ===== -->
+            <TabItem Header="{DynamicResource ProsthStats_TabSummary}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,14,0,0">
+                    <StackPanel>
+                        <UniformGrid Columns="4" Margin="0,0,0,10">
+                            <Border Background="White" CornerRadius="12" Margin="0,0,8,0" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_TotalCases}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="TotalCasesText" FontSize="24" FontWeight="Bold" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="White" CornerRadius="12" Margin="0,0,8,0" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_CompletedCases}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="CompletedCasesText" FontSize="24" FontWeight="Bold" Foreground="#27AE60" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="White" CornerRadius="12" Margin="0,0,8,0" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_ActiveCases}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="ActiveCasesText" FontSize="24" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="White" CornerRadius="12" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_SessionCount}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="SessionCountText" FontSize="24" FontWeight="Bold" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <UniformGrid x:Name="FinanceCardsPanel" Columns="4" Margin="0,0,0,10">
+                            <Border Background="White" CornerRadius="12" Margin="0,0,8,0" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_TotalCaseValue}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="TotalCaseValueText" FontSize="18" FontWeight="Bold" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="White" CornerRadius="12" Margin="0,0,8,0" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_TotalPayments}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="TotalPaymentsText" FontSize="18" FontWeight="Bold" Foreground="#27AE60" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="White" CornerRadius="12" Margin="0,0,8,0" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_TotalOutstanding}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="TotalOutstandingText" FontSize="18" FontWeight="Bold" Foreground="#E67E22" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="White" CornerRadius="12" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_AverageCaseValue}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="AverageCaseValueText" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <!-- Patch 12: مصاريف المرمم + الدخل الصافي - نفس صلاحية FinanceCardsPanel أعلاه بالضبط -->
+                        <UniformGrid x:Name="NetIncomeCardsPanel" Columns="2" Margin="0,0,0,10">
+                            <Border Background="White" CornerRadius="12" Margin="0,0,8,0" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthExpense_TotalExpenses}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="TotalExpensesText" FontSize="18" FontWeight="Bold" Foreground="#E67E22" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                            <Border Background="White" CornerRadius="12" Padding="14">
+                                <StackPanel><TextBlock Text="{DynamicResource ProsthStats_NetIncome}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/><TextBlock x:Name="NetIncomeText" FontSize="18" FontWeight="Bold" Margin="0,3,0,0"/></StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <!-- Patch 11.2: نسبة الإنجاز - عرض شريطي لنفس عدَّادَي المكتملة/الإجمالي أعلاه، وليس مقياساً جديداً -->
+                        <Border Background="White" CornerRadius="12" Padding="16" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{DynamicResource ProsthStats_CompletionRate}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock Grid.Column="1" x:Name="CompletionRateText" FontSize="15" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                                </Grid>
+                                <Border Background="#EEF2F7" CornerRadius="6" Height="20" FlowDirection="LeftToRight">
+                                    <Border x:Name="CompletionRateBar" Background="#27AE60" CornerRadius="6" Height="20" HorizontalAlignment="Left" Width="0"/>
+                                </Border>
+                                <TextBlock x:Name="AverageCompletionDaysText" FontSize="12" Margin="0,10,0,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Patch 11.2: توزيع الحالات Upper/Lower/Both كنسب مئوية بدل أرقام مجرَّدة فقط -->
+                        <Border Background="White" CornerRadius="12" Padding="16">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource ProsthStats_ArchDistribution}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10"/>
+                                <ItemsControl x:Name="ArchDistributionList">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="140"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="90"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Label}" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                                <Border Grid.Column="1" Background="#EEF2F7" CornerRadius="4" Height="18" VerticalAlignment="Center" FlowDirection="LeftToRight">
+                                                    <Border Background="{StaticResource AccentBrush}" CornerRadius="4" Height="18" HorizontalAlignment="Left" Width="{Binding BarWidth}"/>
+                                                </Border>
+                                                <TextBlock Grid.Column="2" Text="{Binding SummaryText}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===== تبويب 2: مقارنة المرممين (Patch 11.2) - فقط عند اختيار "كل المرممين" ===== -->
+            <TabItem Header="{DynamicResource ProsthStats_TabComparison}">
+                <Grid Margin="0,14,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="ComparisonHintText" Grid.Row="0"
+                               Text="{DynamicResource ProsthStats_ComparisonNeedsAll}"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,10"/>
+                    <Border Grid.Row="1" x:Name="ComparisonGridBorder" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}"
+                            BorderThickness="1" ClipToBounds="True">
+                        <DataGrid x:Name="ComparisonGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                  Style="{StaticResource ModernDataGridStyle}"
+                                  ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                                  RowStyle="{StaticResource ModernRowStyle}"
+                                  CellStyle="{StaticResource ModernCellStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_ColProsthetist}" Binding="{Binding ProsthetistName}" Width="*"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_TotalCases}" Binding="{Binding TotalCases}" Width="90"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_CompletedCases}" Binding="{Binding CompletedCases}" Width="90"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_ActiveCases}" Binding="{Binding ActiveCases}" Width="90"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_SessionCount}" Binding="{Binding SessionCount}" Width="90"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_TotalCaseValue}" Binding="{Binding TotalCaseValueText}" Width="130"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_ColPaid}" Binding="{Binding TotalPaymentsText}" Width="130"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_TotalOutstanding}" Binding="{Binding TotalOutstandingText}" Width="130"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthExpense_TotalExpenses}" Binding="{Binding TotalExpensesText}" Width="130"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_NetIncome}" Binding="{Binding NetIncomeText}" Width="130"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- ===== تبويب 3: المراحل (Patch 11.2) - يظهر فقط لمن يملك ViewStage/EditStage ===== -->
+            <TabItem x:Name="StagesTabItem" Header="{DynamicResource ProsthStats_TabStages}">
+                <Grid Margin="0,14,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="StageEmptyText" Grid.Row="0" Text="{DynamicResource ProsthStats_NoData}"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,10" Visibility="Collapsed"/>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="StageBarsList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="White" CornerRadius="10" Padding="12" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="160"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="150"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding StageName}" FontSize="13" FontWeight="Bold"
+                                                           Foreground="{StaticResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{DynamicResource ProsthStats_MostCrowded}" FontSize="10" Foreground="#E67E22"
+                                                           Visibility="{Binding IsMostCrowdedVisibility}"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="#EEF2F7" CornerRadius="4" Height="18" VerticalAlignment="Center" FlowDirection="LeftToRight">
+                                                <Border Background="{StaticResource AccentBrush}" CornerRadius="4" Height="18"
+                                                        HorizontalAlignment="Left" Width="{Binding BarWidth}"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding CountAndPercentText}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding AvgDaysText}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <!-- ===== تبويب 4: الحالات المتأخرة (Patch 11.2) - بلا فلتر فترة عمداً، راجع GetOverdueCases ===== -->
+            <TabItem Header="{DynamicResource ProsthStats_TabOverdue}">
+                <Grid Margin="0,14,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="{DynamicResource ProsthStats_OverdueHint}"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,10"/>
+                    <Border Grid.Row="1" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}"
+                            BorderThickness="1" ClipToBounds="True">
+                        <DataGrid x:Name="OverdueGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                  Style="{StaticResource ModernDataGridStyle}"
+                                  ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                                  RowStyle="{StaticResource ModernRowStyle}"
+                                  CellStyle="{StaticResource ModernCellStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource ProsthCase_ColCaseNumber}" Binding="{Binding CaseNumber}" Width="90"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_ColProsthetist}" Binding="{Binding ProsthetistName}" Width="*"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthCase_ColStage}" Binding="{Binding StageName}" Width="150"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_ColCreatedAt}" Binding="{Binding CreatedAtText}" Width="120"/>
+                                <DataGridTextColumn Header="{DynamicResource ProsthStats_ColDaysOpen}" Binding="{Binding DaysOpenText}" Width="110"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

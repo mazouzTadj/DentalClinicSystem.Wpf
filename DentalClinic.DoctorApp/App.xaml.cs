@@ -1,6 +1,8 @@
 using System.Configuration;
+using System.IO;
 using System.Windows;
 using DentalClinic.Data.DataAccess;
+using DentalClinic.Features;
 using DentalClinic.UI.Localization;
 
 namespace DentalClinic.DoctorApp;
@@ -18,6 +20,13 @@ public partial class App : Application
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         var checkSucceeded = TryHasAnyUsers(out var hasAnyUsers);
+
+        if (!TryCheckLicense())
+        {
+            Shutdown();
+            return;
+        }
+
         if (checkSucceeded && !hasAnyUsers)
         {
             // قاعدة بيانات جديدة فارغة تماماً (لا يوجد أي مستخدم بعد) - على الأغلب أول تشغيل
@@ -53,10 +62,10 @@ public partial class App : Application
         }
     }
 
-    // فحص آمن: إن فشل الاتصال بالقاعدة لأي سبب (سيرفر غير جاهز بعد، connection string خاطئ...)
-    // نتجاهل الخطأ هنا تماماً ونكمل لشاشة تسجيل الدخول العادية، التي ستُظهر رسالة الخطأ بوضوح
-    // بنفسها عند محاولة الدخول. لا نريد شاشة "الإعداد الأول" أن تظهر بالخطأ لعميل قاعدته فعلاً
-    // تحتوي مستخدمين، لمجرد أن الاتصال فشل مؤقتاً.
+    // فحص آمن: إن فشل الاتصال بالقاعدة لأي سبب (سيرفر غير جاهز بعد، connection string خاطئ،
+    // أو حتى القاعدة نفسها CREATE DATABASE غير منفَّذة بعد) نتجاهل الخطأ هنا تماماً ونكمل لشاشة
+    // تسجيل الدخول العادية، التي ستُظهر رسالة الخطأ بوضوح بنفسها عند محاولة الدخول. لا نريد شاشة
+    // "الإعداد الأول" أن تظهر بالخطأ لعميل قاعدته فعلاً تحتوي مستخدمين، لمجرد أن الاتصال فشل مؤقتاً.
     private static bool TryHasAnyUsers(out bool hasAnyUsers)
     {
         hasAnyUsers = true; // افتراض آمن عند الفشل: نتصرف كأن القاعدة ليست فارغة (لا نعرض شاشة الإعداد)
@@ -64,6 +73,14 @@ public partial class App : Application
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
             var db = new DatabaseHelper(connectionString);
+
+            // أول تشغيل على قاعدة بيانات فارغة تماماً (أُنشئت بأمر CREATE DATABASE فقط، بدون أي
+            // جداول بعد) - ننشئ البنية الكاملة تلقائياً هنا قبل أي شيء آخر
+            if (!SchemaInitializer.SchemaExists(db))
+                SchemaInitializer.CreateSchema(db);
+            else
+                SchemaInitializer.EnsureSchemaUpgrades(db);
+
             var userRepo = new UserRepository(db);
             hasAnyUsers = userRepo.AnyUsersExist();
             return true;
@@ -74,9 +91,55 @@ public partial class App : Application
         }
     }
 
+    // فحص الترخيص يعمل بمبدأ الفشل المغلق: لا يُسمح بتشغيل التطبيق ما لم نستطع
+    // التحقق بنجاح من ترخيص صالح. هذا يمنع تجاوز الترخيص عند تعذر الاتصال بالقاعدة
+    // أو عند حدوث خطأ غير متوقع أثناء التحقق.
+    private static bool TryCheckLicense()
+    {
+        try
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
+            var db = new DatabaseHelper(connectionString);
+
+            // يُنشئ InstallationId فقط إن لم يكن موجوداً بعد - آمن الاستدعاء دائماً (idempotent)،
+            // يُصلح تلقائياً أي قاعدة كانت موجودة من قبل هذا الباتش ولم تمرّ بـ SchemaInitializer.CreateSchema
+            LicenseValidator.EnsureInstallationId(db);
+
+            if (LicenseValidator.IsLicensed(db, out var installationId)) return true;
+
+            var licenseWindow = new LicenseRequiredWindow(db, installationId);
+            return licenseWindow.ShowDialog() == true;
+        }
+        catch
+        {
+            MessageBox.Show(
+                "Unable to verify the license. Check the database connection and try again.",
+                "License verification",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            return false;
+        }
+    }
+
+    private static string? LoadSavedBackupFolder()
+    {
+        try
+        {
+            var file = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "DentalClinicSystem",
+                "backup-folder.txt");
+            return File.Exists(file) ? File.ReadAllText(file).Trim() : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private void RunDailyBackupIfNeeded()
     {
-        var folderPath = ConfigurationManager.AppSettings["BackupFolderPath"];
+        var folderPath = LoadSavedBackupFolder() ?? ConfigurationManager.AppSettings["BackupFolderPath"];
         if (string.IsNullOrWhiteSpace(folderPath))
         {
             return; // لم يُعدّ مسار النسخ الاحتياطي بعد - لا شيء نفعله تلقائياً

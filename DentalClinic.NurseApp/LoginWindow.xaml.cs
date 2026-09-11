@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
+using DentalClinic.Features;
 using DentalClinic.UI.Localization;
 
 namespace DentalClinic.NurseApp;
@@ -15,6 +16,30 @@ public partial class LoginWindow : Window
     public LoginWindow()
     {
         InitializeComponent();
+
+        var remembered = LoginPreferences.LoadRememberedUsername("Nurse");
+        if (!string.IsNullOrWhiteSpace(remembered))
+        {
+            UsernameBox.Text = remembered;
+            RememberMeCheckBox.IsChecked = true;
+            RememberPasswordCheckBox.IsEnabled = true;
+
+            var rememberedPassword = LoginPreferences.LoadRememberedPassword("Nurse");
+            if (!string.IsNullOrEmpty(rememberedPassword))
+            {
+                PasswordBox.Password = rememberedPassword;
+                RememberPasswordCheckBox.IsChecked = true;
+            }
+
+            PasswordBox.Focus();
+        }
+    }
+
+    private void RememberMeCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        var isChecked = RememberMeCheckBox.IsChecked == true;
+        RememberPasswordCheckBox.IsEnabled = isChecked;
+        if (!isChecked) RememberPasswordCheckBox.IsChecked = false;
     }
 
     // يسمح بسحب النافذة من الشريط العلوي المخصّص لأننا ألغينا شريط العنوان الافتراضي
@@ -132,6 +157,11 @@ public partial class LoginWindow : Window
             }
 
             LoggedInUser = user;
+            var rememberUsername = RememberMeCheckBox.IsChecked == true ? username : null;
+            var rememberPassword = RememberMeCheckBox.IsChecked == true && RememberPasswordCheckBox.IsChecked == true
+                ? password
+                : null;
+            LoginPreferences.SaveRememberedCredentials("Nurse", rememberUsername, rememberPassword);
             DialogResult = true;
             Close();
         }

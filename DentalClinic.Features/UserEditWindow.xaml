@@ -70,9 +70,11 @@
                                 <!-- Tag = القيمة الثابتة (Doctor/Nurse) المستخدَمة في المقارنات البرمجية
                                      Content = النص المعروض فقط (مترجَم حسب اللغة) -->
                                 <ComboBox x:Name="RoleBox" BorderThickness="0" Background="Transparent"
-                                          Padding="10,8" FontSize="14" VerticalContentAlignment="Center">
+                                          Padding="10,8" FontSize="14" VerticalContentAlignment="Center"
+                                          SelectionChanged="RoleBox_SelectionChanged">
                                     <ComboBoxItem Tag="Doctor" Content="{DynamicResource UserMgmt_RoleDoctor}" IsSelected="True"/>
                                     <ComboBoxItem Tag="Nurse" Content="{DynamicResource UserMgmt_RoleNurse}"/>
+                                    <ComboBoxItem Tag="Prosthetist" Content="{DynamicResource UserMgmt_RoleProsthetist}"/>
                                 </ComboBox>
                             </Border>
                         </StackPanel>
@@ -84,7 +86,8 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- ===== صلاحيات دقيقة ومستقلة عن الدور (Doctor/Nurse) ===== -->
+                    <!-- ===== صلاحيات دقيقة ومستقلة عن الدور (Doctor/Nurse فقط - المرمم له نظام صلاحيات منفصل أدناه) ===== -->
+                    <StackPanel x:Name="BitmaskPermissionsSection">
                     <TextBlock Text="{DynamicResource UserEdit_PermissionsHeader}" Style="{StaticResource FieldLabelStyle}" Margin="4,0,0,6"/>
                     <Border Style="{StaticResource InputContainerStyle}" Padding="12,10" Margin="0,0,0,14">
                         <StackPanel>
@@ -123,8 +126,87 @@
                                 <TextBlock Text="{DynamicResource UserEdit_PermRegisterPatients}" FontSize="13"
                                            Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <CheckBox x:Name="PermEditPatientsCheck" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource UserEdit_PermEditPatients}" FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <CheckBox x:Name="PermDeletePatientsCheck" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource UserEdit_PermDeletePatients}" FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
+                    </StackPanel>
+
+                    <!-- ===== خاص بالمرمم فقط: صلاحيات دقيقة مبنية ديناميكياً من جدول Permissions (فئة Prosthetics) -
+                         وليست Bitmask - كل صلاحية تُحفَظ كصف مستقل في UserPermissions عند الحفظ ===== -->
+                    <StackPanel x:Name="ProstheticPermissionsSection" Visibility="Collapsed">
+                        <TextBlock Text="{DynamicResource UserEdit_ProsthPermissionsHeader}" Style="{StaticResource FieldLabelStyle}" Margin="4,0,0,6"/>
+                        <Border Style="{StaticResource InputContainerStyle}" Padding="12,10" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock x:Name="NoProsthPermsHintText" Text="{DynamicResource UserEdit_NoProsthPermsYet}"
+                                           FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Visibility="Collapsed"/>
+                                <ScrollViewer MaxHeight="260" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl x:Name="ProstheticPermissionsList">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                    <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding DisplayName}" FontSize="13"
+                                                               Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ===== خاص بالممرضة فقط: أي قوائم انتظار أطباء تقدر تشوفها - يمنحها إياها الطبيب الرئيسي هنا ===== -->
+                    <StackPanel x:Name="DoctorAccessSection" Visibility="Collapsed">
+                        <TextBlock Text="{DynamicResource UserEdit_DoctorAccessHeader}" Style="{StaticResource FieldLabelStyle}" Margin="4,0,0,6"/>
+                        <Border Style="{StaticResource InputContainerStyle}" Padding="12,10" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock x:Name="NoDoctorsHintText" Text="{DynamicResource UserEdit_NoDoctorsYet}"
+                                           FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Visibility="Collapsed"/>
+                                <ItemsControl x:Name="DoctorAccessList">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding DisplayName}" FontSize="13"
+                                                           Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ===== خاص بالطبيب فقط: تعيين "الطبيب الرئيسي" (واحد فقط في كل النظام) -
+                         التحكم بها مقيَّد لمن يملك الحق فعلياً (راجع UserEditWindow.xaml.cs CanEditMainDoctor) ===== -->
+                    <StackPanel x:Name="MainDoctorSection" Visibility="Collapsed">
+                        <TextBlock Text="{DynamicResource UserEdit_MainDoctorHeader}" Style="{StaticResource FieldLabelStyle}" Margin="4,0,0,6"/>
+                        <Border Style="{StaticResource InputContainerStyle}" Padding="12,10" Margin="0,0,0,14">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox x:Name="IsMainDoctorCheck" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{DynamicResource UserEdit_IsMainDoctor}" FontSize="13"
+                                               Foreground="{StaticResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock x:Name="MainDoctorHintText" Text="{DynamicResource UserEdit_MainDoctorHint}"
+                                           FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,8,0,0"/>
+                                <TextBlock x:Name="MainDoctorReadOnlyHintText" Text="{DynamicResource UserEdit_MainDoctorReadOnlyHint}"
+                                           FontSize="11" Foreground="{StaticResource ErrorBrush}"
+                                           TextWrapping="Wrap" Margin="0,4,0,0" Visibility="Collapsed"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
 
                     <StackPanel x:Name="ActivePanel" Orientation="Horizontal" Margin="4,0,0,14">
                         <CheckBox x:Name="IsActiveCheck" VerticalAlignment="Center" IsChecked="True"/>

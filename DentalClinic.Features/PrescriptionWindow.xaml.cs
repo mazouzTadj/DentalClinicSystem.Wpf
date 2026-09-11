@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Drawing.Printing;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
 using DentalClinic.UI.Localization;
@@ -15,17 +16,28 @@ public partial class PrescriptionWindow : Window
     private readonly int? _patientAge;
     public ObservableCollection<PrescriptionLineViewModel> Lines { get; } = new();
 
-    public PrescriptionWindow(string patientName, List<string>? initialMedicationNames = null, int? patientAge = null)
+    public PrescriptionWindow(string patientName, List<string>? initialMedicationNames = null, int? patientAge = null,
+        List<string>? initialCertificateNames = null)
     {
         _patientName = patientName;
         _patientAge = patientAge;
         InitializeComponent();
 
+        // نفس إصلاح PatientFileWindow: لا تسمح للنافذة أن تتجاوز الشاشات الصغيرة
+        var maxAvailableHeight = SystemParameters.WorkArea.Height - 20;
+        if (Height > maxAvailableHeight) Height = maxAvailableHeight;
+
         LinesItems.ItemsSource = Lines;
+        LinesItems.ItemTemplateSelector = new PrescriptionLineTemplateSelector
+        {
+            MedicationTemplate = (DataTemplate)FindResource("MedicationLineTemplate"),
+            CertificateTemplate = (DataTemplate)FindResource("CertificateLineTemplate")
+        };
         PatientHeaderText.Text = LocalizationManager.T("Rx_PatientHeaderFormat", patientName);
         DateText.Text = DateTime.Now.ToString("yyyy-MM-dd");
 
         List<MedicationPreset> presets = new();
+        List<CertificatePreset> certificatePresets = new();
         try
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
@@ -33,6 +45,26 @@ public partial class PrescriptionWindow : Window
             var presetRepo = new MedicationPresetRepository(db);
             presets = presetRepo.GetActivePresets();
             PresetBox.ItemsSource = presets;
+
+            var certificatePresetRepo = new CertificatePresetRepository(db);
+            certificatePresets = certificatePresetRepo.GetActivePresets();
+            CertificatePresetBox.ItemsSource = certificatePresets;
+
+                // Populate printer picker with installed printers
+                try
+                {
+                    var printers = DentalClinic.Printing.SilentPdfPrinter.GetInstalledPrinterNames();
+                    PrinterBox.ItemsSource = printers;
+                    var defaultPrinter = new PrinterSettings().PrinterName;
+                    if (!string.IsNullOrWhiteSpace(defaultPrinter) && printers.Contains(defaultPrinter))
+                    {
+                        PrinterBox.SelectedItem = defaultPrinter;
+                    }
+                }
+                catch
+                {
+                    // Ignore printer list errors; printing will handle errors at print time
+                }
         }
         catch
         {
@@ -49,8 +81,24 @@ public partial class PrescriptionWindow : Window
                 Lines.Add(new PrescriptionLineViewModel
                 {
                     MedicationName = name.Trim(),
-                    Dosage = matchedPreset?.DefaultDosage ?? string.Empty,
-                    Duration = matchedPreset?.DefaultDuration ?? string.Empty
+                    Dosage = matchedPreset?.DefaultDosage ?? string.Empty
+                });
+            }
+        }
+
+        // نفس المنطق تماماً للشهادات/العطل المختارة في ملف المريض: تظهر مباشرة هنا كسطر جاهز،
+        // بنص الفقرة الكامل (DefaultText) إن وُجدت شهادة بنفس الاسم في القائمة السريعة
+        if (initialCertificateNames != null)
+        {
+            foreach (var name in initialCertificateNames.Where(n => !string.IsNullOrWhiteSpace(n)))
+            {
+                var matchedCertificate = certificatePresets.FirstOrDefault(c => c.CertificateName == name);
+                Lines.Add(new PrescriptionLineViewModel
+                {
+                    MedicationName = matchedCertificate?.DefaultText ?? name.Trim(),
+                    Dosage = string.Empty,
+                    BoxCount = string.Empty,
+                    IsCertificate = true
                 });
             }
         }
@@ -75,14 +123,36 @@ public partial class PrescriptionWindow : Window
         Lines.Add(new PrescriptionLineViewModel
         {
             MedicationName = preset.MedicationName,
-            Dosage = preset.DefaultDosage ?? string.Empty,
-            Duration = preset.DefaultDuration ?? string.Empty
+            Dosage = preset.DefaultDosage ?? string.Empty
         });
     }
 
     private void AddCustomLineButton_Click(object sender, RoutedEventArgs e)
     {
         Lines.Add(new PrescriptionLineViewModel());
+    }
+
+    private void AddCertificatePresetButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (CertificatePresetBox.SelectedItem is not CertificatePreset preset)
+        {
+            ErrorText.Text = LocalizationManager.T("Rx_SelectCertificateFirst");
+            return;
+        }
+
+        ErrorText.Text = string.Empty;
+        Lines.Add(new PrescriptionLineViewModel
+        {
+            MedicationName = preset.DefaultText ?? preset.CertificateName,
+            Dosage = string.Empty,
+            BoxCount = string.Empty,
+            IsCertificate = true
+        });
+    }
+
+    private void AddCustomCertificateButton_Click(object sender, RoutedEventArgs e)
+    {
+        Lines.Add(new PrescriptionLineViewModel { IsCertificate = true, BoxCount = string.Empty });
     }
 
     private void RemoveLineButton_Click(object sender, RoutedEventArgs e)
@@ -100,40 +170,38 @@ public partial class PrescriptionWindow : Window
         var validLines = Lines.Where(l => !string.IsNullOrWhiteSpace(l.MedicationName)).ToList();
         if (validLines.Count == 0)
         {
-            ErrorText.Text = LocalizationManager.T("Rx_AddAtLeastOneMedication");
+            ErrorText.Text = LocalizationManager.T("Rx_AddAtLeastOneLine");
             return;
         }
 
         try
         {
-            var pdfBytes = PrescriptionPdfExporter.Generate(_patientName, DateTime.Now, validLines, NotesBox.Text, _patientAge);
-
-            var dialog = new Microsoft.Win32.SaveFileDialog
+            // Determine selected printer (if user picked one)
+            string? selectedPrinter = null;
+            try
             {
-                FileName = $"Prescription_{_patientName.Replace(' ', '_')}_{DateTime.Now:yyyy-MM-dd}.pdf",
-                Filter = LocalizationManager.T("PF_PdfFilter"),
-                DefaultExt = ".pdf"
-            };
-
-            if (dialog.ShowDialog() != true)
+                if (PrinterBox?.SelectedItem is string s && !string.IsNullOrWhiteSpace(s)) selectedPrinter = s;
+            }
+            catch
             {
-                return;
+                // ignore; selectedPrinter stays null
             }
 
-            System.IO.File.WriteAllBytes(dialog.FileName, pdfBytes);
+            // Silent direct print using SilentPdfPrinter (PdfiumViewer)
+            PrescriptionPdfExporter.GenerateAndPrint(_patientName, DateTime.Now, validLines, NotesBox.Text, _patientAge, selectedPrinter);
 
-            var openIt = MessageBox.Show(
-                LocalizationManager.T("Rx_SavedMessage"),
-                LocalizationManager.T("PF_ExportCompleteTitle"),
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Information);
-
-            if (openIt == MessageBoxResult.Yes)
+            // Provide user feedback on success
+            try
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dialog.FileName)
-                {
-                    UseShellExecute = true
-                });
+                var successMsg = LocalizationManager.T("Rx_PrintSuccess");
+                if (string.IsNullOrWhiteSpace(successMsg)) successMsg = "Prescription sent to printer.";
+                var title = LocalizationManager.T("Rx_Title");
+                if (string.IsNullOrWhiteSpace(title)) title = "Information";
+                MessageBox.Show(this, successMsg, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch
+            {
+                // If localization or MessageBox fails for any reason, fall back to a simple close
             }
 
             DialogResult = true;

@@ -1,7 +1,7 @@
 <Window x:Class="DentalClinic.Features.BackupWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{DynamicResource Backup_Title}" Height="460" Width="460"
+        Title="{DynamicResource Backup_Title}" Height="620" Width="540"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
 
@@ -22,7 +22,8 @@
                         Margin="0,0,10,0" Click="CloseButton_Click"/>
             </Grid>
 
-            <StackPanel Grid.Row="1" Margin="40,0,40,30" VerticalAlignment="Center">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="40,0,40,30">
 
                 <Border Width="60" Height="60" CornerRadius="30" Background="{StaticResource AccentBrush}"
                         HorizontalAlignment="Center" Margin="0,0,0,16">
@@ -40,10 +41,23 @@
                 </Border>
 
                 <TextBlock Text="{DynamicResource Backup_FolderLabel}" Style="{StaticResource FieldLabelStyle}"/>
-                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,16">
-                    <TextBlock x:Name="FolderPathText" Padding="12,10" FontSize="13"
-                               Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-                </Border>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Style="{StaticResource InputContainerStyle}" Margin="0,0,8,0">
+                        <TextBox x:Name="FolderPathText" Padding="12,9" FontSize="13"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 Background="Transparent" BorderThickness="0"
+                                 VerticalContentAlignment="Center"/>
+                    </Border>
+                    <Button Grid.Column="1" Content="..." Width="58" Height="42"
+                            Style="{StaticResource SecondaryButtonStyle}" Click="BrowseFolderButton_Click"/>
+                </Grid>
+
+                <Button x:Name="SaveFolderButton" Content="{DynamicResource Common_Save}" Height="42" Margin="0,0,0,16"
+                        Style="{StaticResource SecondaryButtonStyle}" Click="SaveFolderButton_Click"/>
 
                 <TextBlock x:Name="RetentionText" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
                            Margin="4,0,0,10"/>
@@ -57,7 +71,8 @@
                 <Button Content="{DynamicResource Common_Close}" Height="38" Margin="0,10,0,0"
                         Style="{StaticResource SecondaryButtonStyle}"
                         Click="CloseButton_Click"/>
-            </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
     </Border>
 </Window>

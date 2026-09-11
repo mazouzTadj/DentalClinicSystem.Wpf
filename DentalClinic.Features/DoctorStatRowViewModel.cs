@@ -20,14 +20,14 @@ public class DoctorStatRowViewModel
     {
         DoctorName = r.DoctorName;
         PatientsAndSessionsText = $"{r.PatientCount} patients • {r.SessionCount} sessions";
-        IncomeText = r.GrossIncome.ToString("N2", CultureInfo.InvariantCulture);
+        IncomeText = MoneyFormatter.Format(r.GrossIncome);
 
         CrownVisibility = r.IsPrimary ? Visibility.Visible : Visibility.Collapsed;
         CommissionVisibility = r.IsPrimary ? Visibility.Collapsed : Visibility.Visible;
 
         CommissionText = r.IsPrimary
             ? string.Empty
-            : $"Commission {r.CommissionPercent:0.##}% → {r.DoctorShare.ToString("N2", CultureInfo.InvariantCulture)} (clinic keeps {r.ClinicShare.ToString("N2", CultureInfo.InvariantCulture)})";
+            : $"Commission {r.CommissionPercent:0.##}% → {MoneyFormatter.Format(r.DoctorShare)} (clinic keeps {MoneyFormatter.Format(r.ClinicShare)})";
 
         BarWidth = maxIncome > 0 ? Math.Max(6, (double)(r.GrossIncome / (decimal)maxIncome) * maxBarWidth) : 6;
     }

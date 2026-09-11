@@ -1,6 +1,8 @@
+using System.Linq;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using DentalClinic.Printing;
 
 namespace DentalClinic.Features;
 
@@ -14,7 +16,7 @@ public static class PrescriptionPdfExporter
     private const string DoctorTitle = "Chirurgien - dentiste";
     private const string ClinicAddress = "Haï Safsaf à côté du lycée Commandant Ferradje  Debdaba - Béchar";
     private const string ClinicMobile = "06 99 37 49 84";
-    private const string ClinicPhone = "049 22 44 03";
+    private const string ClinicPhone = "042 08 83 52";
 
     static PrescriptionPdfExporter()
     {
@@ -45,6 +47,8 @@ public static class PrescriptionPdfExporter
 
                         col.Item().Row(row =>
                         {
+                            row.Spacing(12);
+
                             // العمود الأيسر: أنواع الخدمات
                             row.RelativeItem(2).Column(left =>
                             {
@@ -54,20 +58,26 @@ public static class PrescriptionPdfExporter
                                 left.Item().Text("RVG...").FontSize(9).Bold();
                             });
 
-                            // الوسط: شعار السن
-                            row.ConstantItem(50).AlignCenter().AlignMiddle().Element(e =>
+                            // الوسط: شعار السن - حجم ثابت صريح (Width/Height) حتى لا يتمدد الشعار
+                            // خارج مساحته المحجوزة ويتداخل مع عمود اسم الطبيب المجاور
+                            row.ConstantItem(56).AlignCenter().AlignMiddle().Element(e =>
                             {
                                 var toothLogo = LogoLoader.TryLoadOutlineToothLogoBytes();
                                 if (toothLogo != null)
                                 {
-                                    e.Image(toothLogo);
+                                    e.Width(46).Image(toothLogo);
                                 }
                             });
 
-                            // العمود الأيمن: اسم الطبيب والتاريخ
+                            // العمود الأيمن: اسم الطبيب والتاريخ - وزن أكبر (3) ليتّسع لاسم الطبيب
+                            // كاملاً على سطر واحد دون أن يضغط على عمود الشعار المجاور
+                            // العمود الأيمن: اسم الطبيب والتاريخ - نفس وزن العمود الأيسر (2) عمداً،
+                            // ليبقى الشعار في مركز الصفحة الحقيقي؛ نضبط عدم تداخل النص مع الشعار
+                            // بتصغير الخط قليلاً بدل توسيع هذا العمود (كان الحل السابق يُزيح الشعار
+                            // عن المركز)
                             row.RelativeItem(2).AlignRight().Column(right =>
                             {
-                                right.Item().AlignRight().Text(DoctorName).FontSize(11).Bold();
+                                right.Item().AlignRight().Text(DoctorName).FontSize(10).Bold();
                                 right.Item().AlignRight().Text(DoctorTitle).FontSize(9).Bold();
                                 right.Item().AlignRight().PaddingTop(6).Text($"Date : {date:dd/MM/yyyy}").FontSize(9);
                             });
@@ -95,22 +105,53 @@ public static class PrescriptionPdfExporter
                         col.Item().PaddingTop(18).AlignCenter().Text("ORDONNANCE").FontSize(22).Bold();
 
                         // ===================== بنود الوصفة الطبية =====================
-                        col.Item().PaddingTop(24).Column(rx =>
+                        // تباعد محسوب: كلما قلّ عدد الأدوية زادت المسافة بينها، لملء الفراغ الفارغ
+                        // بشكل معقول بدون أي مخاطرة - جرّبنا سابقاً ExtendVertical (مكافئ flex-grow
+                        // حقيقي في QuestPDF) لكنها سبّبت انقسام كل دواء لصفحة منفصلة، فتراجعنا عنها
+                        // لصالح هذا الحل الحتمي المضمون دائماً بصفحة واحدة.
+                        var extraSpacing = lines.Count switch
                         {
-                            rx.Spacing(4);
+                            <= 2 => 108f,
+                            3 => 75f,
+                            4 => 46f,
+                            5 => 22f,
+                            6 => 14f,
+                            _ => 6f
+                        };
 
+                        col.Item().PaddingTop(20).Column(rx =>
+                        {
                             foreach (var line in lines)
                             {
-                                rx.Item().PaddingBottom(10).Column(lineCol =>
+                                rx.Item().PaddingBottom(extraSpacing).Column(lineCol =>
                                 {
-                                    lineCol.Item().Text(line.MedicationName).SemiBold().FontSize(12);
-
-                                    var detail = string.Join("   |   ",
-                                        new[] { line.Dosage, line.Duration }.Where(s => !string.IsNullOrWhiteSpace(s)));
-
-                                    if (!string.IsNullOrWhiteSpace(detail))
+                                    // السطر الرئيسي: اسم الدواء (عريض) + عدد العلب (نفس حجم الخط، محاذى لليمين)
+                                    // - نستخدم نفس نسب الأعمدة الأصلية (3 / 4 / 2) مع ترك مساحة الجرعة (4)
+                                    // فارغة هنا حتى يبقى عمود عدد العلب في نفس موضعه الأصلي بالضبط
+                                    lineCol.Item().Row(lineRow =>
                                     {
-                                        lineCol.Item().Text(detail).FontSize(10).FontColor(Colors.Grey.Darken2);
+                                        lineRow.Spacing(10);
+
+                                        lineRow.RelativeItem(7).ScaleToFit().Text(line.MedicationName).SemiBold().FontSize(12);
+
+                                        if (!string.IsNullOrWhiteSpace(line.BoxCount))
+                                        {
+                                            lineRow.RelativeItem(2).AlignRight().Text(line.BoxCount).FontSize(12).FontColor(Colors.Black);
+                                        }
+                                    });
+
+                                    // سطر الجرعة: ينزل تحت السطر الرئيسي مباشرة، لكن يبقى بنفس المحاذاة
+                                    // الأفقية التي كانت عليها سابقاً (تحت عمود الجرعة القديم تقريباً) عبر
+                                    // ترك نفس عرض عمود اسم الدواء (3) فارغاً قبله كمسافة بادئة
+                                    if (!string.IsNullOrWhiteSpace(line.Dosage))
+                                    {
+                                        lineCol.Item().Row(dosageRow =>
+                                        {
+                                            dosageRow.Spacing(10);
+
+                                            dosageRow.RelativeItem(2);
+                                            dosageRow.RelativeItem(7).Text(line.Dosage).FontSize(10.5f).FontColor(Colors.Black);
+                                        });
                                     }
 
                                     if (!string.IsNullOrWhiteSpace(line.Instructions))
@@ -125,7 +166,7 @@ public static class PrescriptionPdfExporter
                                 rx.Item().PaddingTop(10).Text("Remarques").FontSize(10.5f).SemiBold();
                                 rx.Item().Text(notes).FontSize(10);
                             }
-                        });   
+                        });
                     });
                 });
 
@@ -147,5 +188,34 @@ public static class PrescriptionPdfExporter
         });
 
         return document.GeneratePdf();
+    }
+
+    /// <summary>
+    /// يولّد الوصفة ويطبعها مباشرة بصمت تام (بدون حفظ ملف مرئي، بدون فتح أي تطبيق، بدون أي وميض)
+    /// عبر SilentPdfPrinter. مرّر printerName إن أردت الطباعة على طابعة محددة غير الافتراضية.
+    ///
+    /// إن كانت الوصفة تحتوي على أدوية وشهادة/عطلة معاً، يُنشأ ملفا PDF منفصلان (بنفس تخطيط
+    /// الصفحة بالضبط - نفس الترويسة وعنوان "ORDONNANCE" - بلا أي تغيير) بدل دمجهما في ملف واحد:
+    /// ملف للأدوية وملف مستقل للشهادة/العطلة، ويُطبع كل منهما على حدة.
+    /// </summary>
+    public static void GenerateAndPrint(string patientName, DateTime date,
+        List<PrescriptionLineViewModel> lines, string? notes, int? patientAge = null,
+        string? printerName = null)
+    {
+        var medicationLines = lines.Where(l => !l.IsCertificate).ToList();
+        var certificateLines = lines.Where(l => l.IsCertificate).ToList();
+
+        if (medicationLines.Count > 0)
+        {
+            var medicationPdf = Generate(patientName, date, medicationLines, notes, patientAge);
+            SilentPdfPrinter.Print(medicationPdf, printerName);
+        }
+
+        if (certificateLines.Count > 0)
+        {
+            // الملاحظات (Remarques) تبقى خاصة بملف الأدوية فقط، ولا تُكرَّر في ملف الشهادة/العطلة
+            var certificatePdf = Generate(patientName, date, certificateLines, null, patientAge);
+            SilentPdfPrinter.Print(certificatePdf, printerName);
+        }
     }
 }

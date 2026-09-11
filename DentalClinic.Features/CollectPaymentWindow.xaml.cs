@@ -18,6 +18,7 @@ public partial class CollectPaymentWindow : Window
 
     private decimal _totalPrice;
     private decimal _alreadyPaid;
+    private decimal _writeOffAmount;
     private decimal _remainingBalance;
 
     public CollectPaymentWindow(int sessionId, string patientName, UserAccount currentUser)
@@ -53,7 +54,7 @@ public partial class CollectPaymentWindow : Window
 
         try
         {
-            const string sql = "SELECT TotalPrice, PaidAmount FROM MedicalSessions WHERE SessionID = @SessionID";
+            const string sql = "SELECT TotalPrice, PaidAmount, WriteOffAmount FROM MedicalSessions WHERE SessionID = @SessionID";
             var table = _db.ExecuteQuery(sql, new Microsoft.Data.SqlClient.SqlParameter("@SessionID", _sessionId));
 
             if (table.Rows.Count == 0)
@@ -66,7 +67,8 @@ public partial class CollectPaymentWindow : Window
             var row = table.Rows[0];
             _totalPrice = row["TotalPrice"] != DBNull.Value ? Convert.ToDecimal(row["TotalPrice"]) : 0m;
             _alreadyPaid = row["PaidAmount"] != DBNull.Value ? Convert.ToDecimal(row["PaidAmount"]) : 0m;
-            _remainingBalance = _totalPrice - _alreadyPaid;
+            _writeOffAmount = row["WriteOffAmount"] != DBNull.Value ? Convert.ToDecimal(row["WriteOffAmount"]) : 0m;
+            _remainingBalance = Math.Max(0m, _totalPrice - _alreadyPaid - _writeOffAmount);
 
             TotalPriceText.Text = LocalizationManager.T("Payment_AmountFormat", _totalPrice);
             AlreadyPaidText.Text = LocalizationManager.T("Payment_AmountFormat", _alreadyPaid);

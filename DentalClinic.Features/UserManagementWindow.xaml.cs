@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Windows;
+using System.Windows.Input;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Data.Models;
 using DentalClinic.UI.Localization;
@@ -34,6 +35,13 @@ public partial class UserManagementWindow : Window
 
         Loaded += (s, e) => LoadUsers();
     }
+
+    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ButtonState == MouseButtonState.Pressed) DragMove();
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
 
     private void LoadUsers()
     {

@@ -12,8 +12,10 @@ public class MedicalSession
     public string? Diagnosis { get; set; }
     public string? TreatmentPerformed { get; set; }
     public string? Medication { get; set; }
+    public string? Certificate { get; set; }
     public decimal TotalPrice { get; set; }
     public decimal PaidAmount { get; set; }
-    public decimal RemainingAmount => TotalPrice - PaidAmount;
+    public decimal WriteOffAmount { get; set; }
+    public decimal RemainingAmount => Math.Max(0m, TotalPrice - PaidAmount - WriteOffAmount);
     public string? Notes { get; set; }
 }

@@ -36,12 +36,16 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- زر تبديل بين العلاجات والأدوية -->
+                <!-- زر تبديل بين العلاجات والأدوية والتشخيصات -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
                     <Button x:Name="TabTreatmentsButton" Content="{DynamicResource Treat_TabTreatments}" Height="34" Padding="18,0"
                             Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0" Click="TabTreatments_Click"/>
                     <Button x:Name="TabMedicationsButton" Content="{DynamicResource Treat_TabMedications}" Height="34" Padding="18,0"
-                            Style="{StaticResource SecondaryButtonStyle}" Click="TabMedications_Click"/>
+                            Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0" Click="TabMedications_Click"/>
+                    <Button x:Name="TabDiagnosesButton" Content="{DynamicResource Treat_TabDiagnoses}" Height="34" Padding="18,0"
+                            Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0" Click="TabDiagnoses_Click"/>
+                    <Button x:Name="TabCertificatesButton" Content="{DynamicResource Treat_TabCertificates}" Height="34" Padding="18,0"
+                            Style="{StaticResource SecondaryButtonStyle}" Click="TabCertificates_Click"/>
                 </StackPanel>
 
                 <!-- ===================== لوحة العلاجات ===================== -->
@@ -202,6 +206,129 @@
                                                 <Button Content="{DynamicResource Treat_DeleteButton}" Height="26" Width="55" FontSize="11"
                                                         Style="{StaticResource DangerButtonStyle}"
                                                         Tag="{Binding}" Click="BtnDeleteMed_Click"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+
+                <!-- ===================== لوحة التشخيصات ===================== -->
+                <Grid x:Name="DiagnosesPanelGrid" Grid.Row="1" Grid.RowSpan="2" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- نموذج الإضافة والتعديل -->
+                    <Border Grid.Row="0" Background="{StaticResource WindowBackgroundBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Diag_Name}" Style="{StaticResource FieldLabelStyle}"/>
+                            <Border Style="{StaticResource InputContainerStyle}">
+                                <TextBox x:Name="TxtDiagnosisName" Style="{StaticResource PlainTextBoxStyle}"/>
+                            </Border>
+
+                            <TextBlock x:Name="DiagErrorText" Style="{StaticResource ErrorTextStyle}" Margin="0,6,0,0"/>
+
+                            <!-- أزرار الحفظ والإلغاء -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                                <Button x:Name="BtnCancelEditDiag" Content="{DynamicResource Treat_CancelEdit}" Width="100" Height="36" Margin="0,0,8,0"
+                                        Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                                        Click="BtnCancelEditDiag_Click"/>
+                                <Button x:Name="BtnSaveDiag" Content="{DynamicResource Diag_AddButton}" Width="140" Height="36"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        Click="BtnSaveDiag_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- جدول عرض التشخيصات -->
+                    <Border Grid.Row="1" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" ClipToBounds="True">
+                        <DataGrid x:Name="DiagnosesGrid"
+                                  Style="{StaticResource ModernDataGridStyle}"
+                                  ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                                  RowStyle="{StaticResource ModernRowStyle}"
+                                  CellStyle="{StaticResource ModernCellStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource Diag_ColName}" Binding="{Binding DiagnosisName}" Width="*"/>
+
+                                <DataGridTemplateColumn Header="{DynamicResource Treat_ColActions}" Width="140">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="{DynamicResource Treat_EditButton}" Height="26" Width="55" FontSize="11" Margin="0,0,6,0"
+                                                        Style="{StaticResource SecondaryButtonStyle}"
+                                                        Tag="{Binding}" Click="BtnEditDiag_Click"/>
+                                                <Button Content="{DynamicResource Treat_DeleteButton}" Height="26" Width="55" FontSize="11"
+                                                        Style="{StaticResource DangerButtonStyle}"
+                                                        Tag="{Binding}" Click="BtnDeleteDiag_Click"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+
+                <!-- ===================== لوحة الشهادات الطبية / العطل المرضية ===================== -->
+                <Grid x:Name="CertificatesPanelGrid" Grid.Row="1" Grid.RowSpan="2" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- نموذج الإضافة والتعديل -->
+                    <Border Grid.Row="0" Background="{StaticResource WindowBackgroundBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Cert_Name}" Style="{StaticResource FieldLabelStyle}"/>
+                            <Border Style="{StaticResource InputContainerStyle}">
+                                <TextBox x:Name="TxtCertificateName" Style="{StaticResource PlainTextBoxStyle}"/>
+                            </Border>
+
+                            <TextBlock Text="{DynamicResource Cert_Text}" Style="{StaticResource FieldLabelStyle}" Margin="0,10,0,0"/>
+                            <Border Style="{StaticResource InputContainerStyle}">
+                                <TextBox x:Name="TxtCertificateText" Style="{StaticResource PlainTextBoxStyle}"
+                                         TextWrapping="Wrap" AcceptsReturn="True" Height="70" VerticalContentAlignment="Top"/>
+                            </Border>
+
+                            <TextBlock x:Name="CertErrorText" Style="{StaticResource ErrorTextStyle}" Margin="0,6,0,0"/>
+
+                            <!-- أزرار الحفظ والإلغاء -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                                <Button x:Name="BtnCancelEditCert" Content="{DynamicResource Treat_CancelEdit}" Width="100" Height="36" Margin="0,0,8,0"
+                                        Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"
+                                        Click="BtnCancelEditCert_Click"/>
+                                <Button x:Name="BtnSaveCert" Content="{DynamicResource Cert_AddButton}" Width="140" Height="36"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        Click="BtnSaveCert_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- جدول عرض الشهادات/العطل -->
+                    <Border Grid.Row="1" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" ClipToBounds="True">
+                        <DataGrid x:Name="CertificatesGrid"
+                                  Style="{StaticResource ModernDataGridStyle}"
+                                  ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                                  RowStyle="{StaticResource ModernRowStyle}"
+                                  CellStyle="{StaticResource ModernCellStyle}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource Cert_ColName}" Binding="{Binding CertificateName}" Width="*"/>
+                                <DataGridTextColumn Header="{DynamicResource Cert_ColText}" Binding="{Binding DefaultText}" Width="2*"/>
+
+                                <DataGridTemplateColumn Header="{DynamicResource Treat_ColActions}" Width="140">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="{DynamicResource Treat_EditButton}" Height="26" Width="55" FontSize="11" Margin="0,0,6,0"
+                                                        Style="{StaticResource SecondaryButtonStyle}"
+                                                        Tag="{Binding}" Click="BtnEditCert_Click"/>
+                                                <Button Content="{DynamicResource Treat_DeleteButton}" Height="26" Width="55" FontSize="11"
+                                                        Style="{StaticResource DangerButtonStyle}"
+                                                        Tag="{Binding}" Click="BtnDeleteCert_Click"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>

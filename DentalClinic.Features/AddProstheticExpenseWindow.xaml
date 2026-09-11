@@ -1,0 +1,83 @@
+<Window x:Class="DentalClinic.Features.AddProstheticExpenseWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource ProsthExpense_Title}" Height="560" Width="400"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{StaticResource WindowBackgroundBrush}">
+
+    <!-- ScrollViewer احترازي: هذه النافذة تحمل حقلاً إضافياً (المرمم) لا توجد نظيرته في
+         AddExpenseWindow الأصلية (Height=420 لـ4 حقول فقط)، فارتفاع المحتوى الفعلي مع 5 حقول
+         + الترويسة + الأزرار يتجاوز بسهولة أي ارتفاع ثابت يُقدَّر تقديراً - خصوصاً مع تكبير خط
+         Windows (125%/150%) الشائع. النتيجة السابقة بلا ScrollViewer: أزرار الحفظ/الإلغاء
+         تُقصّ بصمت خارج حدود النافذة بلا أي خطأ أو تنبيه. -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Padding="20">
+            <StackPanel>
+            <TextBlock Text="{DynamicResource ProsthExpense_Header}" FontSize="18" FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,15"/>
+
+            <!-- المرمم صاحب هذا المصروف - مقفل على المرمم الحالي لمن لا يملك ViewAllCases،
+                 قابل للاختيار فقط للطبيب/من يملك الصلاحية (نفس قفل ProsthetistFilterCombo في
+                 ProstheticStatisticsWindow). ItemTemplate صريح هنا (وليس DisplayMemberPath) لأن
+                 قالب ComboBox المخصَّص في Theme.xaml لا يعرض DisplayMemberPath بشكل صحيح في
+                 صندوق الاختيار المغلق (يظهر اسم الكلاس الخام) - نفس الحل المعتمد في كل قوائم
+                 المرممين الأخرى بالتطبيق (ProsthetistFilterCombo). Opacity ينخفض عند القفل حتى
+                 يكون واضحاً للمستخدم أن الحقل معطَّل عمداً وليس عطلاً. -->
+            <TextBlock Text="{DynamicResource ProsthExpense_Prosthetist}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+            <ComboBox x:Name="ProsthetistComboBox" Height="35" FontSize="14" Padding="5" Margin="0,0,0,12"
+                      TextSearch.TextPath="FullName">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding FullName}" TextTrimming="CharacterEllipsis"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                <ComboBox.Style>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
+            </ComboBox>
+
+            <!-- Category: Tag = القيمة الثابتة المخزَّنة في قاعدة البيانات (إنجليزية دائماً)
+                 Content = النص المعروض فقط في قائمة الاختيار (مترجَم حسب اللغة) -->
+            <TextBlock Text="{DynamicResource Expense_Category}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+            <ComboBox x:Name="CategoryComboBox" Height="35" FontSize="14" Padding="5" Margin="0,0,0,12" SelectedIndex="0">
+                <ComboBoxItem Tag="Dental Lab Fees" Content="{DynamicResource ProsthExpense_CatLabFees}"/>
+                <ComboBoxItem Tag="Materials" Content="{DynamicResource ProsthExpense_CatMaterials}"/>
+                <ComboBoxItem Tag="Shipping" Content="{DynamicResource ProsthExpense_CatShipping}"/>
+                <ComboBoxItem Tag="Prosthetist Dues" Content="{DynamicResource ProsthExpense_CatDues}"/>
+                <ComboBoxItem Tag="General / Other" Content="{DynamicResource Expense_CatOther}"/>
+            </ComboBox>
+
+            <!-- Amount -->
+            <TextBlock Text="{DynamicResource Expense_Amount}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+            <TextBox x:Name="AmountBox" Height="35" FontSize="14" Padding="5" Margin="0,0,0,12"/>
+
+            <!-- Description -->
+            <TextBlock Text="{DynamicResource Expense_Description}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+            <TextBox x:Name="DescriptionBox" Height="35" FontSize="14" Padding="5" Margin="0,0,0,12"/>
+
+            <!-- Date -->
+            <TextBlock Text="{DynamicResource Expense_Date}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+            <DatePicker x:Name="ExpenseDatePicker" Height="35" FontSize="14" Padding="5" Margin="0,0,0,12"/>
+
+            <TextBlock x:Name="ErrorText" Foreground="{StaticResource ErrorBrush}" FontSize="12" Margin="0,0,0,10" TextWrapping="Wrap"/>
+
+            <!-- Buttons -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="{DynamicResource Common_Cancel}" Height="38" Style="{StaticResource SecondaryButtonStyle}" Click="CancelButton_Click"/>
+                <Button Grid.Column="2" Content="{DynamicResource Common_Save}" Height="38" Style="{StaticResource PrimaryButtonStyle}" Click="SaveButton_Click"/>
+            </Grid>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</Window>
