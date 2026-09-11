@@ -7,7 +7,7 @@
 ; ============================================================
 
 #define MyAppName "Dental Clinic System"
-#define MyAppVersion "1.0.3"
+#define MyAppVersion "1.1.0"
 #define MyPublisher "MAZOUZ Tadjeddine"
 
 [Setup]
@@ -65,8 +65,11 @@ var
   AuthPage: TInputOptionWizardPage;
   ServerPage: TInputQueryWizardPage;
   LoginPage: TInputQueryWizardPage;
+  InstancesHint: TNewStaticText;
   DetectedExistingConfig: Boolean;
   AlreadyPrefilled: Boolean;
+
+procedure DiscoverLocalSqlInstances; forward;
 
 // ------------------------------------------------------------------
 // يتحقق إن كان NurseApp.exe أو DoctorApp.exe يعملان حالياً قبل السماح
@@ -130,6 +133,11 @@ begin
   EndQuote := EndQuote + StartMarker - 1;
 
   Result := Copy(Content, StartMarker, EndQuote - StartMarker);
+  StringChangeEx(Result, '&quot;', '"', True);
+  StringChangeEx(Result, '&apos;', '''', True);
+  StringChangeEx(Result, '&lt;', '<', True);
+  StringChangeEx(Result, '&gt;', '>', True);
+  StringChangeEx(Result, '&amp;', '&', True);
 end;
 
 function ExtractField(Content, FieldName: String): String;
@@ -239,6 +247,16 @@ begin
   ServerPage.Add('Server\Instance:', False);
   ServerPage.Values[0] := '.\SQLEXPRESS';
 
+  InstancesHint := TNewStaticText.Create(ServerPage);
+  InstancesHint.Parent := ServerPage.Surface;
+  InstancesHint.Left := 0;
+  InstancesHint.Top := ScaleY(70);
+  InstancesHint.Width := ServerPage.SurfaceWidth;
+  InstancesHint.Height := ScaleY(42);
+  InstancesHint.AutoSize := False;
+  InstancesHint.Font.Color := clGray;
+  DiscoverLocalSqlInstances;
+
   LoginPage := CreateInputQueryPage(ServerPage.ID,
     'SQL Server Login - بيانات الدخول',
     'Enter the SQL Server login credentials',
@@ -248,6 +266,39 @@ begin
   // ملاحظة: لا يمكن قراءة {app} هنا لأنه غير مُهيَّأ بعد في هذه المرحلة
   // من التشغيل (يُهيَّأ فقط بعد صفحة اختيار مجلد التثبيت wpSelectDir).
   // لذلك تأجَّلت التعبئة التلقائية إلى CurPageChanged أدناه.
+end;
+
+// يبحث في سجل Windows عن SQL Server instances المحلية المسجّلة. لا يعتمد ذلك
+// على خدمة SQL Browser أو الشبكة، لذلك يبقى مفيداً حتى عند إيقاف الخدمة مؤقتاً.
+procedure DiscoverLocalSqlInstances;
+var
+  Names: TArrayOfString;
+  i: Integer;
+  Instances, Preferred: String;
+begin
+  Instances := '';
+  Preferred := '';
+
+  if not RegGetValueNames(HKLM64, 'SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL', Names) then
+    RegGetValueNames(HKLM32, 'SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL', Names);
+
+  for i := 0 to GetArrayLength(Names) - 1 do
+  begin
+    if Instances <> '' then Instances := Instances + ', ';
+    Instances := Instances + '.\' + Names[i];
+    if CompareText(Names[i], 'SQLEXPRESS') = 0 then Preferred := Names[i];
+    if Preferred = '' then Preferred := Names[i];
+  end;
+
+  if Instances = '' then
+    InstancesHint.Caption := 'No local SQL Server instance was detected. Enter the server name or IP manually. ' +
+      'لم يتم العثور على SQL Server محلي؛ أدخل اسم الخادم أو عنوان IP يدوياً.'
+  else
+  begin
+    InstancesHint.Caption := 'Detected local SQL Server: ' + Instances + #13#10 +
+      'تم اكتشاف SQL Server محلياً. راجع العنوان ثم تابع.';
+    ServerPage.Values[0] := '.\' + Preferred;
+  end;
 end;
 
 function ShouldSkipPage(PageID: Integer): Boolean;
@@ -285,7 +336,7 @@ begin
   begin
     // Windows Authentication
     Result := 'Data Source=' + Server + ';Initial Catalog=DentalClinicDB;' +
-      'Integrated Security=True;Encrypt=False;TrustServerCertificate=True;';
+      'Integrated Security=True;Encrypt=False;TrustServerCertificate=True;Connect Timeout=5;';
   end
   else
   begin
@@ -293,8 +344,118 @@ begin
     User := LoginPage.Values[0];
     Pass := LoginPage.Values[1];
     Result := 'Data Source=' + Server + ';Initial Catalog=DentalClinicDB;' +
-      'User ID=' + User + ';Password=' + Pass + ';Encrypt=False;TrustServerCertificate=True;';
+      'User ID=' + User + ';Password=' + Pass + ';Encrypt=False;TrustServerCertificate=True;Connect Timeout=5;';
   end;
+end;
+
+function XmlEscape(Value: String): String;
+begin
+  Result := Value;
+  StringChangeEx(Result, '&', '&amp;', True);
+  StringChangeEx(Result, '<', '&lt;', True);
+  StringChangeEx(Result, '>', '&gt;', True);
+  StringChangeEx(Result, '"', '&quot;', True);
+  StringChangeEx(Result, '''', '&apos;', True);
+end;
+
+function EscapePowerShellLiteral(Value: String): String;
+begin
+  Result := Value;
+  StringChangeEx(Result, '''', '''''', True);
+  Result := '''' + Result + '''';
+end;
+
+// اختبار فعلي عبر .NET Framework الموجود مع Windows PowerShell. نختبر master
+// بدل DentalClinicDB حتى يتمكن فني التثبيت من إعداد الاتصال قبل إنشاء قاعدة العيادة.
+function TestSqlServerConnection(var ErrorMessage: String): Boolean;
+var
+  ConnectionString, Script, ScriptFile, OutputFile: String;
+  ResultCode: Integer;
+  Output: AnsiString;
+begin
+  Result := False;
+  ErrorMessage := '';
+  ConnectionString := BuildConnectionString();
+  StringChangeEx(ConnectionString, 'Initial Catalog=DentalClinicDB;', 'Initial Catalog=master;', True);
+
+  ScriptFile := ExpandConstant('{tmp}\dcs_test_sql.ps1');
+  OutputFile := ExpandConstant('{tmp}\dcs_test_sql.txt');
+  Script := '$ErrorActionPreference = ''Stop'';' + #13#10 +
+    '$outputFile = ' + EscapePowerShellLiteral(OutputFile) + ';' + #13#10 +
+    '$connection = New-Object System.Data.SqlClient.SqlConnection;' + #13#10 +
+    '$connection.ConnectionString = ' + EscapePowerShellLiteral(ConnectionString) + ';' + #13#10 +
+    'try { $connection.Open(); $command = $connection.CreateCommand(); $command.CommandText = ''SELECT 1''; ' +
+    '[void]$command.ExecuteScalar(); [System.IO.File]::WriteAllText($outputFile, ''OK''); exit 0 } ' +
+    'catch { [System.IO.File]::WriteAllText($outputFile, $_.Exception.Message); exit 1 } ' +
+    'finally { if ($connection) { $connection.Dispose() } }';
+
+  SaveStringToFile(ScriptFile, Script, False);
+  Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'),
+    '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptFile + '"',
+    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+  if FileExists(OutputFile) then LoadStringFromFile(OutputFile, Output);
+  DeleteFile(ScriptFile);
+  DeleteFile(OutputFile);
+
+  Result := ResultCode = 0;
+  if not Result then
+  begin
+    ErrorMessage := Trim(Output);
+    if ErrorMessage = '' then ErrorMessage := 'The installer could not connect to SQL Server.';
+  end;
+end;
+
+function ConfirmSqlConnection(): Boolean;
+var
+  ErrorMessage: String;
+  Choice: Integer;
+begin
+  Result := False;
+  while True do
+  begin
+    if TestSqlServerConnection(ErrorMessage) then
+    begin
+      MsgBox('SQL Server connection succeeded. تم الاتصال بسيرفر SQL بنجاح.', mbInformation, MB_OK);
+      Result := True;
+      Exit;
+    end;
+
+    Choice := MsgBox('Could not connect to SQL Server:' + #13#10 + ErrorMessage + #13#10#13#10 +
+      'Retry: test again.  No: continue without a successful test.  Cancel: return to the settings.' + #13#10 +
+      'إعادة المحاولة: اختبار جديد. لا: المتابعة دون اختبار ناجح. إلغاء: العودة إلى الإعدادات.',
+      mbError, MB_YESNOCANCEL);
+    if Choice = IDYES then Continue;
+    if Choice = IDNO then
+    begin
+      Result := True;
+      Exit;
+    end;
+    Exit;
+  end;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+
+  if (CurPageID = ServerPage.ID) and (Trim(ServerPage.Values[0]) = '') then
+  begin
+    MsgBox('Enter a SQL Server name or IP address first. أدخل اسم أو عنوان SQL Server أولاً.', mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+
+  if (CurPageID = LoginPage.ID) and ((Trim(LoginPage.Values[0]) = '') or (LoginPage.Values[1] = '')) then
+  begin
+    MsgBox('Enter both the SQL Server username and password. أدخل اسم المستخدم وكلمة المرور لحساب SQL Server.', mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
+
+  if ((CurPageID = ServerPage.ID) and (AuthPage.SelectedValueIndex = 0)) or
+     ((CurPageID = LoginPage.ID) and (AuthPage.SelectedValueIndex = 1)) then
+    Result := ConfirmSqlConnection;
 end;
 
 procedure UpdateConfigConnectionString(ConfigFile: String; NewConnString: String);
@@ -324,7 +485,7 @@ begin
   Prefix := Copy(Content, 1, StartMarker - 1);
   Suffix := Copy(Content, EndQuote, Length(Content) - EndQuote + 1);
 
-  Content := Prefix + NewConnString + Suffix;
+  Content := Prefix + XmlEscape(NewConnString) + Suffix;
   SaveStringToFile(ConfigFile, Content, False);
 end;
 
