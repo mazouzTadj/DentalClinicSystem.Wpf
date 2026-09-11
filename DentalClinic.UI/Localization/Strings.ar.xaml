@@ -636,6 +636,15 @@
     <sys:String x:Key="Backup_FolderSaved">تم حفظ مجلد النسخ الاحتياطي بنجاح.</sys:String>
     <sys:String x:Key="Backup_FolderSaveErrorFormat">تعذّر حفظ مجلد النسخ الاحتياطي: {0}</sys:String>
     <sys:String x:Key="Backup_SelectFolder">اختيار مجلد النسخ الاحتياطي</sys:String>
+    <sys:String x:Key="Backup_RestoreTitle">استعادة قاعدة البيانات</sys:String>
+    <sys:String x:Key="Backup_RestoreWarning">يجب أن يكون مسار ملف النسخة متاحاً لخدمة SQL Server. الاستعادة تستبدل قاعدة البيانات الحالية وتفصل جميع المستخدمين.</sys:String>
+    <sys:String x:Key="Backup_RestoreButton">استعادة من نسخة احتياطية</sys:String>
+    <sys:String x:Key="Backup_SelectRestoreFile">اختيار ملف النسخة الاحتياطية</sys:String>
+    <sys:String x:Key="Backup_RestoreFileFilter">نسخة SQL Server (*.bak)|*.bak|كل الملفات (*.*)|*.*</sys:String>
+    <sys:String x:Key="Backup_RestoreFileRequired">أدخل مسار ملف النسخة الاحتياطية المطلوب استعادته.</sys:String>
+    <sys:String x:Key="Backup_RestoreConfirm">سيتم استبدال قاعدة بيانات العيادة الحالية نهائياً وفصل جميع المستخدمين. هل تريد المتابعة؟</sys:String>
+    <sys:String x:Key="Backup_RestoreInProgress">جارٍ الاستعادة...</sys:String>
+    <sys:String x:Key="Backup_RestoreSuccess">تمت استعادة قاعدة البيانات بنجاح. سيُغلق التطبيق الآن؛ أعد فتحه للمتابعة.</sys:String>
 
     <sys:String x:Key="PF_ColActions">الإجراءات</sys:String>
     <sys:String x:Key="PF_EditSessionButton">تعديل</sys:String>

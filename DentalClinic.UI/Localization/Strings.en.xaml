@@ -636,6 +636,15 @@
     <sys:String x:Key="Backup_FolderSaved">Backup folder saved successfully.</sys:String>
     <sys:String x:Key="Backup_FolderSaveErrorFormat">Could not save backup folder: {0}</sys:String>
     <sys:String x:Key="Backup_SelectFolder">Select backup folder</sys:String>
+    <sys:String x:Key="Backup_RestoreTitle">Restore Database</sys:String>
+    <sys:String x:Key="Backup_RestoreWarning">The backup file path must be accessible to SQL Server. Restoring replaces the current database and disconnects all users.</sys:String>
+    <sys:String x:Key="Backup_RestoreButton">Restore from Backup</sys:String>
+    <sys:String x:Key="Backup_SelectRestoreFile">Select backup file</sys:String>
+    <sys:String x:Key="Backup_RestoreFileFilter">SQL Server Backup (*.bak)|*.bak|All files (*.*)|*.*</sys:String>
+    <sys:String x:Key="Backup_RestoreFileRequired">Enter the backup file path to restore.</sys:String>
+    <sys:String x:Key="Backup_RestoreConfirm">This permanently replaces the current clinic database and disconnects every user. Continue?</sys:String>
+    <sys:String x:Key="Backup_RestoreInProgress">Restoring...</sys:String>
+    <sys:String x:Key="Backup_RestoreSuccess">The database was restored successfully. The application will now close; reopen it to continue.</sys:String>
 
     <sys:String x:Key="PF_ColActions">Actions</sys:String>
     <sys:String x:Key="PF_EditSessionButton">Edit</sys:String>

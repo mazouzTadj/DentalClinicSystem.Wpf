@@ -23,7 +23,7 @@ public class BackupRepository
         var fullPath = System.IO.Path.Combine(backupFolderPath, fileName);
 
         // اسم قاعدة البيانات يأتي من إعدادات التطبيق (App.config) وليس من إدخال المستخدم مباشرة، فالدمج هنا آمن
-        var sql = $"BACKUP DATABASE [{_databaseName}] TO DISK = @FilePath WITH NAME = @BackupName, STATS = 10";
+        var sql = $"BACKUP DATABASE [{_databaseName}] TO DISK = @FilePath WITH NAME = @BackupName, CHECKSUM, STATS = 10";
 
         try
         {
@@ -34,11 +34,74 @@ public class BackupRepository
             conn.Open();
             cmd.ExecuteNonQuery();
 
-            return (true, "Backup completed successfully", fullPath);
+            var (verified, verificationMessage) = VerifyBackupFile(fullPath);
+            if (!verified)
+                return (false, "Backup was created but verification failed: " + verificationMessage, fullPath);
+
+            return (true, "Backup completed and verified successfully", fullPath);
         }
         catch (Exception ex)
         {
             return (false, "Backup failed: " + ex.Message, null);
+        }
+    }
+
+    // يتحقق SQL Server من قابلية استعادة الملف ومن CHECKSUM قبل أن نعتبر النسخة ناجحة.
+    // مهم خصوصاً لأن وجود ملف .bak وحده لا يعني أنه كامل أو صالح للاستعادة.
+    public (bool Success, string Message) VerifyBackupFile(string backupFilePath)
+    {
+        const string sql = "RESTORE VERIFYONLY FROM DISK = @FilePath WITH CHECKSUM";
+
+        try
+        {
+            using var conn = _db.GetConnection();
+            using var cmd = new SqlCommand(sql, conn) { CommandTimeout = 300 };
+            cmd.Parameters.AddWithValue("@FilePath", backupFilePath);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            return (true, "Backup file is valid.");
+        }
+        catch (Exception ex)
+        {
+            return (false, ex.Message);
+        }
+    }
+
+    // الاستعادة عملية مدمّرة ومقصودة: نافذة الواجهة تطلب تأكيداً صريحاً قبل استدعائها.
+    // نتحقق من الملف أولاً، ثم ننفذ الأوامر من master حتى لا تكون قاعدة الهدف قيد الاستخدام
+    // من اتصال هذا الأمر نفسه. WITH ROLLBACK IMMEDIATE يفصل اتصالات التطبيقات الأخرى.
+    public (bool Success, string Message) RestoreDatabase(string backupFilePath)
+    {
+        var (verified, verificationMessage) = VerifyBackupFile(backupFilePath);
+        if (!verified)
+            return (false, "Backup verification failed: " + verificationMessage);
+
+        var escapedDatabaseName = _databaseName.Replace("]", "]]", StringComparison.Ordinal);
+        var sql = $@"
+USE [master];
+BEGIN TRY
+    ALTER DATABASE [{escapedDatabaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    RESTORE DATABASE [{escapedDatabaseName}] FROM DISK = @FilePath WITH REPLACE, RECOVERY, CHECKSUM;
+    ALTER DATABASE [{escapedDatabaseName}] SET MULTI_USER;
+END TRY
+BEGIN CATCH
+    IF DB_ID(N'{escapedDatabaseName}') IS NOT NULL
+        ALTER DATABASE [{escapedDatabaseName}] SET MULTI_USER;
+    THROW;
+END CATCH";
+
+        try
+        {
+            using var conn = _db.GetConnection();
+            using var cmd = new SqlCommand(sql, conn) { CommandTimeout = 600 };
+            cmd.Parameters.AddWithValue("@FilePath", backupFilePath);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            return (true, "Database restored successfully.");
+        }
+        catch (Exception ex)
+        {
+            return (false, "Restore failed: " + ex.Message);
         }
     }
 

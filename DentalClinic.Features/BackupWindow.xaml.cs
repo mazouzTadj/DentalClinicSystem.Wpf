@@ -32,6 +32,7 @@ public partial class BackupWindow : Window
 
         // إصلاح: الزر لم يكن يحمل أي نص عند فتح النافذة أول مرة (كان فارغاً حتى أول نقرة)
         BackupNowButton.Content = LocalizationManager.T("Backup_NowButton");
+        RestoreButton.Content = LocalizationManager.T("Backup_RestoreButton");
 
         Loaded += (s, e) => RefreshLastBackupText();
     }
@@ -99,7 +100,7 @@ public partial class BackupWindow : Window
         }
     }
 
-    private void BackupNowButton_Click(object sender, RoutedEventArgs e)
+    private async void BackupNowButton_Click(object sender, RoutedEventArgs e)
     {
         StatusText.Text = string.Empty;
 
@@ -127,11 +128,12 @@ public partial class BackupWindow : Window
 
         try
         {
-            var (success, message, _) = _backupRepo.BackupNow(folder);
+            var result = await System.Threading.Tasks.Task.Run(() => _backupRepo.BackupNow(folder));
+            var (success, message, _) = result;
 
             if (success)
             {
-                _backupRepo.CleanupOldBackups(folder, _retainDays);
+                await System.Threading.Tasks.Task.Run(() => _backupRepo.CleanupOldBackups(folder, _retainDays));
                 StatusText.Foreground = System.Windows.Media.Brushes.SeaGreen;
                 StatusText.Text = LocalizationManager.T("Backup_Success");
                 RefreshLastBackupText();
@@ -147,6 +149,60 @@ public partial class BackupWindow : Window
             BackupNowButton.IsEnabled = true;
             BackupNowButton.Content = LocalizationManager.T("Backup_NowButton");
         }
+    }
+
+    private void BrowseRestoreFileButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = LocalizationManager.T("Backup_SelectRestoreFile"),
+            Filter = LocalizationManager.T("Backup_RestoreFileFilter"),
+            CheckFileExists = false
+        };
+
+        if (dialog.ShowDialog(this) == true)
+            RestoreFilePathText.Text = dialog.FileName;
+    }
+
+    private async void RestoreButton_Click(object sender, RoutedEventArgs e)
+    {
+        StatusText.Text = string.Empty;
+        var backupFile = RestoreFilePathText.Text.Trim();
+        if (string.IsNullOrWhiteSpace(backupFile))
+        {
+            StatusText.Foreground = (System.Windows.Media.Brush)FindResource("ErrorBrush");
+            StatusText.Text = LocalizationManager.T("Backup_RestoreFileRequired");
+            return;
+        }
+
+        var confirmation = MessageBox.Show(
+            LocalizationManager.T("Backup_RestoreConfirm"),
+            LocalizationManager.T("Backup_RestoreTitle"),
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+        if (confirmation != MessageBoxResult.Yes) return;
+
+        BackupNowButton.IsEnabled = false;
+        RestoreButton.IsEnabled = false;
+        RestoreButton.Content = LocalizationManager.T("Backup_RestoreInProgress");
+
+        var (success, message) = await System.Threading.Tasks.Task.Run(() => _backupRepo.RestoreDatabase(backupFile));
+        if (!success)
+        {
+            BackupNowButton.IsEnabled = true;
+            RestoreButton.IsEnabled = true;
+            RestoreButton.Content = LocalizationManager.T("Backup_RestoreButton");
+            StatusText.Foreground = (System.Windows.Media.Brush)FindResource("ErrorBrush");
+            StatusText.Text = message;
+            return;
+        }
+
+        MessageBox.Show(
+            LocalizationManager.T("Backup_RestoreSuccess"),
+            LocalizationManager.T("Backup_RestoreTitle"),
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+        Application.Current.Shutdown();
     }
 
     private static string? LoadSavedBackupFolder()
