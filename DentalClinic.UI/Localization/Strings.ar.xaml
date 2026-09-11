@@ -643,6 +643,7 @@
     <sys:String x:Key="PF_TodaySessionNotice">تم تحميل جلسة اليوم؛ الحفظ سيحدّثها ولن ينشئ جلسة جديدة.</sys:String>
     <sys:String x:Key="PF_EditingSessionNotice">وضع تعديل الجلسة</sys:String>
     <sys:String x:Key="PF_UpdateSessionButton">تحديث الجلسة</sys:String>
+    <sys:String x:Key="PF_ConcurrencyConflict">تم تعديل هذه الجلسة من مستخدم آخر. أغلقها وافتحها مجدداً قبل حفظ تعديلاتك.</sys:String>
     <sys:String x:Key="PF_DeleteSessionTitle">حذف الجلسة</sys:String>
     <sys:String x:Key="PF_DeleteSessionConfirm">هل أنت متأكد من حذف هذه الجلسة؟ هذا الإجراء لا يمكن التراجع عنه.</sys:String>
     <sys:String x:Key="PF_DeleteSessionPaidConfirm">هذه الجلسة مرتبطة بمبالغ مدفوعة. هل أنت متأكد من حذفها؟ سيتم حذف الدفعات والسجلات المالية التابعة لها أيضاً.</sys:String>

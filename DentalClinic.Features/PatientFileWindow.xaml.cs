@@ -36,6 +36,7 @@ public partial class PatientFileWindow : Window
     private readonly int? _visitId;
     private readonly int? _requestedSessionId;
     private int? _editingSessionId;
+    private byte[]? _editingSessionRowVersion;
     private readonly UserAccount _currentUser;
 
     private readonly PatientRepository _patientRepo;
@@ -512,6 +513,7 @@ public partial class PatientFileWindow : Window
         if (targetSession != null)
         {
             _editingSessionId = targetSession.SessionID;
+            _editingSessionRowVersion = targetSession.RowVersion;
             ChiefComplaintBox.Text = targetSession.ChiefComplaint ?? string.Empty;
             TotalPriceBox.Text = targetSession.TotalPrice > 0 ? targetSession.TotalPrice.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) : string.Empty;
 
@@ -630,7 +632,11 @@ public partial class PatientFileWindow : Window
                 Medication = _selectedMedications.Count > 0 ? string.Join("; ", _selectedMedications.Select(m => m.Name)) : null,
                 Certificate = _selectedCertificates.Count > 0 ? string.Join("; ", _selectedCertificates.Select(c => c.Name)) : null,
                 TotalPrice = totalPrice,
-                PaidAmount = targetSession?.PaidAmount ?? 0
+                PaidAmount = targetSession?.PaidAmount ?? 0,
+                // نحتفظ بإصدار السجل وقت فتحه؛ قراءة إصدار جديد هنا ستخفي تعارض التعديل.
+                RowVersion = targetSession?.SessionID == _editingSessionId && _editingSessionRowVersion != null
+                    ? _editingSessionRowVersion
+                    : targetSession?.RowVersion ?? Array.Empty<byte>()
             };
 
             var isUpdate = targetSession != null;
@@ -660,6 +666,10 @@ public partial class PatientFileWindow : Window
             MessageBox.Show(savedMessage, LocalizationManager.T("PF_SavedTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
             DialogResult = true;
             Close();
+        }
+        catch (ConcurrencyConflictException)
+        {
+            ErrorText.Text = LocalizationManager.T("PF_ConcurrencyConflict");
         }
         catch (Exception ex)
         {

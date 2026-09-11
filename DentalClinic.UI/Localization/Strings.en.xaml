@@ -643,6 +643,7 @@
     <sys:String x:Key="PF_TodaySessionNotice">Today's session has been loaded; saving will update it instead of creating a new session.</sys:String>
     <sys:String x:Key="PF_EditingSessionNotice">Editing session</sys:String>
     <sys:String x:Key="PF_UpdateSessionButton">Update Session</sys:String>
+    <sys:String x:Key="PF_ConcurrencyConflict">This session was changed by another user. Close and reopen it before saving your changes.</sys:String>
     <sys:String x:Key="PF_DeleteSessionTitle">Delete Session</sys:String>
     <sys:String x:Key="PF_DeleteSessionConfirm">Are you sure you want to delete this session? This action cannot be undone.</sys:String>
     <sys:String x:Key="PF_DeleteSessionPaidConfirm">This session has payments. Are you sure you want to delete it? Its payments and related financial records will also be deleted.</sys:String>

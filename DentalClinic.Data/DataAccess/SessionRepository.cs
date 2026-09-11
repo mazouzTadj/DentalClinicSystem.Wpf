@@ -44,7 +44,7 @@ public class SessionRepository
     {
         const string sql = @"
             SELECT SessionID, VisitID, PatientID, DoctorID, SessionDateTime, ChiefComplaint,
-                   Diagnosis, TreatmentPerformed, Medication, Certificate, TotalPrice, PaidAmount, WriteOffAmount, Notes
+                   Diagnosis, TreatmentPerformed, Medication, Certificate, TotalPrice, PaidAmount, WriteOffAmount, Notes, RowVersion
             FROM MedicalSessions
             WHERE PatientID = @PatientID
             ORDER BY SessionDateTime DESC";
@@ -69,7 +69,8 @@ public class SessionRepository
                 TotalPrice = (decimal)row["TotalPrice"],
                 PaidAmount = (decimal)row["PaidAmount"],
                 WriteOffAmount = (decimal)row["WriteOffAmount"],
-                Notes = row["Notes"] as string
+                Notes = row["Notes"] as string,
+                RowVersion = (byte[])row["RowVersion"]
             });
         }
         return result;
@@ -80,7 +81,7 @@ public class SessionRepository
     {
         const string sql = @"
             SELECT SessionID, VisitID, PatientID, DoctorID, SessionDateTime, ChiefComplaint,
-                   Diagnosis, TreatmentPerformed, Medication, Certificate, TotalPrice, PaidAmount, WriteOffAmount, Notes
+                   Diagnosis, TreatmentPerformed, Medication, Certificate, TotalPrice, PaidAmount, WriteOffAmount, Notes, RowVersion
             FROM MedicalSessions
             WHERE SessionID = @SessionID";
         var table = _db.ExecuteQuery(sql, new SqlParameter("@SessionID", sessionId));
@@ -91,7 +92,7 @@ public class SessionRepository
     {
         const string sql = @"
             SELECT TOP 1 SessionID, VisitID, PatientID, DoctorID, SessionDateTime, ChiefComplaint,
-                   Diagnosis, TreatmentPerformed, Medication, Certificate, TotalPrice, PaidAmount, WriteOffAmount, Notes
+                   Diagnosis, TreatmentPerformed, Medication, Certificate, TotalPrice, PaidAmount, WriteOffAmount, Notes, RowVersion
             FROM MedicalSessions
             WHERE PatientID = @PatientID
               AND SessionDateTime >= @StartDate
@@ -109,6 +110,8 @@ public class SessionRepository
         var current = GetById(session.SessionID) ?? throw new InvalidOperationException("Session not found");
         if (session.TotalPrice < current.PaidAmount + current.WriteOffAmount)
             throw new InvalidOperationException("Total price cannot be less than the amount already paid.");
+        if (session.RowVersion.Length == 0)
+            throw new InvalidOperationException("Session version is missing.");
 
         const string sql = @"
             UPDATE MedicalSessions
@@ -119,10 +122,12 @@ public class SessionRepository
                 Certificate = @Certificate,
                 TotalPrice = @TotalPrice,
                 Notes = @Notes
-            WHERE SessionID = @SessionID";
+            WHERE SessionID = @SessionID
+              AND RowVersion = @RowVersion";
 
-        _db.ExecuteNonQuery(sql,
+        var affectedRows = _db.ExecuteNonQuery(sql,
             new SqlParameter("@SessionID", session.SessionID),
+            new SqlParameter("@RowVersion", SqlDbType.Timestamp) { Value = session.RowVersion },
             new SqlParameter("@ChiefComplaint", (object?)session.ChiefComplaint ?? DBNull.Value),
             new SqlParameter("@Diagnosis", (object?)session.Diagnosis ?? DBNull.Value),
             new SqlParameter("@TreatmentPerformed", (object?)session.TreatmentPerformed ?? DBNull.Value),
@@ -130,6 +135,9 @@ public class SessionRepository
             new SqlParameter("@Certificate", (object?)session.Certificate ?? DBNull.Value),
             new SqlParameter("@TotalPrice", session.TotalPrice),
             new SqlParameter("@Notes", (object?)session.Notes ?? DBNull.Value));
+
+        if (affectedRows == 0)
+            throw new ConcurrencyConflictException();
     }
 
     public List<(int SessionID, decimal Amount)> GetUnpaidSessionsForPatient(int patientId)
@@ -211,7 +219,9 @@ public class SessionRepository
         Certificate = row["Certificate"] == DBNull.Value ? null : row["Certificate"].ToString(),
         TotalPrice = Convert.ToDecimal(row["TotalPrice"]),
         PaidAmount = Convert.ToDecimal(row["PaidAmount"]),
-        Notes = row["Notes"] == DBNull.Value ? null : row["Notes"].ToString()
+        WriteOffAmount = Convert.ToDecimal(row["WriteOffAmount"]),
+        Notes = row["Notes"] == DBNull.Value ? null : row["Notes"].ToString(),
+        RowVersion = (byte[])row["RowVersion"]
     };
 
     // تسجيل مبسّط لسن ضمن جلسة - تمهيداً لمخطط الأسنان التفاعلي (Odontogram) في خطوة لاحقة

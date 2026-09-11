@@ -54,6 +54,7 @@ CREATE TABLE [dbo].[MedicalSessions](
 	[WriteOffAmount] [decimal](10, 2) NOT NULL CONSTRAINT [DF_MedicalSessions_WriteOffAmount] DEFAULT ((0)),
 	[RemainingAmount]  AS ([TotalPrice]-[PaidAmount]-[WriteOffAmount]) PERSISTED,
 	[Notes] [nvarchar](1000) NULL,
+	[RowVersion] [rowversion] NOT NULL,
 	[CreatedAt] [datetime] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (

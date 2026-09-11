@@ -57,6 +57,7 @@ public static class SchemaInitializer
         EnsureProstheticPermissionsSeeded(db);
         EnsureWorkTypePriceColumn(db);
         EnsureCertificateColumn(db);
+        EnsureMedicalSessionRowVersion(db);
     }
 
     // ===================== نظام مرمم الأسنان (Dental Prosthetist) =====================
@@ -327,6 +328,16 @@ BEGIN
     ALTER TABLE dbo.ProstheticWorkTypes
         ADD Price DECIMAL(18,2) NOT NULL
             CONSTRAINT DF_ProstheticWorkTypes_Price DEFAULT (0) WITH VALUES;
+END";
+        db.ExecuteNonQuery(sql);
+    }
+
+    private static void EnsureMedicalSessionRowVersion(DatabaseHelper db)
+    {
+        const string sql = @"
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.MedicalSessions') AND name = N'RowVersion')
+BEGIN
+    ALTER TABLE dbo.MedicalSessions ADD RowVersion ROWVERSION NOT NULL;
 END";
         db.ExecuteNonQuery(sql);
     }

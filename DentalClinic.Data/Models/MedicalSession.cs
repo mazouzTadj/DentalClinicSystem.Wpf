@@ -18,4 +18,7 @@ public class MedicalSession
     public decimal WriteOffAmount { get; set; }
     public decimal RemainingAmount => Math.Max(0m, TotalPrice - PaidAmount - WriteOffAmount);
     public string? Notes { get; set; }
+
+    // SQL Server يحدّث هذا الطابع تلقائياً مع كل تعديل على السجل.
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 }
