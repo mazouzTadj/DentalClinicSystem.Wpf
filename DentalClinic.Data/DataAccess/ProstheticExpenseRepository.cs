@@ -67,6 +67,25 @@ public class ProstheticExpenseRepository
         _db.ExecuteNonQuery(sql, new SqlParameter("@ExpenseID", expenseId));
     }
 
+    // تعديل مصروف موجود - نفس نمط UpdatePayment في ProstheticPaymentRepository بالحرف. لا نُغيّر
+    // ProsthetistUserID/CreatedByUserID/CreatedAt هنا عمداً (المرمم صاحب المصروف لا يتغيّر بالتعديل).
+    public void UpdateExpense(ProstheticExpense expense, UserAccount actingUser)
+    {
+        ProstheticPermissionGuard.Ensure(actingUser, ProstheticPermissionKeys.EditExpense);
+
+        const string sql = @"
+            UPDATE ProstheticExpenses
+            SET Amount = @Amount, Description = @Desc, Category = @Cat, ExpenseDate = @Date
+            WHERE ExpenseID = @ExpenseID";
+
+        _db.ExecuteNonQuery(sql,
+            new SqlParameter("@Amount", expense.Amount),
+            new SqlParameter("@Desc", expense.Description),
+            new SqlParameter("@Cat", expense.Category),
+            new SqlParameter("@Date", expense.ExpenseDate),
+            new SqlParameter("@ExpenseID", expense.ExpenseID));
+    }
+
     // قائمة المصاريف ضمن فترة + فلتر مرمم اختياري (null = كل المرممين) - لعرضها في
     // ProstheticExpensesWindow. قراءة فقط، بلا أي تحقق صلاحية هنا (نفس أسلوب باقي دوال القراءة في
     // ProstheticStatisticsRepository - التحقق يقع على الاستدعاء من الواجهة عبر CanViewFinance).
@@ -74,7 +93,7 @@ public class ProstheticExpenseRepository
     {
         var filter = prosthetistUserId.HasValue ? " AND e.ProsthetistUserID = @ProsthetistID" : "";
         var sql = $@"
-            SELECT e.ExpenseID, e.Amount, e.Description, e.Category, e.ExpenseDate,
+            SELECT e.ExpenseID, e.ProsthetistUserID, e.Amount, e.Description, e.Category, e.ExpenseDate,
                    ISNULL(u.FullName, u.Username) AS ProsthetistName
             FROM dbo.ProstheticExpenses e
             LEFT JOIN dbo.Users u ON u.UserID = e.ProsthetistUserID
@@ -91,6 +110,7 @@ public class ProstheticExpenseRepository
             result.Add(new ProstheticExpenseRow
             {
                 ExpenseID = Convert.ToInt32(row["ExpenseID"]),
+                ProsthetistUserID = Convert.ToInt32(row["ProsthetistUserID"]),
                 Amount = Convert.ToDecimal(row["Amount"]),
                 Description = row["Description"].ToString()!,
                 Category = row["Category"].ToString()!,

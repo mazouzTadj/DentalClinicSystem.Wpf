@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using DentalClinic.Data.DataAccess;
+using DentalClinic.Data.Models;
 using DentalClinic.UI.Localization;
 
 namespace DentalClinic.Features;
@@ -10,9 +11,13 @@ namespace DentalClinic.Features;
 public partial class AddExpenseWindow : Window
 {
     private readonly FinancialRepository _financialRepo;
+    private readonly ExpenseRow? _existingExpense; // null = إضافة، غير null = تعديل
+
+    private bool IsEditMode => _existingExpense != null;
 
     public AddExpenseWindow()
     {
+        _existingExpense = null;
         InitializeComponent();
 
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
@@ -20,6 +25,34 @@ public partial class AddExpenseWindow : Window
         _financialRepo = new FinancialRepository(db);
 
         ExpenseDatePicker.SelectedDate = DateTime.Now;
+    }
+
+    // وضع التعديل: نفس نافذة الإضافة، مملوءة مسبقاً بقيم المصروف الحالي - نفس نمط
+    // ProstheticPaymentEditWindow (مُنشِئ ثانٍ يأخذ الكائن الموجود بدل إعادة بناء نافذة منفصلة).
+    public AddExpenseWindow(ExpenseRow existingExpense)
+    {
+        _existingExpense = existingExpense;
+        InitializeComponent();
+
+        var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
+        var db = new DatabaseHelper(connectionString);
+        _financialRepo = new FinancialRepository(db);
+
+        Title = LocalizationManager.T("Expense_EditTitle");
+        HeaderText.Text = LocalizationManager.T("Expense_EditHeader");
+
+        AmountBox.Text = existingExpense.Amount.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+        DescriptionBox.Text = existingExpense.Description;
+        ExpenseDatePicker.SelectedDate = existingExpense.ExpenseDate.Date;
+
+        foreach (ComboBoxItem item in CategoryComboBox.Items)
+        {
+            if (string.Equals(item.Tag?.ToString(), existingExpense.Category, StringComparison.Ordinal))
+            {
+                CategoryComboBox.SelectedItem = item;
+                break;
+            }
+        }
     }
 
     private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -45,8 +78,10 @@ public partial class AddExpenseWindow : Window
 
         try
         {
-            // 2. Pass category to AddExpense
-            _financialRepo.AddExpense(amount, DescriptionBox.Text.Trim(), category, selectedDate);
+            if (IsEditMode)
+                _financialRepo.UpdateExpense(_existingExpense!.ExpenseID, amount, DescriptionBox.Text.Trim(), category, selectedDate);
+            else
+                _financialRepo.AddExpense(amount, DescriptionBox.Text.Trim(), category, selectedDate);
 
             DialogResult = true;
             Close();

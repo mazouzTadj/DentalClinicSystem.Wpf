@@ -56,5 +56,6 @@ public static class ProstheticPermissionKeys
     // جديدة (نفس ما تخضع له بطاقات القيمة/المدفوعات/المتبقي أصلاً) - هاتان الصلاحيتان فقط لعمليتي
     // الإضافة والحذف.
     public const string AddExpense = "Prosthetics.AddExpense";
+    public const string EditExpense = "Prosthetics.EditExpense";
     public const string DeleteExpense = "Prosthetics.DeleteExpense";
 }

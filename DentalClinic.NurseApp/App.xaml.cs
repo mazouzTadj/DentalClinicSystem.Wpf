@@ -32,6 +32,7 @@ public partial class App : Application
 
         if (loginResult == true && loginWindow.LoggedInUser != null)
         {
+            AuditContext.SetCurrentUser(loginWindow.LoggedInUser.UserID);
             var mainWindow = new MainWindow(loginWindow.LoggedInUser);
             MainWindow = mainWindow;
             ShutdownMode = ShutdownMode.OnMainWindowClose;

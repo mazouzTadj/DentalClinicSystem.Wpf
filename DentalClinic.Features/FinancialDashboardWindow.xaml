@@ -393,12 +393,17 @@
                                     <DataGridTextColumn Header="{DynamicResource Fin_ColCategory}" Binding="{Binding Category}" Width="220" ElementStyle="{StaticResource CellTextStyle}"/>
                                     <DataGridTextColumn Header="{DynamicResource Fin_ColDescription}" Binding="{Binding Description}" Width="*" ElementStyle="{StaticResource CellTextStyle}"/>
                                     <DataGridTextColumn Header="{DynamicResource Fin_ColAmount}" Binding="{Binding Amount, StringFormat={}{0:N2}}" Width="130" ElementStyle="{StaticResource CellTextStyle}"/>
-                                    <DataGridTemplateColumn Header="{DynamicResource Fin_ColActions}" Width="90">
+                                    <DataGridTemplateColumn Header="{DynamicResource Fin_ColActions}" Width="130">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="🗑" ToolTip="{DynamicResource Expense_DeleteTooltip}" Width="30" Height="26"
-                                                        Background="Transparent" BorderThickness="0" Cursor="Hand" FontSize="13"
-                                                        Foreground="{StaticResource ErrorBrush}" Tag="{Binding}" Click="DeleteExpenseButton_Click"/>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <Button Content="✏" ToolTip="{DynamicResource Expense_EditTooltip}" Width="30" Height="26"
+                                                            Background="Transparent" BorderThickness="0" Cursor="Hand" FontSize="13"
+                                                            Foreground="{StaticResource TextSecondaryBrush}" Tag="{Binding}" Click="EditExpenseButton_Click"/>
+                                                    <Button Content="🗑" ToolTip="{DynamicResource Expense_DeleteTooltip}" Width="30" Height="26"
+                                                            Background="Transparent" BorderThickness="0" Cursor="Hand" FontSize="13"
+                                                            Foreground="{StaticResource ErrorBrush}" Tag="{Binding}" Click="DeleteExpenseButton_Click"/>
+                                                </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>

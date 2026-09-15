@@ -37,6 +37,7 @@ public partial class ProstheticExpensesWindow : Window
     private bool IsDoctorAccount => _currentUser.Role == UserRole.Doctor && _currentUser.IsMainDoctor;
     private bool CanViewAllCases => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.ViewAllCases);
     private bool CanAddExpense => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.AddExpense);
+    private bool CanEditExpense => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.EditExpense);
     private bool CanDeleteExpense => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.DeleteExpense);
 
     public ObservableCollection<ProstheticExpenseRow> ExpenseRows { get; } = new();
@@ -54,6 +55,7 @@ public partial class ProstheticExpensesWindow : Window
         ExpensesGrid.ItemsSource = ExpenseRows;
 
         AddExpenseButton.Visibility = CanAddExpense ? Visibility.Visible : Visibility.Collapsed;
+        EditColumn.Visibility = CanEditExpense ? Visibility.Visible : Visibility.Collapsed;
         DeleteColumn.Visibility = CanDeleteExpense ? Visibility.Visible : Visibility.Collapsed;
 
         LoadProsthetistFilter();
@@ -158,6 +160,15 @@ public partial class ProstheticExpensesWindow : Window
         if (!CanAddExpense) return;
 
         var window = new AddProstheticExpenseWindow(_currentUser, _db, SelectedProsthetistId) { Owner = this };
+        if (window.ShowDialog() == true) LoadData();
+    }
+
+    private void EditExpenseButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!CanEditExpense) return;
+        if (sender is not Button btn || btn.Tag is not ProstheticExpenseRow expense) return;
+
+        var window = new AddProstheticExpenseWindow(expense, _currentUser, _db) { Owner = this };
         if (window.ShowDialog() == true) LoadData();
     }
 

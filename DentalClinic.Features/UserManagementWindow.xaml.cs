@@ -70,6 +70,12 @@ public partial class UserManagementWindow : Window
         }
     }
 
+    private void AuditLogButton_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new AuditLogWindow(_currentUser) { Owner = this };
+        window.ShowDialog();
+    }
+
     private void EditUserButton_Click(object sender, RoutedEventArgs e) => EditSelected();
 
     private void UsersGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => EditSelected();

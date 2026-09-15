@@ -40,6 +40,9 @@
 
             <!-- شريط الأزرار -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="30,10,30,16">
+                <Button Content="{DynamicResource Audit_OpenButton}" Width="115" Height="40"
+                        Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,10,0"
+                        Click="AuditLogButton_Click"/>
                 <Button Content="{DynamicResource UserMgmt_EditSelected}" Width="130" Height="40"
                         Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,10,0"
                         Click="EditUserButton_Click"/>

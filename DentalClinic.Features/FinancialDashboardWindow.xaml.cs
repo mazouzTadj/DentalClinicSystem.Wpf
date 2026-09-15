@@ -494,6 +494,14 @@ public partial class FinancialDashboardWindow : Window
 
     // حذف مصروف (بعد تأكيد المستخدم) - يعمل مع المصاريف اليدوية وكذلك عمولات الأطباء التلقائية،
     // لتصحيح أي خطأ (مبلغ خاطئ، طبيب خاطئ، إدخال مكرر...) دون الحاجة للوصول لقاعدة البيانات مباشرة
+    private void EditExpenseButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button btn || btn.Tag is not ExpenseRow expense) return;
+
+        var editWin = new AddExpenseWindow(expense) { Owner = this };
+        if (editWin.ShowDialog() == true) LoadExpensesSummary();
+    }
+
     private void DeleteExpenseButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button btn || btn.Tag is not ExpenseRow expense) return;

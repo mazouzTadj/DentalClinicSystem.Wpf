@@ -23,6 +23,7 @@ public class ProstheticExpense
 public class ProstheticExpenseRow
 {
     public int ExpenseID { get; set; }
+    public int ProsthetistUserID { get; set; }
     public string ProsthetistName { get; set; } = "-";
     public decimal Amount { get; set; }
     public string Description { get; set; } = string.Empty;

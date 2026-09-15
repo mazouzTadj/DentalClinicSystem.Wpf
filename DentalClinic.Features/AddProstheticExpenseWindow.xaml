@@ -13,7 +13,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Border Padding="20">
             <StackPanel>
-            <TextBlock Text="{DynamicResource ProsthExpense_Header}" FontSize="18" FontWeight="Bold"
+            <TextBlock x:Name="HeaderText" Text="{DynamicResource ProsthExpense_Header}" FontSize="18" FontWeight="Bold"
                        Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,15"/>
 
             <!-- المرمم صاحب هذا المصروف - مقفل على المرمم الحالي لمن لا يملك ViewAllCases،

@@ -58,6 +58,7 @@ public static class SchemaInitializer
         EnsureWorkTypePriceColumn(db);
         EnsureCertificateColumn(db);
         EnsureMedicalSessionRowVersion(db);
+        EnsureAuditLogging(db);
     }
 
     // ===================== نظام مرمم الأسنان (Dental Prosthetist) =====================
@@ -286,6 +287,7 @@ DELETE FROM dbo.Permissions WHERE PermissionKey = N'Prosthetics.ManageCases';";
             (ProstheticPermissionKeys.EditPayment,   "Edit prosthetic payment", 200),
             (ProstheticPermissionKeys.DeletePayment, "Delete prosthetic payment", 210),
             (ProstheticPermissionKeys.AddExpense,    "Add prosthetic expense", 220),
+            (ProstheticPermissionKeys.EditExpense,   "Edit prosthetic expense", 225),
             (ProstheticPermissionKeys.DeleteExpense, "Delete prosthetic expense", 230),
         };
 
@@ -338,6 +340,58 @@ END";
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.MedicalSessions') AND name = N'RowVersion')
 BEGIN
     ALTER TABLE dbo.MedicalSessions ADD RowVersion ROWVERSION NOT NULL;
+END";
+        db.ExecuteNonQuery(sql);
+    }
+
+    private static void EnsureAuditLogging(DatabaseHelper db)
+    {
+        const string tableSql = @"
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE object_id = OBJECT_ID(N'dbo.AuditLog'))
+BEGIN
+    CREATE TABLE dbo.AuditLog(
+        AuditLogID BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        OccurredAt DATETIME2 NOT NULL CONSTRAINT DF_AuditLog_OccurredAt DEFAULT SYSUTCDATETIME(),
+        ActorUserID INT NULL,
+        Action NVARCHAR(20) NOT NULL,
+        EntityType NVARCHAR(50) NOT NULL,
+        EntityID INT NULL,
+        ClientHost NVARCHAR(128) NULL CONSTRAINT DF_AuditLog_ClientHost DEFAULT HOST_NAME(),
+        ApplicationName NVARCHAR(128) NULL CONSTRAINT DF_AuditLog_ApplicationName DEFAULT APP_NAME(),
+        SqlLogin NVARCHAR(128) NULL CONSTRAINT DF_AuditLog_SqlLogin DEFAULT ORIGINAL_LOGIN()
+    );
+    CREATE INDEX IX_AuditLog_OccurredAt ON dbo.AuditLog(OccurredAt DESC);
+    CREATE INDEX IX_AuditLog_Entity ON dbo.AuditLog(EntityType, EntityID, AuditLogID DESC);
+END";
+        db.ExecuteNonQuery(tableSql);
+
+        EnsureAuditTrigger(db, "Patients", "PatientID", "Patient");
+        EnsureAuditTrigger(db, "MedicalSessions", "SessionID", "MedicalSession");
+        EnsureAuditTrigger(db, "Payments", "PaymentID", "Payment");
+        EnsureAuditTrigger(db, "VisitQueue", "VisitID", "Visit");
+        EnsureAuditTrigger(db, "ProstheticCases", "CaseID", "ProstheticCase");
+        EnsureAuditTrigger(db, "ProstheticPayments", "ProstheticPaymentID", "ProstheticPayment");
+        EnsureAuditTrigger(db, "ProstheticExpenses", "ExpenseID", "ProstheticExpense");
+    }
+
+    private static void EnsureAuditTrigger(DatabaseHelper db, string tableName, string keyColumn, string entityType)
+    {
+        var triggerName = $"TR_Audit_{tableName}";
+        var sql = $@"
+CREATE OR ALTER TRIGGER dbo.[{triggerName}]
+ON dbo.[{tableName}]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO dbo.AuditLog (ActorUserID, Action, EntityType, EntityID)
+    SELECT TRY_CONVERT(INT, SESSION_CONTEXT(N'AuditUserId')),
+           CASE WHEN i.[{keyColumn}] IS NOT NULL AND d.[{keyColumn}] IS NULL THEN N'Created'
+                WHEN i.[{keyColumn}] IS NOT NULL AND d.[{keyColumn}] IS NOT NULL THEN N'Updated'
+                ELSE N'Deleted' END,
+           N'{entityType}', COALESCE(i.[{keyColumn}], d.[{keyColumn}])
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON d.[{keyColumn}] = i.[{keyColumn}];
 END";
         db.ExecuteNonQuery(sql);
     }

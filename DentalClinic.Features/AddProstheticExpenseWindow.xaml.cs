@@ -15,6 +15,9 @@ public partial class AddProstheticExpenseWindow : Window
 {
     private readonly UserAccount _currentUser;
     private readonly ProstheticExpenseRepository _expenseRepo;
+    private readonly ProstheticExpenseRow? _existingExpense; // null = إضافة، غير null = تعديل
+
+    private bool IsEditMode => _existingExpense != null;
 
     // نفس معيار IsDoctorAccount/CanViewAllCases المعتمد في ProstheticStatisticsWindow بالحرف
     // (Role==Doctor && IsMainDoctor، وليس أي طبيب) - من يملكها يستطيع اختيار أي مرمم لهذا المصروف،
@@ -26,6 +29,7 @@ public partial class AddProstheticExpenseWindow : Window
     public AddProstheticExpenseWindow(UserAccount currentUser, DatabaseHelper db, int? preselectedProsthetistId = null)
     {
         _currentUser = currentUser;
+        _existingExpense = null;
         InitializeComponent();
 
         _expenseRepo = new ProstheticExpenseRepository(db);
@@ -55,6 +59,41 @@ public partial class AddProstheticExpenseWindow : Window
         ExpenseDatePicker.SelectedDate = DateTime.Now;
     }
 
+    // وضع التعديل: مملوءة مسبقاً بقيم المصروف الحالي. حقل المرمم يبقى مقفلاً دائماً هنا (حتى لمن
+    // يملك CanChooseProsthetist) لأن نقل مصروف من مرمم لآخر ليس جزءاً من "تعديل" - فقط المبلغ/الوصف/
+    // الفئة/التاريخ قابلة للتغيير، نفس منطق ProstheticPaymentEditWindow الذي لا يسمح بتغيير الحالة (Case).
+    public AddProstheticExpenseWindow(ProstheticExpenseRow existingExpense, UserAccount currentUser, DatabaseHelper db)
+    {
+        _currentUser = currentUser;
+        _existingExpense = existingExpense;
+        InitializeComponent();
+
+        _expenseRepo = new ProstheticExpenseRepository(db);
+
+        Title = LocalizationManager.T("ProsthExpense_EditTitle");
+        HeaderText.Text = LocalizationManager.T("ProsthExpense_EditHeader");
+
+        ProsthetistComboBox.ItemsSource = new List<UserAccount>
+        {
+            new UserAccount { UserID = existingExpense.ProsthetistUserID, FullName = existingExpense.ProsthetistName }
+        };
+        ProsthetistComboBox.SelectedIndex = 0;
+        ProsthetistComboBox.IsEnabled = false;
+
+        AmountBox.Text = existingExpense.Amount.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+        DescriptionBox.Text = existingExpense.Description;
+        ExpenseDatePicker.SelectedDate = existingExpense.ExpenseDate.Date;
+
+        foreach (ComboBoxItem item in CategoryComboBox.Items)
+        {
+            if (string.Equals(item.Tag?.ToString(), existingExpense.Category, StringComparison.Ordinal))
+            {
+                CategoryComboBox.SelectedItem = item;
+                break;
+            }
+        }
+    }
+
     private void SaveButton_Click(object sender, RoutedEventArgs e)
     {
         ErrorText.Text = "";
@@ -82,15 +121,31 @@ public partial class AddProstheticExpenseWindow : Window
 
         try
         {
-            var expense = new ProstheticExpense
+            if (IsEditMode)
             {
-                ProsthetistUserID = selectedProsthetist.UserID,
-                Amount = amount,
-                Description = DescriptionBox.Text.Trim(),
-                Category = category,
-                ExpenseDate = selectedDate
-            };
-            _expenseRepo.AddExpense(expense, _currentUser);
+                var updated = new ProstheticExpense
+                {
+                    ExpenseID = _existingExpense!.ExpenseID,
+                    ProsthetistUserID = _existingExpense.ProsthetistUserID,
+                    Amount = amount,
+                    Description = DescriptionBox.Text.Trim(),
+                    Category = category,
+                    ExpenseDate = selectedDate
+                };
+                _expenseRepo.UpdateExpense(updated, _currentUser);
+            }
+            else
+            {
+                var expense = new ProstheticExpense
+                {
+                    ProsthetistUserID = selectedProsthetist.UserID,
+                    Amount = amount,
+                    Description = DescriptionBox.Text.Trim(),
+                    Category = category,
+                    ExpenseDate = selectedDate
+                };
+                _expenseRepo.AddExpense(expense, _currentUser);
+            }
 
             DialogResult = true;
             Close();

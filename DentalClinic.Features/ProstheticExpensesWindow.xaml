@@ -99,7 +99,16 @@
                         <DataGridTextColumn Header="{DynamicResource Fin_ColCategory}" Binding="{Binding Category}" Width="160"/>
                         <DataGridTextColumn Header="{DynamicResource Fin_ColDescription}" Binding="{Binding Description}" Width="*"/>
                         <DataGridTextColumn Header="{DynamicResource Fin_ColAmount}" Binding="{Binding Amount, StringFormat={}{0:N2}}" Width="120"/>
-                        <DataGridTemplateColumn x:Name="DeleteColumn" Header="{DynamicResource Fin_ColActions}" Width="90">
+                        <DataGridTemplateColumn x:Name="EditColumn" Header="{DynamicResource Fin_ColActions}" Width="45">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="✏" ToolTip="{DynamicResource Expense_EditTooltip}" Width="30" Height="26"
+                                            Background="Transparent" BorderThickness="0" Cursor="Hand" FontSize="13"
+                                            Foreground="{StaticResource TextSecondaryBrush}" Tag="{Binding}" Click="EditExpenseButton_Click"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn x:Name="DeleteColumn" Header="{DynamicResource Fin_ColActions}" Width="45">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Content="🗑" ToolTip="{DynamicResource Expense_DeleteTooltip}" Width="30" Height="26"

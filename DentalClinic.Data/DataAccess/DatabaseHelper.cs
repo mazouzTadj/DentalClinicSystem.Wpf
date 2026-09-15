@@ -71,6 +71,7 @@ public class DatabaseHelper
         using var cmd = new SqlCommand(commandText, conn) { CommandTimeout = CommandTimeoutSeconds };
         if (parameters.Length > 0) cmd.Parameters.AddRange(parameters);
         conn.Open();
+        ApplyAuditContext(conn);
         return cmd.ExecuteNonQuery();
     }
 
@@ -81,6 +82,7 @@ public class DatabaseHelper
         using var cmd = new SqlCommand(commandText + "; SELECT CAST(SCOPE_IDENTITY() AS INT);", conn) { CommandTimeout = CommandTimeoutSeconds };
         if (parameters.Length > 0) cmd.Parameters.AddRange(parameters);
         conn.Open();
+        ApplyAuditContext(conn);
         var result = cmd.ExecuteScalar();
         return result != null ? Convert.ToInt32(result) : 0;
     }
@@ -91,6 +93,8 @@ public class DatabaseHelper
         using var conn = GetConnection();
         using var cmd = new SqlCommand(commandText, conn) { CommandTimeout = CommandTimeoutSeconds };
         if (parameters.Length > 0) cmd.Parameters.AddRange(parameters);
+        conn.Open();
+        ApplyAuditContext(conn);
         using var adapter = new SqlDataAdapter(cmd);
         var table = new DataTable();
         adapter.Fill(table);
@@ -104,6 +108,20 @@ public class DatabaseHelper
         using var cmd = new SqlCommand(commandText, conn) { CommandTimeout = CommandTimeoutSeconds };
         if (parameters.Length > 0) cmd.Parameters.AddRange(parameters);
         conn.Open();
+        ApplyAuditContext(conn);
         return cmd.ExecuteScalar();
+    }
+
+    private static void ApplyAuditContext(SqlConnection conn)
+    {
+        if (!AuditContext.CurrentUserId.HasValue) return;
+
+        using var cmd = new SqlCommand(
+            "EXEC sys.sp_set_session_context @key = N'AuditUserId', @value = @UserId;", conn)
+        {
+            CommandTimeout = CommandTimeoutSeconds
+        };
+        cmd.Parameters.AddWithValue("@UserId", AuditContext.CurrentUserId.Value);
+        cmd.ExecuteNonQuery();
     }
 }

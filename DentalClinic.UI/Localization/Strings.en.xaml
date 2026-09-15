@@ -540,6 +540,8 @@
     <!-- ===== شاشة إضافة مصروف ===== -->
     <sys:String x:Key="Expense_Title">Add Expense</sys:String>
     <sys:String x:Key="Expense_Header">Add New Expense</sys:String>
+    <sys:String x:Key="Expense_EditTitle">Edit Expense</sys:String>
+    <sys:String x:Key="Expense_EditHeader">Edit Expense</sys:String>
     <sys:String x:Key="Expense_Category">Category</sys:String>
     <sys:String x:Key="Expense_Amount">Amount</sys:String>
     <sys:String x:Key="Expense_Description">Description</sys:String>
@@ -557,6 +559,7 @@
     <sys:String x:Key="Expense_DescriptionRequired">Please enter a description.</sys:String>
     <sys:String x:Key="Expense_SaveErrorFormat">Error saving expense: {0}</sys:String>
     <sys:String x:Key="Expense_DeleteTooltip">Delete this expense</sys:String>
+    <sys:String x:Key="Expense_EditTooltip">Edit this expense</sys:String>
     <sys:String x:Key="Expense_DeleteConfirmTitle">Confirm Deletion</sys:String>
     <sys:String x:Key="Expense_DeleteConfirmMessageFormat">Are you sure you want to delete this expense?&#10;"{0}" - {1}&#10;This action cannot be undone.</sys:String>
     <sys:String x:Key="Expense_DeleteConfirmAutoMessageFormat">This is a doctor commission expense auto-generated from an actual payment:&#10;"{0}" - {1}&#10;Deleting it won't affect the payment itself, but it will increase the clinic's calculated net profit for this period. Continue?</sys:String>
@@ -565,6 +568,8 @@
     <!-- Patch 12: prosthetist expenses (ProstheticExpenses) - separate add/manage window from Expense_* above -->
     <sys:String x:Key="ProsthExpense_Title">Add Prosthetist Expense</sys:String>
     <sys:String x:Key="ProsthExpense_Header">Add New Expense</sys:String>
+    <sys:String x:Key="ProsthExpense_EditTitle">Edit Prosthetist Expense</sys:String>
+    <sys:String x:Key="ProsthExpense_EditHeader">Edit Expense</sys:String>
     <sys:String x:Key="ProsthExpense_Prosthetist">Prosthetist</sys:String>
     <sys:String x:Key="ProsthExpense_ProsthetistRequired">Please select a prosthetist.</sys:String>
     <sys:String x:Key="ProsthExpense_CatLabFees">Lab Fees</sys:String>
@@ -645,6 +650,16 @@
     <sys:String x:Key="Backup_RestoreConfirm">This permanently replaces the current clinic database and disconnects every user. Continue?</sys:String>
     <sys:String x:Key="Backup_RestoreInProgress">Restoring...</sys:String>
     <sys:String x:Key="Backup_RestoreSuccess">The database was restored successfully. The application will now close; reopen it to continue.</sys:String>
+    <sys:String x:Key="Audit_OpenButton">Audit Log</sys:String>
+    <sys:String x:Key="Audit_Title">Audit Log</sys:String>
+    <sys:String x:Key="Audit_Description">Recent critical data changes. Clinical content is intentionally not stored in this log.</sys:String>
+    <sys:String x:Key="Audit_ColTime">Time</sys:String>
+    <sys:String x:Key="Audit_ColAction">Action</sys:String>
+    <sys:String x:Key="Audit_ColRecord">Record</sys:String>
+    <sys:String x:Key="Audit_ColUser">User</sys:String>
+    <sys:String x:Key="Audit_ColDevice">Device</sys:String>
+    <sys:String x:Key="Audit_CountFormat">{0} recent entries</sys:String>
+    <sys:String x:Key="Audit_LoadErrorFormat">Could not load audit log: {0}</sys:String>
 
     <sys:String x:Key="PF_ColActions">Actions</sys:String>
     <sys:String x:Key="PF_EditSessionButton">Edit</sys:String>

@@ -540,6 +540,8 @@
     <!-- ===== شاشة إضافة مصروف ===== -->
     <sys:String x:Key="Expense_Title">إضافة مصروف</sys:String>
     <sys:String x:Key="Expense_Header">إضافة مصروف جديد</sys:String>
+    <sys:String x:Key="Expense_EditTitle">تعديل مصروف</sys:String>
+    <sys:String x:Key="Expense_EditHeader">تعديل المصروف</sys:String>
     <sys:String x:Key="Expense_Category">الفئة</sys:String>
     <sys:String x:Key="Expense_Amount">المبلغ</sys:String>
     <sys:String x:Key="Expense_Description">الوصف</sys:String>
@@ -557,6 +559,7 @@
     <sys:String x:Key="Expense_DescriptionRequired">الرجاء إدخال وصف.</sys:String>
     <sys:String x:Key="Expense_SaveErrorFormat">خطأ أثناء حفظ المصروف: {0}</sys:String>
     <sys:String x:Key="Expense_DeleteTooltip">حذف هذا المصروف</sys:String>
+    <sys:String x:Key="Expense_EditTooltip">تعديل هذا المصروف</sys:String>
     <sys:String x:Key="Expense_DeleteConfirmTitle">تأكيد الحذف</sys:String>
     <sys:String x:Key="Expense_DeleteConfirmMessageFormat">هل أنت متأكد من حذف المصروف التالي؟&#10;"{0}" - {1}&#10;لا يمكن التراجع عن هذا الإجراء.</sys:String>
     <sys:String x:Key="Expense_DeleteConfirmAutoMessageFormat">هذا مصروف عمولة طبيب مُولَّد تلقائياً من دفعة فعلية:&#10;"{0}" - {1}&#10;حذفه لن يؤثر على الدفعة نفسها، لكنه سيزيد صافي ربح العيادة المحسوب لهذه الفترة. هل تريد المتابعة؟</sys:String>
@@ -565,6 +568,8 @@
     <!-- Patch 12: مصاريف المرمم (ProstheticExpenses) - نافذة إضافة/إدارة مستقلة عن Expense_* أعلاه -->
     <sys:String x:Key="ProsthExpense_Title">إضافة مصروف مرمم</sys:String>
     <sys:String x:Key="ProsthExpense_Header">إضافة مصروف جديد</sys:String>
+    <sys:String x:Key="ProsthExpense_EditTitle">تعديل مصروف مرمم</sys:String>
+    <sys:String x:Key="ProsthExpense_EditHeader">تعديل المصروف</sys:String>
     <sys:String x:Key="ProsthExpense_Prosthetist">المرمم</sys:String>
     <sys:String x:Key="ProsthExpense_ProsthetistRequired">الرجاء اختيار المرمم.</sys:String>
     <sys:String x:Key="ProsthExpense_CatLabFees">تكاليف المخبر</sys:String>
@@ -645,6 +650,16 @@
     <sys:String x:Key="Backup_RestoreConfirm">سيتم استبدال قاعدة بيانات العيادة الحالية نهائياً وفصل جميع المستخدمين. هل تريد المتابعة؟</sys:String>
     <sys:String x:Key="Backup_RestoreInProgress">جارٍ الاستعادة...</sys:String>
     <sys:String x:Key="Backup_RestoreSuccess">تمت استعادة قاعدة البيانات بنجاح. سيُغلق التطبيق الآن؛ أعد فتحه للمتابعة.</sys:String>
+    <sys:String x:Key="Audit_OpenButton">سجل التدقيق</sys:String>
+    <sys:String x:Key="Audit_Title">سجل التدقيق</sys:String>
+    <sys:String x:Key="Audit_Description">آخر التغييرات المهمة على البيانات. لا يُخزّن محتوى طبي سرّي في هذا السجل.</sys:String>
+    <sys:String x:Key="Audit_ColTime">الوقت</sys:String>
+    <sys:String x:Key="Audit_ColAction">العملية</sys:String>
+    <sys:String x:Key="Audit_ColRecord">السجل</sys:String>
+    <sys:String x:Key="Audit_ColUser">المستخدم</sys:String>
+    <sys:String x:Key="Audit_ColDevice">الجهاز</sys:String>
+    <sys:String x:Key="Audit_CountFormat">{0} سجل حديث</sys:String>
+    <sys:String x:Key="Audit_LoadErrorFormat">تعذّر تحميل سجل التدقيق: {0}</sys:String>
 
     <sys:String x:Key="PF_ColActions">الإجراءات</sys:String>
     <sys:String x:Key="PF_EditSessionButton">تعديل</sys:String>
