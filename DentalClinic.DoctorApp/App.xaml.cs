@@ -1,6 +1,8 @@
 using System.Configuration;
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
+using DentalClinic.UI.Diagnostics;
 using DentalClinic.Data.DataAccess;
 using DentalClinic.Features;
 using DentalClinic.UI.Localization;
@@ -11,6 +13,7 @@ public partial class App : Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
+        RegisterGlobalExceptionHandlers();
         base.OnStartup(e);
 
         // يجب أن يكون أول شيء يحدث: يحمّل قاموس النصوص واتجاه الواجهة (RTL/LTR) المناسبين
@@ -79,8 +82,8 @@ public partial class App : Application
             // جداول بعد) - ننشئ البنية الكاملة تلقائياً هنا قبل أي شيء آخر
             if (!SchemaInitializer.SchemaExists(db))
                 SchemaInitializer.CreateSchema(db);
-            else
-                SchemaInitializer.EnsureSchemaUpgrades(db);
+
+            DatabaseMigrationRunner.EnsureCurrent(db);
 
             var userRepo = new UserRepository(db);
             hasAnyUsers = userRepo.AnyUsersExist();
@@ -90,6 +93,44 @@ public partial class App : Application
         {
             return false;
         }
+    }
+
+
+    private void RegisterGlobalExceptionHandlers()
+    {
+        DispatcherUnhandledException += OnDispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
+        TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+    }
+
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        CrashLogger.LogUnhandledException("DispatcherUnhandledException", e.Exception);
+
+        MessageBox.Show(
+            "An unexpected error occurred in the application.\n\nThe details were saved to the local application log. Please contact support if the problem continues.",
+            "Dental Clinic System",
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+
+        // An unhandled UI exception can leave the window/application state inconsistent.
+        // We log it and terminate cleanly instead of silently continuing in an unknown state.
+        e.Handled = true;
+        Shutdown(-1);
+    }
+
+    private static void OnAppDomainUnhandledException(object? sender, UnhandledExceptionEventArgs e)
+    {
+        if (e.ExceptionObject is Exception exception)
+            CrashLogger.LogUnhandledException("AppDomain.UnhandledException", exception);
+        else
+            CrashLogger.Log("AppDomain.UnhandledException", e.ExceptionObject?.ToString() ?? "Unknown unhandled exception.");
+    }
+
+    private static void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+    {
+        CrashLogger.LogUnhandledException("TaskScheduler.UnobservedTaskException", e.Exception);
+        e.SetObserved();
     }
 
     // فحص الترخيص يعمل بمبدأ الفشل المغلق: لا يُسمح بتشغيل التطبيق ما لم نستطع

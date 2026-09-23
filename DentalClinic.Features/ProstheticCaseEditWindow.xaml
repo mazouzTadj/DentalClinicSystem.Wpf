@@ -174,6 +174,50 @@
                     </Grid>
                 </TabItem>
 
+                <!-- ===== تبويب المواعيد - يظهر فقط لمن يملك Prosthetics.ViewAppointments (الطبيب دائماً) =====
+                     حجز/تعديل/حذف الموعد نفسه مقيَّد إضافياً بـManageAppointments (راجع الكود الخلفي) -->
+                <TabItem x:Name="AppointmentsTabItem" Header="{DynamicResource ProsthCase_TabAppointments}">
+                    <Grid Margin="16,14,16,16">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Button x:Name="ScheduleAppointmentButton" Grid.Row="0" Content="{DynamicResource Sched_ScheduleNewButton}"
+                                Height="32" Padding="12,0" HorizontalAlignment="Left" Margin="0,0,0,10"
+                                Style="{StaticResource SecondaryButtonStyle}" FontSize="12"
+                                Click="ScheduleAppointmentButton_Click"/>
+
+                        <Border Grid.Row="1" CornerRadius="10" BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1" ClipToBounds="True">
+                            <DataGrid x:Name="AppointmentsGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                      Style="{StaticResource ModernDataGridStyle}"
+                                      ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                                      RowStyle="{StaticResource ModernRowStyle}"
+                                      CellStyle="{StaticResource ModernCellStyle}"
+                                      SelectionChanged="AppointmentsGrid_SelectionChanged">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{DynamicResource Sched_DateLabel}" Binding="{Binding DateText}" Width="130"/>
+                                    <DataGridTextColumn Header="{DynamicResource Sched_PlannedTreatment}" Binding="{Binding TreatmentText}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+
+                        <TextBlock x:Name="NoAppointmentsText" Grid.Row="1" Text="{DynamicResource ProsthCase_NoAppointments}"
+                                   FontStyle="Italic" Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
+                            <Button x:Name="EditAppointmentButton" Content="{DynamicResource Common_Edit}" Height="32" Padding="12,0"
+                                    Style="{StaticResource SecondaryButtonStyle}" FontSize="12" IsEnabled="False"
+                                    Margin="0,0,8,0" Click="EditAppointmentButton_Click"/>
+                            <Button x:Name="DeleteAppointmentButton" Content="{DynamicResource Common_Delete}" Height="32" Padding="12,0"
+                                    Style="{StaticResource DangerButtonStyle}" FontSize="12" IsEnabled="False"
+                                    Click="DeleteAppointmentButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+
                 <!-- ===== تبويب 3: المدفوعات - يظهر فقط لمن يملك Prosthetics.ViewPayment ===== -->
                 <TabItem x:Name="PaymentsTabItem" Header="{DynamicResource ProsthCase_TabPayments}">
                     <Grid Margin="16,14,16,16">

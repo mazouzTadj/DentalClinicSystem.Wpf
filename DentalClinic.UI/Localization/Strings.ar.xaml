@@ -108,6 +108,16 @@
     <sys:String x:Key="Sched_DirectAppointmentNotFound">الموعد غير موجود أو لم يعد موعداً مستقبلياً.</sys:String>
     <sys:String x:Key="Sched_SelectFutureDate">اختر تاريخاً مستقبلياً ابتداءً من الغد.</sys:String>
     <sys:String x:Key="Sched_DoctorOnly">هذه العملية متاحة للطبيب فقط.</sys:String>
+    <sys:String x:Key="Sched_ScheduleNewButton">حجز موعد</sys:String>
+
+    <!-- ===== شاشة مواعيد اليوم والقادمة - مشتركة بين تطبيقي الطبيب والمرمم ===== -->
+    <sys:String x:Key="ApptOverview_Title">مواعيد اليوم والأيام القادمة</sys:String>
+    <sys:String x:Key="ApptOverview_RefreshButton">تحديث</sys:String>
+    <sys:String x:Key="ApptOverview_NoAppointments">لا توجد مواعيد اليوم أو في الأيام القادمة.</sys:String>
+    <sys:String x:Key="ApptOverview_Today">اليوم</sys:String>
+    <sys:String x:Key="ApptOverview_Tomorrow">غداً</sys:String>
+    <sys:String x:Key="Main_OpenAppointmentsOverview">مواعيد اليوم والقادمة</sys:String>
+    <sys:String x:Key="ProsthMain_OpenAppointmentsOverview">المواعيد</sys:String>
     <sys:String x:Key="Sched_DirectBlockedPending">يوجد طلب تعديل معلّق لهذا الموعد. يجب معالجة الطلب المعلّق أولاً.</sys:String>
     <sys:String x:Key="Sched_ConfirmDeleteFormat">هل تريد حذف موعد {0} بتاريخ {1} نهائياً؟ سيتم حذف الموعد فقط.</sys:String>
     <sys:String x:Key="Sched_DeleteAppointmentTitle">حذف الموعد</sys:String>
@@ -433,6 +443,8 @@
     <sys:String x:Key="ProsthPerm_ViewTreatment">عرض علاجات المريض في العيادة</sys:String>
     <sys:String x:Key="ProsthPerm_ViewDiagnosis">عرض تشخيصات المريض</sys:String>
     <sys:String x:Key="ProsthPerm_ViewMedications">عرض أدوية المريض</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewAppointments">عرض مواعيد المريض (اليوم والقادمة)</sys:String>
+    <sys:String x:Key="ProsthPerm_ManageAppointments">حجز/تعديل/حذف مواعيد المريض</sys:String>
     <sys:String x:Key="ProsthPerm_ViewFinance">الدخول إلى لوحة مالية الترميم</sys:String>
     <sys:String x:Key="ProsthPerm_ViewPayment">عرض دفعات الحالة</sys:String>
     <sys:String x:Key="ProsthPerm_AddPayment">إضافة دفعة</sys:String>
@@ -763,6 +775,8 @@
     <sys:String x:Key="ProsthCase_TabPayments">المدفوعات</sys:String>
     <sys:String x:Key="ProsthCase_TabClinicalSummary">الملخص السريري</sys:String>
     <sys:String x:Key="ProsthCase_TabHistory">السجل</sys:String>
+    <sys:String x:Key="ProsthCase_TabAppointments">المواعيد</sys:String>
+    <sys:String x:Key="ProsthCase_NoAppointments">لا توجد مواعيد قادمة لهذا المريض.</sys:String>
 
     <!-- ===== Patch 11.1: نافذة إحصائيات الترميم ===== -->
     <sys:String x:Key="ProsthStats_WindowTitle">إحصائيات الترميم</sys:String>

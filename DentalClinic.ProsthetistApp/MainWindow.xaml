@@ -38,6 +38,13 @@
                         DockPanel.Dock="Right" Width="110" Height="42" Margin="0,0,10,0"
                         Style="{StaticResource SecondaryButtonStyle}"
                         Click="ExpensesButton_Click"/>
+                <!-- ميزة إضافة نظام حجز المواعيد لتطبيق المرمم: مواعيد اليوم والقادمة (اسم المريض +
+                     العلاج) - مقيَّد بـProsthetics.ViewAppointments، راجع AppointmentsButton.Visibility
+                     في الكود الخلفي -->
+                <Button x:Name="AppointmentsButton" Content="{DynamicResource ProsthMain_OpenAppointmentsOverview}"
+                        DockPanel.Dock="Right" Width="110" Height="42" Margin="0,0,10,0"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Click="AppointmentsButton_Click"/>
             </DockPanel>
         </Border>
 

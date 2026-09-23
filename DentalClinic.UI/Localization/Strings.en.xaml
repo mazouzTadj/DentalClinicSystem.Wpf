@@ -108,6 +108,16 @@
     <sys:String x:Key="Sched_DirectAppointmentNotFound">The appointment was not found or is no longer a future appointment.</sys:String>
     <sys:String x:Key="Sched_SelectFutureDate">Select a future date starting tomorrow.</sys:String>
     <sys:String x:Key="Sched_DoctorOnly">This operation is available to doctors only.</sys:String>
+    <sys:String x:Key="Sched_ScheduleNewButton">Schedule Appointment</sys:String>
+
+    <!-- ===== Appointments overview window (today &amp; upcoming) - shared between DoctorApp/ProsthetistApp ===== -->
+    <sys:String x:Key="ApptOverview_Title">Today's &amp; Upcoming Appointments</sys:String>
+    <sys:String x:Key="ApptOverview_RefreshButton">Refresh</sys:String>
+    <sys:String x:Key="ApptOverview_NoAppointments">No appointments today or in the coming days.</sys:String>
+    <sys:String x:Key="ApptOverview_Today">Today</sys:String>
+    <sys:String x:Key="ApptOverview_Tomorrow">Tomorrow</sys:String>
+    <sys:String x:Key="Main_OpenAppointmentsOverview">Today's &amp; Upcoming Appointments</sys:String>
+    <sys:String x:Key="ProsthMain_OpenAppointmentsOverview">Appointments</sys:String>
     <sys:String x:Key="Sched_DirectBlockedPending">A change request is pending for this appointment. Resolve the pending request first.</sys:String>
     <sys:String x:Key="Sched_ConfirmDeleteFormat">Delete {0}'s appointment on {1}? Only the appointment will be deleted.</sys:String>
     <sys:String x:Key="Sched_DeleteAppointmentTitle">Delete Appointment</sys:String>
@@ -433,6 +443,8 @@
     <sys:String x:Key="ProsthPerm_ViewTreatment">View patient's clinic treatments</sys:String>
     <sys:String x:Key="ProsthPerm_ViewDiagnosis">View patient's diagnoses</sys:String>
     <sys:String x:Key="ProsthPerm_ViewMedications">View patient's medications</sys:String>
+    <sys:String x:Key="ProsthPerm_ViewAppointments">View patient appointments (today &amp; upcoming)</sys:String>
+    <sys:String x:Key="ProsthPerm_ManageAppointments">Schedule / edit / delete patient appointments</sys:String>
     <sys:String x:Key="ProsthPerm_ViewFinance">Access prosthetics finance dashboard</sys:String>
     <sys:String x:Key="ProsthPerm_ViewPayment">View payments within a case</sys:String>
     <sys:String x:Key="ProsthPerm_AddPayment">Add prosthetic payment</sys:String>
@@ -763,6 +775,8 @@
     <sys:String x:Key="ProsthCase_TabPayments">Payments</sys:String>
     <sys:String x:Key="ProsthCase_TabClinicalSummary">Clinical Summary</sys:String>
     <sys:String x:Key="ProsthCase_TabHistory">History</sys:String>
+    <sys:String x:Key="ProsthCase_TabAppointments">Appointments</sys:String>
+    <sys:String x:Key="ProsthCase_NoAppointments">No upcoming appointments for this patient.</sys:String>
 
     <!-- ===== Patch 11.1: Prosthetic statistics window ===== -->
     <sys:String x:Key="ProsthStats_WindowTitle">Prosthetics Statistics</sys:String>

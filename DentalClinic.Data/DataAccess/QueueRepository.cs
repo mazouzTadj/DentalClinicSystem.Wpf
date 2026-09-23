@@ -227,12 +227,21 @@ public class QueueRepository
         }
     }
 
-    // تعديل موعد مستقبلي مباشرة من تطبيق الطبيب فقط. لا يستخدم مسار طلبات الممرضة.
-    // الحارس داخل طبقة البيانات إلزامي حتى لا يمكن استدعاء العملية من واجهة غير مخوّلة.
+    // من يستطيع تعديل/حذف موعد مستقبلي مباشرة (بلا مرور بمسار طلبات الممرضة)؟ الطبيب دائماً، أو
+    // مرمم مُنِح صراحة Prosthetics.ManageAppointments (ميزة إضافة نظام حجز المواعيد لتطبيق المرمم) -
+    // نفس نمط ProstheticPermissionGuard تماماً، لكن هنا محلياً لأن QueueRepository مشتركة بين
+    // الطبيب/الممرضة/المرمم ولا تعتمد على ProstheticPermissionGuard في بقية دوالها.
+    private static bool CanManageAppointmentsDirectly(UserAccount actingUser) =>
+        actingUser.Role == UserRole.Doctor
+        || (actingUser.Role == UserRole.Prosthetist && actingUser.HasProstheticPermission(ProstheticPermissionKeys.ManageAppointments));
+
+    // تعديل موعد مستقبلي مباشرة من تطبيق الطبيب أو تطبيق المرمم (بصلاحية ManageAppointments) فقط.
+    // لا يستخدم مسار طلبات الممرضة. الحارس داخل طبقة البيانات إلزامي حتى لا يمكن استدعاء العملية
+    // من واجهة غير مخوّلة.
     public bool UpdateFutureAppointment(int visitId, DateTime scheduledDate, string? plannedTreatment, UserAccount actingUser)
     {
-        if (actingUser.Role != UserRole.Doctor)
-            throw new UnauthorizedAccessException("Only doctors can directly edit future appointments.");
+        if (!CanManageAppointmentsDirectly(actingUser))
+            throw new UnauthorizedAccessException("Only doctors, or prosthetists granted Prosthetics.ManageAppointments, can directly edit future appointments.");
 
         if (scheduledDate.Date <= DateTime.Today)
             throw new ArgumentException("The appointment date must be in the future.", nameof(scheduledDate));
@@ -257,8 +266,8 @@ public class QueueRepository
     // حذف الموعد المستقبلي نفسه فقط. لا يحذف المريض ولا أي زيارة طبية أخرى.
     public bool DeleteFutureAppointment(int visitId, UserAccount actingUser)
     {
-        if (actingUser.Role != UserRole.Doctor)
-            throw new UnauthorizedAccessException("Only doctors can directly delete future appointments.");
+        if (!CanManageAppointmentsDirectly(actingUser))
+            throw new UnauthorizedAccessException("Only doctors, or prosthetists granted Prosthetics.ManageAppointments, can directly delete future appointments.");
 
         const string sql = @"
             DELETE FROM VisitQueue
@@ -340,6 +349,121 @@ public class QueueRepository
                 StatusUpdatedByUserID = row["StatusUpdatedByUserID"] as int?,
                 // نقرأ الموعد المستقبلي بدلاً من الحالي
                 ScheduledDate = row["FutureScheduledDate"] == DBNull.Value ? null : (DateTime?)row["FutureScheduledDate"]
+            });
+        }
+        return result;
+    }
+
+    // --------------------------------------------------------
+    // ميزة جديدة: عرض موحَّد لمواعيد اليوم والأيام القادمة
+    // --------------------------------------------------------
+
+    // كل المواعيد المستقبلية (Status='Scheduled') لمريض واحد بعينه - تُستخدم في تبويب "المواعيد"
+    // داخل ملف حالة الترميم (ProstheticCaseEditWindow)، حيث قد يملك المريض أكثر من موعد قادم واحد.
+    public List<AppointmentListItem> GetFutureAppointmentsForPatient(int patientId)
+    {
+        const string sql = @"
+            SELECT VisitID, PatientID, ScheduledDate, PlannedTreatment
+            FROM VisitQueue
+            WHERE PatientID = @PatientID
+              AND Status = 'Scheduled'
+              AND ScheduledDate IS NOT NULL
+            ORDER BY ScheduledDate ASC";
+
+        var table = _db.ExecuteQuery(sql, new SqlParameter("@PatientID", patientId));
+        var result = new List<AppointmentListItem>();
+        foreach (DataRow row in table.Rows)
+        {
+            result.Add(new AppointmentListItem
+            {
+                VisitID = (int)row["VisitID"],
+                PatientID = (int)row["PatientID"],
+                ScheduledDate = (DateTime)row["ScheduledDate"],
+                PlannedTreatment = row["PlannedTreatment"] as string
+            });
+        }
+        return result;
+    }
+
+    // مواعيد اليوم + كل الأيام القادمة (بلا سقف زمني - "القادمة" كما وردت في المتطلبات)، مع اسم
+    // المريض جاهزاً للعرض مباشرة. نفس منطق تقييد allowedDoctorUserIds/includeUnassigned المستخدَم
+    // في GetTodayQueue بالضبط (راجع التعليق هناك) - يسمح لتطبيق الطبيب بعرض مواعيد مرضاه فقط.
+    // null لكليهما => بلا أي تقييد (تُستخدم من تطبيق المرمم عبر GetUpcomingAppointmentsForPatients
+    // بدلاً من ذلك، وليس من هنا مباشرة، إلا إن أراد الطبيب رؤية الكل).
+    public List<AppointmentListItem> GetUpcomingAppointments(List<int>? allowedDoctorUserIds, bool includeUnassigned)
+    {
+        var sql = @"
+            SELECT q.VisitID, q.PatientID, p.FullName AS PatientFullName, q.ScheduledDate, q.PlannedTreatment
+            FROM VisitQueue q
+            INNER JOIN Patients p ON p.PatientID = q.PatientID
+            WHERE q.Status = 'Scheduled'
+              AND q.ScheduledDate IS NOT NULL
+              AND CAST(q.ScheduledDate AS DATE) >= CAST(GETDATE() AS DATE)";
+
+        var parameters = new List<SqlParameter>();
+
+        if (allowedDoctorUserIds != null)
+        {
+            if (allowedDoctorUserIds.Count == 0)
+            {
+                sql += includeUnassigned ? " AND p.AssignedDoctorUserID IS NULL" : " AND 1 = 0";
+            }
+            else
+            {
+                var placeholders = allowedDoctorUserIds.Select((id, i) => $"@Doc{i}").ToList();
+                for (var i = 0; i < allowedDoctorUserIds.Count; i++)
+                {
+                    parameters.Add(new SqlParameter($"@Doc{i}", allowedDoctorUserIds[i]));
+                }
+
+                sql += includeUnassigned
+                    ? $" AND (p.AssignedDoctorUserID IN ({string.Join(",", placeholders)}) OR p.AssignedDoctorUserID IS NULL)"
+                    : $" AND p.AssignedDoctorUserID IN ({string.Join(",", placeholders)})";
+            }
+        }
+
+        sql += " ORDER BY q.ScheduledDate ASC, p.FullName ASC";
+
+        var table = _db.ExecuteQuery(sql, parameters.ToArray());
+        return MapAppointmentRows(table);
+    }
+
+    // نفس فكرة GetUpcomingAppointments أعلاه، لكن مُقيَّدة بمجموعة PatientID محدَّدة صراحةً - تُستخدم
+    // من تطبيق المرمم (لا مفهوم "طبيب مُسنَد" هناك؛ بدلاً من ذلك نُقيِّد بمرضى الحالات الظاهرة له
+    // فعلياً، راجع ProstheticCaseRepository.GetVisiblePatientIds). قائمة فارغة => لا نتائج (وليس "الكل").
+    public List<AppointmentListItem> GetUpcomingAppointmentsForPatients(IReadOnlyCollection<int> patientIds)
+    {
+        if (patientIds == null || patientIds.Count == 0) return new List<AppointmentListItem>();
+
+        var placeholders = patientIds.Select((id, i) => $"@P{i}").ToList();
+        var parameters = patientIds.Select((id, i) => new SqlParameter($"@P{i}", id)).ToArray();
+
+        var sql = $@"
+            SELECT q.VisitID, q.PatientID, p.FullName AS PatientFullName, q.ScheduledDate, q.PlannedTreatment
+            FROM VisitQueue q
+            INNER JOIN Patients p ON p.PatientID = q.PatientID
+            WHERE q.Status = 'Scheduled'
+              AND q.ScheduledDate IS NOT NULL
+              AND CAST(q.ScheduledDate AS DATE) >= CAST(GETDATE() AS DATE)
+              AND q.PatientID IN ({string.Join(",", placeholders)})
+            ORDER BY q.ScheduledDate ASC, p.FullName ASC";
+
+        var table = _db.ExecuteQuery(sql, parameters);
+        return MapAppointmentRows(table);
+    }
+
+    private static List<AppointmentListItem> MapAppointmentRows(DataTable table)
+    {
+        var result = new List<AppointmentListItem>();
+        foreach (DataRow row in table.Rows)
+        {
+            result.Add(new AppointmentListItem
+            {
+                VisitID = (int)row["VisitID"],
+                PatientID = (int)row["PatientID"],
+                PatientFullName = row["PatientFullName"].ToString()!,
+                ScheduledDate = (DateTime)row["ScheduledDate"],
+                PlannedTreatment = row["PlannedTreatment"] as string
             });
         }
         return result;

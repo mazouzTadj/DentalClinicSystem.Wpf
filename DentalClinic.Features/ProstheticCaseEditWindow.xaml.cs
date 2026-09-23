@@ -23,6 +23,19 @@ public class ProstheticSessionRowViewModel
     public ProstheticSessionRowViewModel(ProstheticSession session) => Session = session;
 }
 
+// صف عرض واحد لموعد مستقبلي في تبويب "المواعيد" (ميزة إضافة نظام حجز المواعيد لتطبيق المرمم)
+public class AppointmentRowViewModel
+{
+    public AppointmentListItem Appointment { get; }
+    public int VisitID => Appointment.VisitID;
+    public string DateText => Appointment.ScheduledDate.ToString("yyyy-MM-dd");
+    public string TreatmentText => string.IsNullOrWhiteSpace(Appointment.PlannedTreatment)
+        ? LocalizationManager.T("Sched_NoPlannedTreatment")
+        : Appointment.PlannedTreatment!;
+
+    public AppointmentRowViewModel(AppointmentListItem appointment) => Appointment = appointment;
+}
+
 // صف عرض واحد لدفعة ترميم في تبويب "المدفوعات"
 public class ProstheticPaymentRowViewModel
 {
@@ -206,6 +219,12 @@ public partial class ProstheticCaseEditWindow : Window
     private readonly ProstheticSessionRepository _sessionRepo;
     private readonly ProstheticPaymentRepository _paymentRepo;
     private readonly ProstheticClinicalRepository _clinicalRepo;
+    // ميزة إضافة نظام حجز المواعيد لتطبيق المرمم - نفس QueueRepository المستخدَمة أصلاً في تطبيق
+    // الطبيب (VisitQueue مشتركة، وليست جدولاً خاصاً بالترميم). _requestRepo فقط لفحص "طلب معلَّق"
+    // قبل التعديل/الحذف المباشر، بنفس نمط DoctorApp.MainWindow.EditAppointmentButton_Click بالضبط.
+    private readonly QueueRepository _queueRepo;
+    private readonly AppointmentChangeRequestRepository _requestRepo;
+    private readonly DatabaseHelper _db;
 
     // ⚠️ هذه النافذة مشتركة بين تطبيق الطبيب (دائماً صلاحية كاملة، لم يتغيَّر شيء بالنسبة له) وتطبيق
     // المرمم (منذ الباتش 3) حيث تُطبَّق الصلاحيات الدقيقة فعلياً - لا يكفي إخفاء/تعطيل الحقول في
@@ -232,6 +251,10 @@ public partial class ProstheticCaseEditWindow : Window
     private readonly bool _canViewDiagnosis;
     private readonly bool _canViewMedications;
     private bool CanViewAnyClinicalField => _canViewTreatment || _canViewDiagnosis || _canViewMedications;
+    // ميزة المواعيد: الرؤية والإدارة (حجز/تعديل/حذف) صلاحيتان ذرّيتان منفصلتان تماماً - راجع
+    // ProstheticPermissionKeys.ViewAppointments/ManageAppointments
+    private readonly bool _canViewAppointments;
+    private readonly bool _canManageAppointments;
     // Patch 10: لا صلاحية "ViewHistory" مستقلة في الـ21 صلاحية عمداً (تعليمات صريحة بعدم إضافة
     // صلاحية جديدة إن أمكن الربط بصلاحية موجودة) - نربط رؤية تبويب History بأكمله بـEditCase، لأن
     // أغلب حركاته (WorkTypeChanged/ArchChanged/ToothScopeChanged/PriceChanged/NotesChanged) هي
@@ -256,6 +279,7 @@ public partial class ProstheticCaseEditWindow : Window
 
     private bool IsEditMode => _existingCase != null;
 
+    public ObservableCollection<AppointmentRowViewModel> AppointmentRows { get; } = new();
     public ObservableCollection<ProstheticSessionRowViewModel> SessionRows { get; } = new();
     public ObservableCollection<ProstheticPaymentRowViewModel> PaymentRows { get; } = new();
     public ObservableCollection<ProstheticClinicalSummaryRowViewModel> ClinicalSummaryRows { get; } = new();
@@ -284,24 +308,31 @@ public partial class ProstheticCaseEditWindow : Window
         _canViewTreatment = true;
         _canViewDiagnosis = true;
         _canViewMedications = true;
+        _canViewAppointments = true;
+        _canManageAppointments = true;
 
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
         var db = new DatabaseHelper(connectionString);
+        _db = db;
         _caseRepo = new ProstheticCaseRepository(db);
         _lookupRepo = new ProstheticLookupRepository(db);
         _userRepo = new UserRepository(db);
         _sessionRepo = new ProstheticSessionRepository(db);
         _paymentRepo = new ProstheticPaymentRepository(db);
         _clinicalRepo = new ProstheticClinicalRepository(db);
+        _queueRepo = new QueueRepository(db);
+        _requestRepo = new AppointmentChangeRequestRepository(db);
 
         TitleText.Text = LocalizationManager.T("ProsthCase_NewTitle");
         ReadOnlyInfoSection.Visibility = Visibility.Collapsed;
 
-        // لا معنى لتبويبَي الجلسات/المدفوعات/الملخص السريري/History قبل وجود حالة فعلية بـCaseID (وضع الإنشاء فقط)
+        // لا معنى لتبويبَي الجلسات/المدفوعات/الملخص السريري/History/المواعيد قبل وجود حالة فعلية
+        // بـCaseID (وضع الإنشاء فقط) - نفس المنطق تماماً لكل التبويبات الثانوية
         SessionsTabItem.Visibility = Visibility.Collapsed;
         PaymentsTabItem.Visibility = Visibility.Collapsed;
         ClinicalSummaryTabItem.Visibility = Visibility.Collapsed;
         HistoryTabItem.Visibility = Visibility.Collapsed;
+        AppointmentsTabItem.Visibility = Visibility.Collapsed;
         // لا معنى لزر "حذف الحالة" أيضاً - لا توجد حالة بعد لحذفها في وضع الإنشاء
         DeleteCaseButton.Visibility = Visibility.Collapsed;
 
@@ -340,6 +371,10 @@ public partial class ProstheticCaseEditWindow : Window
         _canViewTreatment = HasEditRight(ProstheticPermissionKeys.ViewTreatment);
         _canViewDiagnosis = HasEditRight(ProstheticPermissionKeys.ViewDiagnosis);
         _canViewMedications = HasEditRight(ProstheticPermissionKeys.ViewMedications);
+        // ميزة إضافة نظام حجز المواعيد لتطبيق المرمم - الطبيب دائماً كامل الصلاحية (HasEditRight)،
+        // والمرمم يحتاج المنح الصريح لكل صلاحية على حدة (رؤية منفصلة عن إدارة فعلية)
+        _canViewAppointments = HasEditRight(ProstheticPermissionKeys.ViewAppointments);
+        _canManageAppointments = HasEditRight(ProstheticPermissionKeys.ManageAppointments);
 
         WorkTypeBox.IsEnabled = _canEditCase;
         IncludesUpperCheck.IsEnabled = _canEditCase;
@@ -365,6 +400,11 @@ public partial class ProstheticCaseEditWindow : Window
         PaymentsTabItem.Visibility = _canViewPayment ? Visibility.Visible : Visibility.Collapsed;
         AddPaymentButton.Visibility = _canAddPayment ? Visibility.Visible : Visibility.Collapsed;
 
+        // تبويب "المواعيد" - مقيَّد بالكامل بصلاحية ViewAppointments؛ زر الحجز مقيَّد إضافياً
+        // بـManageAppointments (قد يرى المرمم المواعيد القادمة بلا القدرة على حجز/تعديل/حذفها)
+        AppointmentsTabItem.Visibility = _canViewAppointments ? Visibility.Visible : Visibility.Collapsed;
+        ScheduleAppointmentButton.Visibility = _canManageAppointments ? Visibility.Visible : Visibility.Collapsed;
+
         // تبويب "الملخص السريري" (Patch 9) - يُخفى بالكامل إن لم يملك المستخدم ولو صلاحية واحدة من
         // الثلاث (لا فائدة من تبويب فارغ تماماً من "مقيَّد" في كل حقل). عند ظهوره، كل حقل داخله
         // مستقل تماماً بصلاحيته الخاصة - راجع ProstheticClinicalSummaryRowViewModel
@@ -376,13 +416,17 @@ public partial class ProstheticCaseEditWindow : Window
 
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
         var db = new DatabaseHelper(connectionString);
+        _db = db;
         _caseRepo = new ProstheticCaseRepository(db);
         _lookupRepo = new ProstheticLookupRepository(db);
         _userRepo = new UserRepository(db);
         _sessionRepo = new ProstheticSessionRepository(db);
         _paymentRepo = new ProstheticPaymentRepository(db);
         _clinicalRepo = new ProstheticClinicalRepository(db);
+        _queueRepo = new QueueRepository(db);
+        _requestRepo = new AppointmentChangeRequestRepository(db);
 
+        AppointmentsGrid.ItemsSource = AppointmentRows;
         SessionsGrid.ItemsSource = SessionRows;
         PaymentsGrid.ItemsSource = PaymentRows;
         ClinicalSummaryList.ItemsSource = ClinicalSummaryRows;
@@ -422,6 +466,7 @@ public partial class ProstheticCaseEditWindow : Window
         {
             LoadLookups();
             LoadSessions();
+            if (_canViewAppointments) LoadAppointments();
             if (_canViewPayment) LoadPayments();
             if (CanViewAnyClinicalField) LoadClinicalSummary();
             if (CanViewHistory) LoadHistory();
@@ -528,6 +573,25 @@ public partial class ProstheticCaseEditWindow : Window
         }
     }
 
+    // ميزة إضافة نظام حجز المواعيد لتطبيق المرمم - تعرض كل المواعيد المستقبلية (VisitQueue بحالة
+    // Scheduled) الخاصة بمريض هذه الحالة، بصرف النظر عن الحالة نفسها (قد يكون للمريض أكثر من حالة
+    // ترميم واحدة، والموعد يخص المريض وليس حالة بعينها).
+    private void LoadAppointments()
+    {
+        try
+        {
+            var appointments = _queueRepo.GetFutureAppointmentsForPatient(_patientId);
+            AppointmentRows.Clear();
+            foreach (var a in appointments) AppointmentRows.Add(new AppointmentRowViewModel(a));
+            NoAppointmentsText.Visibility = AppointmentRows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            UpdateAppointmentButtonsState();
+        }
+        catch (Exception ex)
+        {
+            ErrorText.Text = LocalizationManager.T("ProsthCase_LoadErrorFormat", ex.Message);
+        }
+    }
+
     private void LoadPayments()
     {
         if (_existingCase == null) return;
@@ -617,6 +681,13 @@ public partial class ProstheticCaseEditWindow : Window
             : string.Empty;
     }
 
+    private void UpdateAppointmentButtonsState()
+    {
+        var hasSelection = AppointmentsGrid.SelectedItem != null;
+        EditAppointmentButton.IsEnabled = hasSelection && _canManageAppointments;
+        DeleteAppointmentButton.IsEnabled = hasSelection && _canManageAppointments;
+    }
+
     private void UpdateSessionButtonsState()
     {
         var hasSelection = SessionsGrid.SelectedItem != null;
@@ -631,8 +702,75 @@ public partial class ProstheticCaseEditWindow : Window
         DeletePaymentButton.IsEnabled = hasSelection && _canDeletePayment;
     }
 
+    private void AppointmentsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateAppointmentButtonsState();
     private void SessionsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateSessionButtonsState();
     private void PaymentsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdatePaymentButtonsState();
+
+    // ميزة إضافة نظام حجز المواعيد لتطبيق المرمم - نفس ScheduleAppointmentDialog المستخدَمة في
+    // PatientFileWindow (تطبيق الطبيب) بالحرف، تُفتَح هنا بمريض هذه الحالة مباشرة.
+    private void ScheduleAppointmentButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_canManageAppointments) return;
+
+        var dialog = new ScheduleAppointmentDialog(_patientId, _currentUser.UserID, _queueRepo, _db) { Owner = this };
+        if (dialog.ShowDialog() == true)
+        {
+            LoadAppointments();
+        }
+    }
+
+    private void EditAppointmentButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_canManageAppointments || AppointmentsGrid.SelectedItem is not AppointmentRowViewModel row) return;
+
+        // نفس فحص "طلب معلَّق" الموجود في DoctorApp.MainWindow.EditAppointmentButton_Click بالضبط -
+        // يمنع تعديلاً مباشراً فوق طلب تعديل من الممرضة لم يُبتّ فيه بعد
+        if (_requestRepo.HasPendingRequest(row.VisitID))
+        {
+            MessageBox.Show(LocalizationManager.T("Sched_DirectBlockedPending"), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var dialog = new EditAppointmentDialog(row.VisitID, _currentUser, _queueRepo, _db) { Owner = this };
+        if (dialog.ShowDialog() == true)
+        {
+            LoadAppointments();
+        }
+    }
+
+    private void DeleteAppointmentButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_canManageAppointments || AppointmentsGrid.SelectedItem is not AppointmentRowViewModel row) return;
+
+        if (_requestRepo.HasPendingRequest(row.VisitID))
+        {
+            MessageBox.Show(LocalizationManager.T("Sched_DirectBlockedPending"), LocalizationManager.T("Common_Notice"), MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            LocalizationManager.T("Sched_ConfirmDeleteFormat", _canViewPatient ? PatientNameText.Text : LocalizationManager.T("ProsthCase_PatientInfoRestricted"), row.DateText),
+            LocalizationManager.T("Sched_DeleteAppointmentTitle"),
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            if (_queueRepo.DeleteFutureAppointment(row.VisitID, _currentUser))
+            {
+                LoadAppointments();
+            }
+            else
+            {
+                MessageBox.Show(LocalizationManager.T("Sched_DirectAppointmentNotFound"), LocalizationManager.T("Common_Error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorText.Text = LocalizationManager.T("ProsthCase_SaveErrorFormat", ex.Message);
+        }
+    }
 
     private void AddSessionButton_Click(object sender, RoutedEventArgs e)
     {

@@ -142,6 +142,13 @@
                 Style="{StaticResource SecondaryButtonStyle}"
                 Click="SearchPatientButton_Click"/>-->
 
+                <!-- مواعيد اليوم والأيام القادمة (اسم المريض + العلاج المخطَّط) - متاح دائماً، بلا
+                     حاجة لصلاحية إضافية، لأن الطبيب هو الوحيد الذي يسجّل الدخول لهذا التطبيق أصلاً -->
+                <Button x:Name="AppointmentsOverviewButton" DockPanel.Dock="Right" Height="42" Padding="14,0" Margin="0,0,10,0"
+                        Content="{DynamicResource Main_OpenAppointmentsOverview}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Click="AppointmentsOverviewButton_Click"/>
+
                 <!-- 🔔 جرس إشعارات طلبات تعديل المواعيد المعلَّقة - يظهر فقط عند وجود طلب واحد على الأقل -->
                 <Button x:Name="NotificationBellButton" DockPanel.Dock="Right" Height="42" Padding="14,0"
                         Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed"

@@ -1,0 +1,93 @@
+<Window x:Class="DentalClinic.Features.AppointmentsOverviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource ApptOverview_Title}" Height="640" Width="560"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        ShowInTaskbar="False">
+
+    <Border CornerRadius="18" Background="{StaticResource CardBackgroundBrush}">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="30" ShadowDepth="6"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <TextBlock Text="{DynamicResource ApptOverview_Title}" FontWeight="Bold" FontSize="13"
+                           Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap"
+                           VerticalAlignment="Center" Margin="20,0,50,0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <Button Content="&#10227;" Style="{StaticResource WindowControlButtonStyle}" Click="RefreshButton_Click"
+                            ToolTip="{DynamicResource ApptOverview_RefreshButton}"/>
+                    <Button Content="&#10005;" Style="{StaticResource WindowControlButtonStyle}" Click="CloseButton_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="20,10,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Name="NoAppointmentsText" Text="{DynamicResource ApptOverview_NoAppointments}"
+                           FontStyle="Italic" Foreground="{StaticResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="GroupsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,14">
+                                    <TextBlock Text="{Binding HeaderText}" FontWeight="Bold" FontSize="13"
+                                               Foreground="{StaticResource AccentBrush}" Margin="2,0,0,6"/>
+                                    <ItemsControl ItemsSource="{Binding Items}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Style="{StaticResource InputContainerStyle}" Margin="0,0,0,8" Padding="12,10">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="60"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <TextBlock Grid.Column="0" Text="{Binding TimeText}" FontWeight="Bold"
+                                                                   FontSize="13" Foreground="{StaticResource TextPrimaryBrush}"
+                                                                   VerticalAlignment="Center"/>
+
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding PatientFullName}" FontWeight="Bold" FontSize="13"
+                                                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                            <TextBlock Text="{Binding TreatmentText}" FontSize="12"
+                                                                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0"/>
+                                                        </StackPanel>
+
+                                                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center"
+                                                                    Visibility="{Binding CanManageVisibility}">
+                                                            <Button Content="{DynamicResource Common_Edit}" Tag="{Binding}"
+                                                                    Style="{StaticResource SecondaryButtonStyle}" FontSize="11"
+                                                                    Height="28" Padding="10,0" Margin="0,0,6,0"
+                                                                    Click="EditAppointmentButton_Click"/>
+                                                            <Button Content="{DynamicResource Common_Delete}" Tag="{Binding}"
+                                                                    Style="{StaticResource DangerButtonStyle}" FontSize="11"
+                                                                    Height="28" Padding="10,0"
+                                                                    Click="DeleteAppointmentButton_Click"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

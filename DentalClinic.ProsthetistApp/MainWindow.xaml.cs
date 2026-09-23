@@ -22,6 +22,10 @@ public partial class MainWindow : Window
     private readonly DatabaseHelper _db;
     private readonly ProstheticCaseRepository _caseRepo;
     private readonly ProstheticPaymentRepository _paymentRepo;
+    // ميزة إضافة نظام حجز المواعيد لتطبيق المرمم - نفس VisitQueue/AppointmentChangeRequest المشتركتين
+    // مع تطبيق الطبيب، لا جدول جديد خاص بالترميم
+    private readonly QueueRepository _queueRepo;
+    private readonly AppointmentChangeRequestRepository _requestRepo;
     private readonly DispatcherTimer _refreshTimer;
     private readonly DentalClinic.UI.Connectivity.ConnectionMonitor _connectionMonitor;
     private DentalClinic.UI.ConnectionLostWindow? _connectionLostWindow;
@@ -58,6 +62,11 @@ public partial class MainWindow : Window
     private bool CanViewStage => IsDoctorAccount
         || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.ViewStage)
         || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.EditStage);
+
+    // ميزة إضافة نظام حجز المواعيد لتطبيق المرمم - نفس نمط CanViewFinance/CanViewPatientInfo أعلاه
+    // بالضبط. رؤية وإدارة صلاحيتان ذرّيتان منفصلتان (راجع PermissionDefinition.cs).
+    private bool CanViewAppointmentsOverview => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.ViewAppointments);
+    private bool CanManageAppointmentsOverview => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.ManageAppointments);
 
     public ObservableCollection<ProstheticCaseRowViewModel> CaseRows { get; } = new();
 
@@ -100,11 +109,15 @@ public partial class MainWindow : Window
         StatisticsButton.Visibility = CanViewFinance ? Visibility.Visible : Visibility.Collapsed;
         // Patch 12: نفس صلاحية ViewFinance أيضاً - راجع تعليق الزر في XAML
         ExpensesButton.Visibility = CanViewFinance ? Visibility.Visible : Visibility.Collapsed;
+        // ميزة إضافة نظام حجز المواعيد لتطبيق المرمم - مقيَّد بـViewAppointments (الطبيب دائماً)
+        AppointmentsButton.Visibility = CanViewAppointmentsOverview ? Visibility.Visible : Visibility.Collapsed;
 
         var connectionString = ConfigurationManager.ConnectionStrings["DentalClinicDB"].ConnectionString;
         _db = new DatabaseHelper(connectionString);
         _caseRepo = new ProstheticCaseRepository(_db);
         _paymentRepo = new ProstheticPaymentRepository(_db);
+        _queueRepo = new QueueRepository(_db);
+        _requestRepo = new AppointmentChangeRequestRepository(_db);
 
         // مراقبة الاتصال بالخادم في الخلفية (لا تُجمِّد الواجهة أبداً - راجع ConnectionMonitor) +
         // مؤشر الحالة في الشريط العلوي + نافذة إشعار تلقائية عند الانقطاع
@@ -359,6 +372,27 @@ public partial class MainWindow : Window
     private void ExpensesButton_Click(object sender, RoutedEventArgs e)
     {
         var window = new ProstheticExpensesWindow(_currentUser) { Owner = this };
+        window.ShowDialog();
+    }
+
+    // ميزة جديدة: عرض موحَّد لمواعيد اليوم والأيام القادمة (اسم المريض + العلاج المخطَّط). لا مفهوم
+    // "مريض مُسنَد لطبيب" هنا كما في تطبيق الطبيب - بدلاً من ذلك نُقيِّد بمرضى الحالات المرئية فعلياً
+    // لهذا المرمم (EffectiveProsthetistId: null = الكل، وإلا مرضى حالاته هو فقط)، بنفس نطاق الرؤية
+    // المعتمَد أصلاً في CasesGrid. الإدارة (حجز/تعديل/حذف) مقيَّدة إضافياً بـManageAppointments.
+    private void AppointmentsButton_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new AppointmentsOverviewWindow(
+            _currentUser,
+            _queueRepo,
+            _requestRepo,
+            _db,
+            () =>
+            {
+                var patientIds = _caseRepo.GetVisiblePatientIds(EffectiveProsthetistId);
+                return _queueRepo.GetUpcomingAppointmentsForPatients(patientIds);
+            },
+            canManage: CanManageAppointmentsOverview)
+        { Owner = this };
         window.ShowDialog();
     }
 

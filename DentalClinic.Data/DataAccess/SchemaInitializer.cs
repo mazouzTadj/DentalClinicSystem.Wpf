@@ -40,9 +40,7 @@ public static class SchemaInitializer
             db.ExecuteNonQuery(trimmed);
         }
 
-        // ترقيات مخطط آمنة لقواعد البيانات الموجودة مسبقاً.
-        EnsureSchemaUpgrades(db);
-
+        // Versioned migration runner applies legacy upgrades and records the baseline.
         // بصمة العيادة الفريدة والثابتة - أساس نظام الترخيص (راجع LicenseValidator)
         LicenseValidator.EnsureInstallationId(db);
     }
@@ -289,6 +287,10 @@ DELETE FROM dbo.Permissions WHERE PermissionKey = N'Prosthetics.ManageCases';";
             (ProstheticPermissionKeys.AddExpense,    "Add prosthetic expense", 220),
             (ProstheticPermissionKeys.EditExpense,   "Edit prosthetic expense", 225),
             (ProstheticPermissionKeys.DeleteExpense, "Delete prosthetic expense", 230),
+
+            // ===== المواعيد =====
+            (ProstheticPermissionKeys.ViewAppointments,   "View patient appointments (today & upcoming)", 240),
+            (ProstheticPermissionKeys.ManageAppointments, "Schedule / edit / delete patient appointments", 250),
         };
 
         foreach (var (key, displayName, sort) in definitions)

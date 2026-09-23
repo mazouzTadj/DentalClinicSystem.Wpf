@@ -671,6 +671,24 @@ public partial class MainWindow : Window
         LoadQueue(); // احتمال حصل تعديل/حذف مريض من داخل شاشة البحث - نحدّث القائمة احتياطاً
     }
 
+    // ميزة جديدة: عرض موحَّد لمواعيد اليوم والأيام القادمة (اسم المريض + العلاج المخطَّط) - نفس
+    // نطاق مرضى هذا الطبيب المستخدَم في GetTodayQueue بالضبط (مرضاه + غير المُسنَدين). الطبيب هنا
+    // يملك دوماً صلاحية التعديل/الحذف المباشر (canManage: true) لأن DoctorApp.LoginWindow لا يسمح
+    // بتسجيل دخول إلا لدور Doctor أصلاً.
+    private void AppointmentsOverviewButton_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new AppointmentsOverviewWindow(
+            _currentUser,
+            _queueRepo,
+            _requestRepo,
+            _db,
+            () => _queueRepo.GetUpcomingAppointments(new List<int> { _currentUser.UserID }, true),
+            canManage: true)
+        { Owner = this };
+        window.ShowDialog();
+        LoadQueue(); // قد يكون تعديل/حذف موعد من هذه الشاشة أثّر أيضاً على صف اليوم في الطابور
+    }
+
     private void AdvancedSearchButton_Click(object sender, RoutedEventArgs e)
     {
         var window = new AdvancedSearchWindow(_currentUser) { Owner = this };

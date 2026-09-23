@@ -219,6 +219,29 @@ public class ProstheticCaseRepository
         return items;
     }
 
+    // معرّفات المرضى الظاهرين فعليًا لهذا المرمم عبر حالاته (أو الكل إن null، تمامًا كنفس معنى
+    // prosthetistUserId في GetCases أعلاه) - تُستخدم لتحديد نطاق "مواعيد اليوم والقادمة" في تطبيق
+    // المرمم (لا مفهوم "طبيب مُسنَد للمريض" هناك، فنُقيِّد بدلًا من ذلك بمرضى الحالات المرئية له).
+    // بلا حالة/بحث/صفحات - كل الحالات (أي CaseStatus) لأن موعداً قادماً قد يخص حالة منتهية حديثاً أيضاً.
+    public List<int> GetVisiblePatientIds(int? prosthetistUserId)
+    {
+        var sql = "SELECT DISTINCT PatientID FROM dbo.ProstheticCases c WHERE 1 = 1";
+        var parameters = new List<SqlParameter>();
+        if (prosthetistUserId.HasValue)
+        {
+            sql += " AND c.AssignedProsthetistUserID = @ProsthetistID";
+            parameters.Add(new SqlParameter("@ProsthetistID", prosthetistUserId.Value));
+        }
+
+        var table = _db.ExecuteQuery(sql, parameters.ToArray());
+        var result = new List<int>();
+        foreach (DataRow row in table.Rows)
+        {
+            result.Add((int)row["PatientID"]);
+        }
+        return result;
+    }
+
     // نقل الحالة من مرمم إلى آخر (أو تعيينها لأول مرة) - لا يُغيّر CaseNumber ولا الجلسات ولا
     // المعلومات المالية إطلاقًا (تحديث عمود واحد فقط + تسجيل History)
     // Patch 14: يتحقق من Prosthetics.TransferCase تحديدًا - وليس EditCase العامة

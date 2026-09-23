@@ -58,4 +58,11 @@ public static class ProstheticPermissionKeys
     public const string AddExpense = "Prosthetics.AddExpense";
     public const string EditExpense = "Prosthetics.EditExpense";
     public const string DeleteExpense = "Prosthetics.DeleteExpense";
+
+    // ===== المواعيد (Appointments) =====
+    // ViewAppointments: رؤية مواعيد المريض المستقبلية (تبويب "المواعيد" داخل ملف الحالة) + شاشة
+    // "مواعيد اليوم والقادمة" العامة في النافذة الرئيسية. ManageAppointments: حجز/تعديل/حذف فعلي -
+    // صلاحيتان منفصلتان تماماً (نفس فلسفة الذرّية أعلاه) حتى يمكن منح الرؤية فقط بلا صلاحية التعديل.
+    public const string ViewAppointments = "Prosthetics.ViewAppointments";
+    public const string ManageAppointments = "Prosthetics.ManageAppointments";
 }
