@@ -6,8 +6,8 @@
 ;  ثم يكتبهما تلقائياً داخل ملفات App.config لكل تطبيق مُثبَّت.
 ; ============================================================
 
-#define MyAppName "Dental Clinic System"
-#define MyAppVersion "1.1.0"
+#define MyAppName "Dental Clinic System v1.2.0"
+#define MyAppVersion "1.2.0"
 #define MyPublisher "MAZOUZ Tadjeddine"
 
 [Setup]

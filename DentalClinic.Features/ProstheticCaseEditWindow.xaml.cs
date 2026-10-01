@@ -454,6 +454,10 @@ public partial class ProstheticCaseEditWindow : Window
             ProstheticCaseStatus.Cancelled => "ProsthCase_StatusCancelled",
             _ => "ProsthCase_StatusOpen"
         });
+        // نفس ألوان شارة الحالة في قائمة الحالات بالنافذة الرئيسية (ProstheticCaseStatusToBrushConverter) -
+        // هنا نص ملوَّن بدل شارة كاملة لأن السياق هو حقل معلومات وليس صفاً في جدول
+        StatusText.Foreground = (System.Windows.Media.Brush)new DentalClinic.UI.Converters.ProstheticCaseStatusToBrushConverter()
+            .Convert(existingCase.CaseStatus, typeof(System.Windows.Media.Brush), null, System.Globalization.CultureInfo.CurrentCulture);
 
         ToothScopeOdontogram.SetSelectedTeeth(ParseToothNumbers(existingCase.ToothScope));
         IncludesUpperCheck.IsChecked = existingCase.IncludesUpper;

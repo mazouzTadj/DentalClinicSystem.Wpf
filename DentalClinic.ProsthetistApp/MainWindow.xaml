@@ -3,11 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:DentalClinic.UI;assembly=DentalClinic.UI"
         xmlns:controls="clr-namespace:DentalClinic.UI.Controls;assembly=DentalClinic.UI"
+        xmlns:conv="clr-namespace:DentalClinic.UI.Converters;assembly=DentalClinic.UI"
         Title="{DynamicResource App_ProsthetistTitle}" Height="720" Width="1300" MinWidth="1040" MinHeight="560"
         Icon="pack://application:,,,/DentalClinic.UI;component/Assets/logo_icon.ico"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource WindowBackgroundBrush}"
         ui:WindowFx.AnimateEntrance="True">
+
+    <Window.Resources>
+        <!-- ميزة تلوين حالة الملف (Open/Completed/Cancelled) بنفس أسلوب شارات حالة الزيارة في تطبيق الطبيب -->
+        <conv:ProstheticCaseStatusToBrushConverter x:Key="ProstheticCaseStatusToBrushConverter"/>
+    </Window.Resources>
 
     <DockPanel LastChildFill="True">
 
@@ -153,7 +159,28 @@
                     <DataGridTextColumn Header="{DynamicResource ProsthCase_Prosthetist}" Binding="{Binding ProsthetistName}" Width="150"/>
                     <DataGridTextColumn Header="{DynamicResource ProsthCase_WorkType}" Binding="{Binding WorkTypeName}" Width="130"/>
                     <DataGridTextColumn Header="{DynamicResource ProsthCase_ColStage}" Binding="{Binding StageName}" Width="120"/>
-                    <DataGridTextColumn Header="{DynamicResource ProsthCase_ColStatus}" Binding="{Binding StatusText}" Width="90"/>
+                    <!-- ميزة جديدة: الضغط على شارة الحالة نفسها يفتح نافذة تغيير الحالة مباشرة (بدل
+                         زر منفصل أسفل الجدول) - Button بلا أي مظهر افتراضي (ControlTemplate كامل)
+                         بحيث تبقى الشارة الملوَّنة نفسها بصرياً لكنها قابلة للنقر مع مؤشر يد -->
+                    <DataGridTemplateColumn Header="{DynamicResource ProsthCase_ColStatus}" Width="110">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Tag="{Binding}" Click="StatusBadge_Click" Cursor="Hand"
+                                        HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"
+                                        ToolTip="{DynamicResource ProsthMain_ChangeStatusHint}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{Binding Case.CaseStatus, Converter={StaticResource ProstheticCaseStatusToBrushConverter}}"
+                                                    CornerRadius="12" Padding="10,4">
+                                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <TextBlock Text="{Binding StatusText}" Foreground="White" FontSize="11.5" FontWeight="SemiBold"/>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="{DynamicResource ProsthCase_ColPrice}" Binding="{Binding PriceText}" Width="100"/>
                 </DataGrid.Columns>
             </DataGrid>

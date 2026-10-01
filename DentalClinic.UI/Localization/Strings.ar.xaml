@@ -769,6 +769,13 @@
     <sys:String x:Key="ProsthMain_OpenExpenses">المصاريف</sys:String>
     <sys:String x:Key="ProsthMain_ShowingCountFormat">عرض {0} من أصل {1} حالة</sys:String>
 
+    <!-- ===== ميزة جديدة: تغيير حالة الملف مباشرة من النافذة الرئيسية ===== -->
+    <sys:String x:Key="ProsthMain_ChangeStatus">تغيير الحالة</sys:String>
+    <sys:String x:Key="ProsthMain_ChangeStatusTitle">تغيير حالة الملف</sys:String>
+    <sys:String x:Key="ProsthMain_ChangeStatusHint">اختر الحالة الجديدة لهذا الملف.</sys:String>
+    <sys:String x:Key="ProsthMain_ChangeStatusCaseFormat">الحالة رقم {0} — {1}</sys:String>
+    <sys:String x:Key="ProsthMain_ChangeStatusPickOne">الرجاء اختيار حالة.</sys:String>
+
     <!-- ===== تبويبات نافذة الحالة (Patch 4) ===== -->
     <sys:String x:Key="ProsthCase_TabInfo">معلومات الحالة</sys:String>
     <sys:String x:Key="ProsthCase_TabSessions">الجلسات</sys:String>

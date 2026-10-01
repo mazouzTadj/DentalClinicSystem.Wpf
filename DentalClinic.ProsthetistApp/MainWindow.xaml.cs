@@ -68,6 +68,11 @@ public partial class MainWindow : Window
     private bool CanViewAppointmentsOverview => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.ViewAppointments);
     private bool CanManageAppointmentsOverview => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.ManageAppointments);
 
+    // ميزة جديدة: تغيير حالة الملف (مفتوحة/مكتملة/ملغاة) من النافذة الرئيسية - بنفس صلاحية EditCase
+    // المستخدَمة أصلاً كحارس داخل ProstheticCaseRepository.UpdateStatus (دفاع في العمق: الزر هنا
+    // مُقيَّد بها أيضاً على مستوى الواجهة، بالإضافة لتحقق الطبقة الخلفية نفسها)
+    private bool CanChangeCaseStatus => IsDoctorAccount || _currentUser.HasProstheticPermission(ProstheticPermissionKeys.EditCase);
+
     public ObservableCollection<ProstheticCaseRowViewModel> CaseRows { get; } = new();
 
     // DataGridColumn is not a FrameworkElement and should not be given x:Name in XAML.
@@ -408,6 +413,26 @@ public partial class MainWindow : Window
         {
             LoadCases();
             LoadDashboard(); // قد يتغيّر السعر ضمن التعديل، فيتأثر الرصيد المستحق الظاهر في البطاقات
+        }
+    }
+
+    // ميزة جديدة: الضغط على شارة الحالة نفسها في صف الجدول (وليس زراً منفصلاً) يفتح نافذة تغيير
+    // الحالة مباشرة - عبر ChangeCaseStatusDialog الجديدة فوق ProstheticCaseRepository.UpdateStatus.
+    // sender.Tag يحمل صف ProstheticCaseRowViewModel الخاص بهذا الصف تحديداً (راجع Tag="{Binding}" في XAML).
+    private void StatusBadge_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: ProstheticCaseRowViewModel row }) return;
+
+        if (!CanChangeCaseStatus)
+        {
+            MessageBox.Show(LocalizationManager.T("Common_AccessDenied"), LocalizationManager.T("Common_AccessDenied"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var dialog = new ChangeCaseStatusDialog(row.Case, _currentUser, _caseRepo) { Owner = this };
+        if (dialog.ShowDialog() == true)
+        {
+            LoadCases();
         }
     }
 

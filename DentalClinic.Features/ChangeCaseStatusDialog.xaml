@@ -1,0 +1,61 @@
+<Window x:Class="DentalClinic.Features.ChangeCaseStatusDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource ProsthMain_ChangeStatusTitle}" Height="420" Width="380"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+    <Border CornerRadius="18" Background="{StaticResource CardBackgroundBrush}">
+        <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.25" BlurRadius="30" ShadowDepth="6"/></Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions><RowDefinition Height="44"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+            <Grid Grid.Row="0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <TextBlock Text="{DynamicResource ProsthMain_ChangeStatusTitle}" FontWeight="Bold" FontSize="14"
+                           Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center" Margin="20,0,0,0"/>
+                <Button Content="&#10005;" HorizontalAlignment="Right" Style="{StaticResource WindowControlButtonStyle}"
+                        Click="CloseButton_Click" Margin="0,0,10,0"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1" Margin="30,10,30,20">
+                <TextBlock x:Name="CaseSummaryText" FontSize="13" FontWeight="Bold"
+                           Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"
+                           HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                <TextBlock Text="{DynamicResource ProsthMain_ChangeStatusHint}" FontSize="12" FontStyle="Italic"
+                           Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap"
+                           HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,18"/>
+
+                <RadioButton x:Name="OpenRadio" GroupName="CaseStatusGroup" Margin="0,0,0,12" HorizontalAlignment="Center"
+                             Checked="StatusRadio_Checked">
+                    <Border Background="#2E86DE" CornerRadius="14" Padding="18,7" MinWidth="180" HorizontalAlignment="Center">
+                        <TextBlock Text="{DynamicResource ProsthCase_StatusOpen}" Foreground="White"
+                                   FontWeight="SemiBold" FontSize="13" HorizontalAlignment="Center"/>
+                    </Border>
+                </RadioButton>
+
+                <RadioButton x:Name="CompletedRadio" GroupName="CaseStatusGroup" Margin="0,0,0,12" HorizontalAlignment="Center"
+                             Checked="StatusRadio_Checked">
+                    <Border Background="#22A06B" CornerRadius="14" Padding="18,7" MinWidth="180" HorizontalAlignment="Center">
+                        <TextBlock Text="{DynamicResource ProsthCase_StatusCompleted}" Foreground="White"
+                                   FontWeight="SemiBold" FontSize="13" HorizontalAlignment="Center"/>
+                    </Border>
+                </RadioButton>
+
+                <RadioButton x:Name="CancelledRadio" GroupName="CaseStatusGroup" Margin="0,0,0,4" HorizontalAlignment="Center"
+                             Checked="StatusRadio_Checked">
+                    <Border Background="#EF4444" CornerRadius="14" Padding="18,7" MinWidth="180" HorizontalAlignment="Center">
+                        <TextBlock Text="{DynamicResource ProsthCase_StatusCancelled}" Foreground="White"
+                                   FontWeight="SemiBold" FontSize="13" HorizontalAlignment="Center"/>
+                    </Border>
+                </RadioButton>
+
+                <TextBlock x:Name="ErrorText" Style="{StaticResource ErrorTextStyle}" Margin="0,14,0,0" HorizontalAlignment="Center"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,18,0,0">
+                    <Button Content="{DynamicResource Common_Cancel}" Width="110" Height="40" Margin="0,0,12,0"
+                            Style="{StaticResource SecondaryButtonStyle}" Click="CloseButton_Click"/>
+                    <Button x:Name="SaveButton" Content="{DynamicResource Common_Save}" Width="130" Height="40"
+                            Style="{StaticResource PrimaryButtonStyle}" Click="SaveButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

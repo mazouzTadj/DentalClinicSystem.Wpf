@@ -769,6 +769,13 @@
     <sys:String x:Key="ProsthMain_OpenExpenses">Expenses</sys:String>
     <sys:String x:Key="ProsthMain_ShowingCountFormat">Showing {0} of {1} cases</sys:String>
 
+    <!-- ===== New: change case status directly from the main window ===== -->
+    <sys:String x:Key="ProsthMain_ChangeStatus">Change Status</sys:String>
+    <sys:String x:Key="ProsthMain_ChangeStatusTitle">Change Case Status</sys:String>
+    <sys:String x:Key="ProsthMain_ChangeStatusHint">Choose the new status for this case.</sys:String>
+    <sys:String x:Key="ProsthMain_ChangeStatusCaseFormat">Case #{0} — {1}</sys:String>
+    <sys:String x:Key="ProsthMain_ChangeStatusPickOne">Please choose a status.</sys:String>
+
     <!-- ===== Case window tabs (Patch 4) ===== -->
     <sys:String x:Key="ProsthCase_TabInfo">Case Info</sys:String>
     <sys:String x:Key="ProsthCase_TabSessions">Sessions</sys:String>
