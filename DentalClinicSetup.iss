@@ -250,7 +250,7 @@ begin
   InstancesHint := TNewStaticText.Create(ServerPage);
   InstancesHint.Parent := ServerPage.Surface;
   InstancesHint.Left := 0;
-  InstancesHint.Top := ScaleY(70);
+  InstancesHint.Top := ScaleY(105);
   InstancesHint.Width := ServerPage.SurfaceWidth;
   InstancesHint.Height := ScaleY(42);
   InstancesHint.AutoSize := False;

@@ -10,7 +10,7 @@ namespace DentalClinic.Data.DataAccess;
 /// </summary>
 public static class DatabaseMigrationRunner
 {
-    public const int CurrentVersion = 1;
+    public const int CurrentVersion = 2;
     private const int BaselineVersion = 1;
     private const int MigrationLockTimeoutMs = 30000;
     private const string MigrationLockName = "DentalClinicSystem.DatabaseMigration";
@@ -56,7 +56,35 @@ public static class DatabaseMigrationRunner
     }
 
     private static IReadOnlyList<DatabaseMigration> GetMigrations() =>
-        Array.Empty<DatabaseMigration>();
+        new[]
+        {
+            new DatabaseMigration(
+                2,
+                "Add prosthetist appointment permissions",
+                "Adds ViewAppointments and ManageAppointments permission definitions introduced by the prosthetist appointments feature.",
+                ApplyMigration002AddProsthetistAppointmentPermissions)
+        };
+
+    private static void ApplyMigration002AddProsthetistAppointmentPermissions(SqlConnection conn, SqlTransaction tx)
+    {
+        // Historical migration: keep the permission keys literal so this migration remains
+        // stable even if the application constants are renamed in a future release.
+        const string sql = @"
+IF NOT EXISTS (SELECT 1 FROM dbo.Permissions WHERE PermissionKey = N'Prosthetics.ViewAppointments')
+BEGIN
+    INSERT INTO dbo.Permissions (PermissionKey, Category, DisplayName, Description, SortOrder)
+    VALUES (N'Prosthetics.ViewAppointments', N'Prosthetics', N'View patient appointments (today & upcoming)', NULL, 240);
+END;
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Permissions WHERE PermissionKey = N'Prosthetics.ManageAppointments')
+BEGIN
+    INSERT INTO dbo.Permissions (PermissionKey, Category, DisplayName, Description, SortOrder)
+    VALUES (N'Prosthetics.ManageAppointments', N'Prosthetics', N'Schedule / edit / delete patient appointments', NULL, 250);
+END;";
+
+        using var cmd = CreateCommand(conn, sql, tx);
+        cmd.ExecuteNonQuery();
+    }
 
     private static void EnsureHistoryTable(SqlConnection conn)
     {

@@ -54,6 +54,22 @@ public static class BidiTextFixer
         {
             char c = text[i];
 
+            // Preserve composite string.Format placeholders exactly as written.
+            // Example: {0:N0} must remain byte-for-byte equivalent so that
+            // LocalizationManager.T(key, args) can format it correctly.
+            // In particular, ':' is a neutral symbol handled below, but inserting
+            // an RLM around it would turn {0:N0} into an invalid format placeholder.
+            if (c == '{' && i + 1 < text.Length && text[i + 1] != '{')
+            {
+                int closingBrace = text.IndexOf('}', i + 1);
+                if (closingBrace > i)
+                {
+                    sb.Append(text, i, closingBrace - i + 1);
+                    i = closingBrace;
+                    continue;
+                }
+            }
+
             if (NeutralSymbols.IndexOf(c) >= 0)
             {
                 // نتجنّب إضافة RLM مكرَّرة إن كانت موجودة أصلاً حول نفس الرمز (نص عولج سابقاً)

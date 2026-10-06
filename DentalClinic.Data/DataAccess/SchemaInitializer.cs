@@ -31,14 +31,14 @@ public static class SchemaInitializer
 
         // كل دفعة SQL منفصلة بسطر "GO" وحيد (نفس تقسيم SSMS) - SqlCommand لا يفهم GO
         // إطلاقاً (هي فقط أمر خاص بـ sqlcmd/SSMS)، فيجب تقسيم النص وتنفيذ كل دفعة على حدة.
-        var batches = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        // لكن جميع الدفعات تُنفَّذ الآن داخل اتصال ومعاملة واحدة حتى لا تبقى قاعدة البيانات
+        // في حالة نصف مهيأة إذا فشلت أي دفعة في منتصف عملية الإنشاء.
+        var batches = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase)
+            .Select(batch => batch.Trim())
+            .Where(batch => batch.Length > 0)
+            .ToArray();
 
-        foreach (var batch in batches)
-        {
-            var trimmed = batch.Trim();
-            if (trimmed.Length == 0) continue;
-            db.ExecuteNonQuery(trimmed);
-        }
+        db.ExecuteBatchesInTransaction(batches);
 
         // Versioned migration runner applies legacy upgrades and records the baseline.
         // بصمة العيادة الفريدة والثابتة - أساس نظام الترخيص (راجع LicenseValidator)

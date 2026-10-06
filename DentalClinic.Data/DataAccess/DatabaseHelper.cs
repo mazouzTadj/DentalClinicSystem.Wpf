@@ -64,6 +64,46 @@ public class DatabaseHelper
         }
     }
 
+    // تنفيذ مجموعة أوامر SQL ضمن اتصال ومعاملة واحدة.
+    // يُستخدم عند إنشاء Schema جديدة حتى لا تبقى القاعدة في حالة نصف مهيأة
+    // إذا فشلت إحدى دفعات SQL في منتصف عملية الإنشاء.
+    public void ExecuteBatchesInTransaction(IEnumerable<string> commandTexts)
+    {
+        using var conn = GetConnection();
+        conn.Open();
+        ApplyAuditContext(conn);
+
+        using var tx = conn.BeginTransaction();
+        try
+        {
+            foreach (var commandText in commandTexts)
+            {
+                if (string.IsNullOrWhiteSpace(commandText)) continue;
+
+                using var cmd = new SqlCommand(commandText, conn, tx)
+                {
+                    CommandTimeout = CommandTimeoutSeconds
+                };
+                cmd.ExecuteNonQuery();
+            }
+
+            tx.Commit();
+        }
+        catch
+        {
+            try
+            {
+                tx.Rollback();
+            }
+            catch
+            {
+                // Preserve the original SQL exception if rollback itself fails.
+            }
+
+            throw;
+        }
+    }
+
     // لتنفيذ أوامر INSERT / UPDATE / DELETE
     public int ExecuteNonQuery(string commandText, params SqlParameter[] parameters)
     {
